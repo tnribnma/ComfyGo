@@ -1,6 +1,4 @@
-"""
-Admin model — top-level user who manages hotels & employees.
-"""
+
 from typing import List, TYPE_CHECKING
 from sqlalchemy import String, Integer
 from sqlalchemy.orm import relationship, Mapped, mapped_column
@@ -22,7 +20,6 @@ class Admin(TimestampMixin, Base):
     admin_password: Mapped[str] = mapped_column(String(255), nullable=False)
     admin_phone: Mapped[str] = mapped_column(String(20), nullable=True)
 
-    # One-to-many: Admin -> Employees
     employees: Mapped[List["Employee"]] = relationship(
         "Employee",
         back_populates="admin",
