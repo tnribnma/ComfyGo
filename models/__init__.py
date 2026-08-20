@@ -6,6 +6,7 @@ from .customer import Customer
 from .guide import Guide
 from .booking import Booking, BookingStatus
 from .payment import Payment, PaymentMethod, PaymentStatus
+from .audit_log import AuditLog
 
 __all__ = [
     "Base",

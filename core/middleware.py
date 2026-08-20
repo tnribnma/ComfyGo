@@ -14,6 +14,8 @@ from starlette.responses import Response
 from ..config import settings
 from .exceptions import AppException
 from .logger import get_logger
+from ..database import Database
+from ..repositories.audit_log_repository import AuditLogRepository
 
 log = get_logger(__name__)
 
@@ -150,3 +152,62 @@ def register_exception_handlers(app: FastAPI) -> None:
                 "request_id": request_id,
             },
         )
+
+class AuditMiddleware(BaseHTTPMiddleware):
+    SKIP_PATHS = {"/", "/health", "/docs", "/redoc", "/openapi.json"}
+    
+    async def dispatch(self, request: Request, call_next: Callable):
+        if request.url.path in self.SKIP_PATHS or request.method == "GET":
+            return await call_next(request)
+        
+        start = time.perf_counter()
+        response = await call_next(request)
+        duration_ms = (time.perf_counter() - start) * 1000
+        
+        user_id = getattr(request.state, "user_id", None)
+        user_role = getattr(request.state, "user_role", None)
+        
+        method = request.method
+        action_map = {
+            "POST": "CREATE",
+            "PUT": "UPDATE",
+            "PATCH": "UPDATE",
+            "DELETE": "DELETE",
+        }
+        action = action_map.get(method, method.upper())
+        
+        try:
+            db = Database.session_factory()()
+            repo = AuditLogRepository(db)
+            repo.create({
+                "user_id": user_id,
+                "user_role": user_role,
+                "action": action,
+                "entity_type": self._guess_entity(request.url.path),
+                "request_method": method,
+                "request_path": request.url.path,
+                "status_code": response.status_code,
+                "ip_address": request.client.host if request.client else None,
+                "user_agent": request.headers.get("user-agent", "")[:500],
+                "duration_ms": round(duration_ms, 2),
+            })
+        except Exception as e:
+            log.error("Failed to write audit log: %s", e)
+        finally:
+            db.close()
+        
+        return response
+    
+    @staticmethod
+    def _guess_entity(path: str) -> str:
+        """Extract entity name from URL path (e.g., /api/v1/hotels -> Hotel)."""
+        parts = path.strip("/").split("/")
+        if len(parts) >= 3 and parts[0] == "api":
+            entity = parts[2]  
+            return entity.rstrip("s").capitalize()  
+        return None
+
+def register_middleware(app: FastAPI) -> None:
+    app.add_middleware(AuditMiddleware)  
+    app.add_middleware(RequestLoggingMiddleware)
+    app.add_middleware(RequestIDMiddleware)

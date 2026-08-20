@@ -1,13 +1,11 @@
-from typing import Annotated, Union
-
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Request  
 from fastapi.security import OAuth2PasswordBearer
+from typing import Annotated, Union
 from sqlalchemy.orm import Session
 
 from .config import settings
 from .database import get_db
 from .core.security import decode_token
-from .core.exceptions import AuthenticationError, AuthorizationError
 from .models import Admin, Employee, Customer
 
 oauth2_scheme = OAuth2PasswordBearer(
@@ -64,6 +62,8 @@ def get_current_user(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="User no longer exists",
         )
+        request.state.user_id = user_id
+        request.state.user_role = role
     return user
 
 
