@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     PG_HOST: str = "localhost"
     PG_PORT: int = 5432
     PG_USER: str = "postgres"
-    PG_PASS: str = "postgres"
+    PG_PASS: str = 1234
     PG_DB: str = "comfygo"
     DATABASE_URL: Optional[str] = None  
 
