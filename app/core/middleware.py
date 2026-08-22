@@ -77,8 +77,8 @@ def register_middleware(app: FastAPI) -> None:
     app.add_middleware(GZipMiddleware, minimum_size=1000)
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=settings.CORS_ORIGINS,
-        allow_credentials=True,
+        allow_origins=["*"],
+        allow_credentials=False,       
         allow_methods=["*"],
         allow_headers=["*"],
         expose_headers=["X-Request-ID"],
@@ -110,13 +110,21 @@ def register_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(RequestValidationError)
     async def _validation_exception(request: Request, exc: RequestValidationError):
         request_id = getattr(request.state, "request_id", "-")
-        log.info("%s | Validation error: %s", request_id, exc.errors())
+        
+        safe_errors = []
+        for err in exc.errors():
+            e = err.copy()
+            if "ctx" in e and "error" in e["ctx"]:
+                e["ctx"]["error"] = str(e["ctx"]["error"])
+            safe_errors.append(e)
+
+        log.info("%s | Validation error: %s", request_id, safe_errors)
         return JSONResponse(
             status_code=422,
             content={
                 "error": "validation_error",
                 "message": "Request validation failed",
-                "detail": exc.errors(),
+                "detail": safe_errors,
                 "request_id": request_id,
             },
         )

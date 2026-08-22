@@ -4,13 +4,14 @@ from typing import Any, Optional
 from jose import jwt, JWTError
 from passlib.context import CryptContext
 
-from .config import settings
+from ..config import settings
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def get_password_hash(password: str) -> str:
-    return pwd_context.hash(password)
+    password_str = str(password)[:72]
+    return pwd_context.hash(password_str)
 
 
 def verify_password(plain: str, hashed: str) -> bool:

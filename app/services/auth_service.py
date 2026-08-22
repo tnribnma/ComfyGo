@@ -4,8 +4,8 @@ from ..core.security import (
     get_password_hash, verify_password,
     create_access_token, create_refresh_token, decode_token,
 )
-from ..core.exceptions import AuthenticationError, ConflictError
-from ..repositories import AdminRepository, EmployeeRepository, CustomerRepository
+from ..core.exceptions import AuthenticationError, ConflictError, NotFoundError
+from ..repositories import AdminRepository, EmployeeRepository, CustomerRepository, HotelRepository
 from ..schemas.admin import AdminCreate, AdminLogin
 from ..schemas.employee import EmployeeCreate, EmployeeLogin
 from ..schemas.customer import CustomerCreate, CustomerLogin
@@ -18,13 +18,15 @@ class AuthService:
         self.admin_repo = AdminRepository(db)
         self.employee_repo = EmployeeRepository(db)
         self.customer_repo = CustomerRepository(db)
+        self.hotel_repo = HotelRepository(db)
 
-  
     def register_admin(self, payload: AdminCreate):
         if self.admin_repo.email_exists(payload.admin_email):
             raise ConflictError("Email already registered", detail=payload.admin_email)
+        
         data = payload.model_dump()
         data["admin_password"] = get_password_hash(data["admin_password"])
+        
         return self.admin_repo.create(data)
 
     def login_admin(self, payload: AdminLogin) -> TokenResponse:
@@ -36,14 +38,15 @@ class AuthService:
     def register_employee(self, payload: EmployeeCreate):
         if self.employee_repo.get_by_email(payload.employee_email):
             raise ConflictError("Email already registered")
-        from ..repositories import HotelRepository
-        if not HotelRepository(self.db).exists(payload.hotel_id):
+        
+        if not self.hotel_repo.exists(payload.hotel_id):
             raise ConflictError("Hotel does not exist", detail=f"hotel_id={payload.hotel_id}")
         if not self.admin_repo.exists(payload.admin_id):
             raise ConflictError("Admin does not exist", detail=f"admin_id={payload.admin_id}")
 
         data = payload.model_dump()
         data["employee_password"] = get_password_hash(data["employee_password"])
+        
         return self.employee_repo.create(data)
 
     def login_employee(self, payload: EmployeeLogin) -> TokenResponse:
@@ -52,12 +55,13 @@ class AuthService:
             raise AuthenticationError("Invalid email or password")
         return self._issue_tokens(user_id=emp.employee_id, role="employee")
 
- 
     def register_customer(self, payload: CustomerCreate):
         if self.customer_repo.email_exists(payload.customer_email):
             raise ConflictError("Email already registered")
+        
         data = payload.model_dump()
         data["customer_password"] = get_password_hash(data["customer_password"])
+        
         return self.customer_repo.create(data)
 
     def login_customer(self, payload: CustomerLogin) -> TokenResponse:

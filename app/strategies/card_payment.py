@@ -1,15 +1,12 @@
-import os
 import re
+import random
 from typing import Any, Dict
-
-import stripe
 
 from .payment_strategy import PaymentStrategy
 
-
 class CardPayment(PaymentStrategy):
+    PROCESSOR_NAME = "stripe_simulated"
 
-    PROCESSOR_NAME = "stripe"
     @staticmethod
     def _passes_luhn(card_number: str) -> bool:
         digits = [int(d) for d in re.sub(r"\D", "", card_number)]
@@ -37,50 +34,37 @@ class CardPayment(PaymentStrategy):
         return "unknown"
 
     def pay(self, amount: float, transaction_id: str) -> Dict[str, Any]:
-        stripe.api_key = os.environ["STRIPE_SECRET_KEY"]
-        try:
-            charge = stripe.Charge.create(
-                amount=int(amount * 100),
-                currency="usd",
-                source=transaction_id,
-                description=f"ComfyGo payment {transaction_id}",
-            )
-        except stripe.error.StripeError as exc:
+        success = random.random() > 0.05
+
+        if not success:
             return {
                 "success": False,
                 "transaction_id": transaction_id,
-                "message": str(exc),
+                "message": "Card declined by issuing bank",
                 "processor": self.PROCESSOR_NAME,
             }
 
         return {
-            "success": charge.status == "succeeded",
-            "transaction_id": charge.id,
-            "message": f"Card payment {charge.status}",
+            "success": True,
+            "transaction_id": transaction_id,
+            "message": "Card payment processed successfully",
             "processor": self.PROCESSOR_NAME,
-            "card_type": charge.payment_method_details.card.brand if charge.payment_method_details else None,
+            "card_type": self._detect_card_type(transaction_id),  # demo only
         }
 
     def refund(self, transaction_id: str, amount: float) -> Dict[str, Any]:
-        refund = stripe.Refund.create(
-            charge=transaction_id,
-            amount=int(amount * 100),
-        )
-
         return {
-            "success": refund.status == "succeeded",
+            "success": True,
             "transaction_id": transaction_id,
-            "message": f"Refund {refund.status} via card",
+            "message": f"Refunded {amount:.2f} via card",
             "processor": self.PROCESSOR_NAME,
-            "refund_id": refund.id,
         }
 
     def verify(self, transaction_id: str) -> Dict[str, Any]:
-        charge = stripe.Charge.retrieve(transaction_id)
         return {
-            "success": charge.status == "succeeded",
+            "success": True,
             "transaction_id": transaction_id,
             "message": "Transaction verified",
             "processor": self.PROCESSOR_NAME,
-            "status": charge.status,
+            "status": "succeeded",
         }
