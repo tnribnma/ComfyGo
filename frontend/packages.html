@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Tour Packages · ComfyGo</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .pkg-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
+    .pkg-card{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;transition:.3s;cursor:pointer}
+    .pkg-card:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+    .pkg-img{height:220px;position:relative;overflow:hidden}
+    .pkg-img img{width:100%;height:100%;object-fit:cover}
+    .pkg-badge{position:absolute;top:14px;left:14px;padding:5px 12px;border-radius:999px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;background:var(--forest);color:#fff}
+    .pkg-discount{position:absolute;top:14px;right:14px;padding:5px 10px;border-radius:999px;font-size:.75rem;font-weight:700;background:#d94a4a;color:#fff}
+    .pkg-seats{position:absolute;bottom:14px;right:14px;padding:4px 10px;border-radius:999px;font-size:.72rem;font-weight:600;background:rgba(0,0,0,.7);color:#fff;backdrop-filter:blur(4px)}
+    .pkg-seats.low{background:rgba(217,74,74,.9)}
+    .pkg-body{padding:22px}
+    .pkg-body h3{font-family:'Playfair Display',serif;font-size:1.2rem;margin:0 0 8px}
+    .pkg-body .pkg-meta{display:flex;flex-wrap:wrap;gap:12px;font-size:.82rem;color:var(--muted);margin-bottom:12px}
+    .pkg-body .pkg-meta span{display:flex;align-items:center;gap:4px}
+    .pkg-body p{font-size:.88rem;color:var(--muted);line-height:1.7;margin:0 0 12px}
+    .pkg-includes{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+    .pkg-tag{padding:4px 10px;border-radius:999px;font-size:.72rem;background:var(--mint);color:var(--forest);font-weight:600}
+    .pkg-excludes{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+    .pkg-tag-ex{padding:4px 10px;border-radius:999px;font-size:.72rem;background:#fee;color:#a33;font-weight:600}
+    .pkg-footer{display:flex;justify-content:space-between;align-items:center;padding-top:14px;border-top:1px solid var(--line)}
+    .pkg-price{font-size:1.4rem;font-weight:700;color:var(--forest)}
+    .pkg-price .old{font-size:.85rem;text-decoration:line-through;color:var(--muted);font-weight:400;margin-right:6px}
+    .pkg-price small{font-size:.78rem;font-weight:400;color:var(--muted)}
+    .filter-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:30px}
+    .filter-btn{padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:.85rem;font-weight:600;transition:.2s}
+    .filter-btn.active{background:var(--forest);color:#fff;border-color:var(--forest)}
+    .filter-btn:hover:not(.active){border-color:var(--forest);color:var(--forest)}
+    @media(max-width:800px){.pkg-grid{grid-template-columns:1fr}}
+
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;overflow-y:auto;padding:20px}
+    .modal-overlay.open{display:flex;justify-content:center;align-items:flex-start}
+    .modal-box{background:#fff;border-radius:20px;max-width:820px;width:100%;margin:40px auto;overflow:hidden;position:relative}
+    .modal-close{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;border:none;background:rgba(0,0,0,.5);color:#fff;font-size:1.2rem;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center}
+    .modal-hero{height:300px;position:relative;overflow:hidden}
+    .modal-hero img{width:100%;height:100%;object-fit:cover}
+    .modal-hero-overlay{position:absolute;bottom:0;left:0;right:0;padding:24px;background:linear-gradient(transparent,rgba(0,0,0,.7));color:#fff}
+    .modal-hero-overlay h2{font-family:'Playfair Display',serif;font-size:1.6rem;margin:0}
+    .modal-hero-overlay .pkg-meta{display:flex;gap:16px;margin-top:8px;font-size:.85rem;opacity:.9}
+    .modal-content{padding:28px}
+    .modal-tabs{display:flex;gap:0;border-bottom:2px solid var(--line);margin-bottom:20px}
+    .modal-tab{padding:10px 20px;cursor:pointer;font-weight:600;font-size:.88rem;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;transition:.2s}
+    .modal-tab.active{color:var(--forest);border-bottom-color:var(--forest)}
+    .tab-panel{display:none}
+    .tab-panel.active{display:block}
+    .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+    .detail-item{display:flex;align-items:flex-start;gap:10px;padding:12px;background:#f8f9fa;border-radius:10px}
+    .detail-item i{font-size:1.2rem;color:var(--forest);margin-top:2px}
+    .detail-item .label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+    .detail-item .value{font-weight:600;font-size:.92rem}
+    .itinerary-day{padding:16px;border-left:3px solid var(--forest);margin-bottom:12px;background:#f8f9fa;border-radius:0 10px 10px 0;position:relative}
+    .itinerary-day::before{content:'';position:absolute;left:-7px;top:18px;width:10px;height:10px;border-radius:50%;background:var(--forest)}
+    .itinerary-day h4{margin:0 0 6px;font-size:.92rem}
+    .itinerary-day p{margin:0;font-size:.85rem;color:var(--muted);line-height:1.6}
+    .review-card{padding:16px;border:1px solid var(--line);border-radius:12px;margin-bottom:12px}
+    .review-header{display:flex;justify-content:space-between;margin-bottom:8px}
+    .review-stars{color:var(--gold)}
+    .review-date{font-size:.78rem;color:var(--muted)}
+
+    .booking-form{display:grid;gap:14px}
+    .booking-form label{font-size:.82rem;font-weight:600;display:block;margin-bottom:4px}
+    .booking-form input,.booking-form select,.booking-form textarea{width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:10px;font-size:.88rem;font-family:inherit}
+    .booking-form input:focus,.booking-form select:focus,.booking-form textarea:focus{outline:none;border-color:var(--forest)}
+    .booking-form textarea{min-height:80px;resize:vertical}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .booking-summary{background:var(--mint);border-radius:12px;padding:20px;margin-bottom:16px}
+    .booking-summary .line{display:flex;justify-content:space-between;margin-bottom:6px;font-size:.88rem}
+    .booking-summary .total{font-size:1.2rem;font-weight:700;border-top:2px solid var(--forest);padding-top:8px;margin-top:8px;color:var(--forest)}
+    .seat-indicator{display:flex;align-items:center;gap:8px;margin-bottom:16px;padding:12px;border-radius:10px;background:#f0fdf4}
+    .seat-bar{flex:1;height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden}
+    .seat-bar-fill{height:100%;border-radius:4px;transition:.3s}
+    .seat-bar-fill.green{background:#22c55e}
+    .seat-bar-fill.yellow{background:#eab308}
+    .seat-bar-fill.red{background:#ef4444}
+    .btn-book{width:100%;padding:14px;font-size:1rem;font-weight:700;border:none;border-radius:12px;cursor:pointer;transition:.2s}
+    .btn-book.primary{background:var(--forest);color:#fff}
+    .btn-book.primary:hover{opacity:.9}
+    .btn-book:disabled{opacity:.5;cursor:not-allowed}
+
+    .gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+    .gallery-grid img{width:100%;height:120px;object-fit:cover;border-radius:8px;cursor:pointer;transition:.2s}
+    .gallery-grid img:hover{opacity:.85}
+    .highlights-list{list-style:none;padding:0;margin:0}
+    .highlights-list li{padding:6px 0;display:flex;align-items:center;gap:8px;font-size:.88rem}
+    .highlights-list li::before{content:none}
+    .excludes-list{list-style:none;padding:0;margin:0}
+    .excludes-list li{padding:6px 0;display:flex;align-items:center;gap:8px;font-size:.88rem;color:#a33}
+    .excludes-list li::before{content:none}
+    .date-chips{display:flex;flex-wrap:wrap;gap:8px}
+    .date-chip{padding:8px 14px;border:1px solid var(--line);border-radius:10px;font-size:.82rem;cursor:pointer;transition:.2s}
+    .date-chip:hover,.date-chip.selected{background:var(--forest);color:#fff;border-color:var(--forest)}
+  </style>
+</head>
+<body>
+<nav class="site-nav"><div class="shell nav-inner"><a class="brand" href="index.html"><b class="brand-mark">C</b>ComfyGo</a><div class="nav-links"><a href="index.html">Explore</a><a href="hotels.html">Hotels</a><a href="destinations.html">Destinations</a><a class="active" href="packages.html">Packages</a><a href="guides.html">Guides</a><a href="flights.html">Flights</a></div><div class="nav-actions"><a href="login.html">Log in</a><a class="btn btn-ghost" href="register.html">Sign up</a></div><button class="menu-toggle" data-menu><i class="bi bi-list"></i></button></div></nav>
+
+<header class="page-hero"><div class="shell"><span class="eyebrow">CURATED EXPERIENCES</span><h1 class="page-title">Tour Packages</h1><p>All-inclusive packages designed to give you the best experience at the best price.</p></div></header>
+
+<main class="shell section" id="packages-container" style="min-height:400px"><p class="muted">Loading packages…</p></main>
+
+<div class="modal-overlay" id="detailModal">
+  <div class="modal-box" id="detailBox">
+    <button class="modal-close" onclick="closeDetailModal()"><i class="bi bi-x-lg"></i></button>
+    <div id="detailContent"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="bookingModal">
+  <div class="modal-box" id="bookingBox">
+    <button class="modal-close" onclick="closeBookingModal()"><i class="bi bi-x-lg"></i></button>
+    <div style="padding:28px" id="bookingContent"></div>
+  </div>
+</div>
+
+<div class="shell"><section class="cta"><span class="eyebrow" style="color:#ffbd95">CUSTOM TRIPS</span><h2>Want a tailor-made package?</h2><p>Contact us and we'll create a custom itinerary just for you.</p><a class="btn" href="mailto:info@comfygo.com">Get in touch <i class="bi bi-arrow-right"></i></a></section></div>
+
+<footer class="footer"><div class="shell"><div class="footer-grid"><div><a class="brand" href="index.html"><b class="brand-mark">C</b>ComfyGo</a><p>Thoughtful stays and real local experiences.</p></div><div><h4>Explore</h4><a href="hotels.html">Hotels</a><a href="packages.html">Packages</a><a href="destinations.html">Destinations</a><a href="guides.html">Guides</a></div><div><h4>Support</h4><a href="#">Help</a><a href="#">Privacy</a><a href="#">Terms</a></div></div><div class="footer-bottom">© 2026 ComfyGo.</div></div></footer>
+
+<script src="js/utils/storage.js?v=6"></script>
+<script src="js/api/client.js?v=6"></script>
+<script src="js/ui.js?v=6"></script>
+<script>
+function escapeHtml(t){const d=document.createElement('div');d.textContent=t||'';return d.innerHTML}
+function parseJson(s){try{return JSON.parse(s)}catch{return[]}}
+const countryFlags={'Sri Lanka':'<i class="bi bi-geo-alt"></i>','Bangladesh':'<i class="bi bi-geo-alt"></i>','Nepal':'<i class="bi bi-geo-alt"></i>','Thailand':'<i class="bi bi-geo-alt"></i>','India':'<i class="bi bi-geo-alt"></i>'};
+let allPackages=[];
+
+document.addEventListener('DOMContentLoaded',async()=>{
+  const container=document.getElementById('packages-container');
+  try{
+    const data=await apiClient.get('/packages/?limit=100');
+    allPackages=data.items||[];
+    if(!allPackages.length){container.innerHTML='<p class="muted">No packages available yet.</p>';return}
+    const destinations=[...new Set(allPackages.map(p=>p.destination))];
+    container.innerHTML=`
+      <div class="section-head"><div><span class="eyebrow">ALL PACKAGES</span><h2>${allPackages.length} curated experiences</h2></div></div>
+      <div class="filter-bar">
+        <button class="filter-btn active" onclick="filterPkg('all',this)">All</button>
+        ${destinations.map(d=>`<button class="filter-btn" onclick="filterPkg('${escapeHtml(d)}',this)">${escapeHtml(d)}</button>`).join('')}
+      </div>
+      <div class="pkg-grid" id="pkg-grid">${allPackages.map(p=>renderPkgCard(p)).join('')}</div>
+    `;
+  }catch(e){container.innerHTML='<p class="muted">Could not load packages.</p>'}
+});
+
+function renderPkgCard(p){
+  const flag=countryFlags[p.country]||'<i class="bi bi-geo-alt"></i>';
+  const included=parseJson(p.included_services);
+  const discount=p.original_price&&p.price_per_person<p.original_price?Math.round((1-p.price_per_person/p.original_price)*100):0;
+  const seatsLeft=(p.max_group_size||p.group_size_max||15)-(p.booked_count||0);
+  const seatsPercent=Math.max(0,Math.round((seatsLeft/(p.max_group_size||p.group_size_max||15))*100));
+  const seatsClass=seatsPercent>50?'green':seatsPercent>20?'yellow':'red';
+  const difficultyColors={Easy:'var(--forest)',Moderate:'#eab308',Challenging:'#ef4444'};
+
+  return `<div class="pkg-card" data-dest="${escapeHtml(p.destination)}" onclick="openDetail(${p.package_id})">
+    <div class="pkg-img">
+      <img src="${escapeHtml(p.image||'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=800&q=85')}" alt="${escapeHtml(p.package_name)}" loading="lazy">
+      <span class="pkg-badge" style="background:${difficultyColors[p.difficulty]||'var(--forest)'}">${escapeHtml(p.difficulty||'Easy')}</span>
+      ${discount>0?`<span class="pkg-discount">-${discount}%</span>`:''}
+      <span class="pkg-seats ${seatsLeft<5?'low':''}">${seatsLeft} seat${seatsLeft!==1?'s':''} left</span>
+    </div>
+    <div class="pkg-body">
+      <h3>${escapeHtml(p.package_name)}</h3>
+      <div class="pkg-meta">
+        <span><i class="bi bi-geo-alt"></i> ${flag} ${escapeHtml(p.destination)}, ${escapeHtml(p.country)}</span>
+        <span><i class="bi bi-calendar3"></i> ${p.duration_days}D/${p.duration_nights}N</span>
+        <span><i class="bi bi-people"></i> ${p.group_size_min||2}–${p.group_size_max||15}</span>
+        <span style="color:var(--gold)"><i class="bi bi-star-fill"></i> ${p.rating||'New'} ${p.review_count?`(${p.review_count})`:''}</span>
+      </div>
+      <p>${escapeHtml((p.description||'').substring(0,150))}${(p.description||'').length>150?'…':''}</p>
+      <div class="pkg-includes">${included.slice(0,4).map(i=>`<span class="pkg-tag">${escapeHtml(i)}</span>`).join('')}</div>
+      <div class="pkg-footer">
+        <div class="pkg-price">
+          ${p.original_price&&p.price_per_person<p.original_price?`<span class="old">$${p.original_price}</span>`:''}
+          $${p.price_per_person}<small>/person</small>
+        </div>
+        <button class="btn btn-primary" onclick="event.stopPropagation();openBooking(${p.package_id})" ${seatsLeft<=0?'disabled':''}>
+          ${seatsLeft<=0?'Sold Out':'Book Now'}
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function filterPkg(dest,btn){
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.pkg-card').forEach(c=>{
+    c.style.display=(dest==='all'||c.dataset.dest===dest)?'':'none';
+  });
+}
+
+function openDetail(pkgId){
+  const pkg=allPackages.find(p=>p.package_id===pkgId);
+  if(!pkg)return;
+  const included=parseJson(pkg.included_services);
+  const excluded=parseJson(pkg.excluded_services);
+  const itinerary=parseJson(pkg.itinerary);
+  const gallery=parseJson(pkg.gallery_images);
+  const highlights=parseJson(pkg.highlights);
+  const toBring=parseJson(pkg.what_to_bring);
+  const dates=parseJson(pkg.available_dates);
+  const flag=countryFlags[pkg.country]||'<i class="bi bi-geo-alt"></i>';
+  const seatsLeft=(pkg.max_group_size||pkg.group_size_max||15)-(pkg.booked_count||0);
+
+  let html=`
+    <div class="modal-hero">
+      <img src="${escapeHtml(pkg.image||'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=800&q=85')}" alt="${escapeHtml(pkg.package_name)}">
+      <button class="modal-close" onclick="closeDetailModal()"><i class="bi bi-x-lg"></i></button>
+      <div class="modal-hero-overlay">
+        <h2>${escapeHtml(pkg.package_name)}</h2>
+        <div class="pkg-meta">
+          <span><i class="bi bi-geo-alt"></i> ${flag} ${escapeHtml(pkg.destination)}, ${escapeHtml(pkg.country)}</span>
+          <span><i class="bi bi-calendar3"></i> ${pkg.duration_days}D/${pkg.duration_nights}N</span>
+          <span style="color:var(--gold)"><i class="bi bi-star-fill"></i> ${pkg.rating||'New'}</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-content">
+      <div class="modal-tabs">
+        <div class="modal-tab active" onclick="switchTab(this,'overview')">Overview</div>
+        <div class="modal-tab" onclick="switchTab(this,'itinerary')">Itinerary</div>
+        <div class="modal-tab" onclick="switchTab(this,'details')">Details</div>
+        <div class="modal-tab" onclick="switchTab(this,'reviews')">Reviews</div>
+      </div>
+
+      <!-- Overview Tab -->
+      <div class="tab-panel active" id="tab-overview">
+        <p style="font-size:.95rem;line-height:1.8;margin-bottom:20px">${escapeHtml(pkg.description||'')}</p>
+        ${highlights.length?`
+          <h4 style="margin-bottom:10px"><i class="bi bi-star" style="color:var(--gold)"></i> Highlights</h4>
+          <ul class="highlights-list">${highlights.map(h=>`<li>${escapeHtml(h)}</li>`).join('')}</ul>
+        `:''}
+        ${gallery.length?`
+          <h4 style="margin:20px 0 10px"><i class="bi bi-images"></i> Gallery</h4>
+          <div class="gallery-grid">${gallery.map(g=>`<img src="${escapeHtml(g)}" alt="Gallery" loading="lazy">`).join('')}</div>
+        `:''}
+      </div>
+
+      <!-- Itinerary Tab -->
+      <div class="tab-panel" id="tab-itinerary">
+        ${itinerary.length?itinerary.map((day,i)=>`
+          <div class="itinerary-day">
+            <h4>Day ${day.day||i+1}: ${escapeHtml(day.title||day.activity||'')}</h4>
+            <p>${escapeHtml(day.description||day.details||day.activities||'')}</p>
+          </div>
+        `).join(''):'<p class="muted">Detailed itinerary will be provided upon booking.</p>'}
+      </div>
+
+      <!-- Details Tab -->
+      <div class="tab-panel" id="tab-details">
+        <div class="detail-grid">
+          <div class="detail-item"><div><i class="bi bi-building"></i></div><div><div class="label">Hotel</div><div class="value">${escapeHtml(pkg.hotel_name||'TBA')} ${pkg.hotel_rating?`<small>(${pkg.hotel_rating})</small>`:''}</div></div></div>
+          <div class="detail-item"><div><i class="bi bi-truck"></i></div><div><div class="label">Transportation</div><div class="value">${escapeHtml(pkg.transportation||'Included')}</div></div></div>
+          <div class="detail-item"><div><i class="bi bi-cup-hot"></i></div><div><div class="label">Meals</div><div class="value">${escapeHtml(pkg.meals||'Breakfast & Lunch')}</div></div></div>
+          <div class="detail-item"><div><i class="bi bi-person-badge"></i></div><div><div class="label">Tour Guide</div><div class="value">${pkg.tour_guide_included?(pkg.tour_guide_name?'Yes - '+escapeHtml(pkg.tour_guide_name):'Included'):'Not included'}</div></div></div>
+          <div class="detail-item"><div><i class="bi bi-people"></i></div><div><div class="label">Group Size</div><div class="value">${pkg.group_size_min}–${pkg.group_size_max} people</div></div></div>
+          <div class="detail-item"><div><i class="bi bi-activity"></i></div><div><div class="label">Difficulty</div><div class="value">${escapeHtml(pkg.difficulty||'Easy')}</div></div></div>
+          <div class="detail-item"><div><i class="bi bi-translate"></i></div><div><div class="label">Languages</div><div class="value">${escapeHtml(pkg.languages||'English')}</div></div></div>
+          <div class="detail-item"><div><i class="bi bi-arrow-left-circle"></i></div><div><div class="label">Cancellation</div><div class="value" style="font-size:.82rem">${escapeHtml(pkg.cancellation_policy||'Free cancellation up to 48 hours before')}</div></div></div>
+        </div>
+        ${included.length?`
+          <h4 style="margin-bottom:8px"><i class="bi bi-check-circle" style="color:var(--forest)"></i> Included</h4>
+          <ul class="highlights-list">${included.map(i=>`<li>${escapeHtml(i)}</li>`).join('')}</ul>
+        `:''}
+        ${excluded.length?`
+          <h4 style="margin:16px 0 8px"><i class="bi bi-x-circle" style="color:#a33"></i> Not Included</h4>
+          <ul class="excludes-list">${excluded.map(e=>`<li>${escapeHtml(e)}</li>`).join('')}</ul>
+        `:''}
+        ${toBring.length?`
+          <h4 style="margin:16px 0 8px"><i class="bi bi-backpack2"></i> What to Bring</h4>
+          <ul class="highlights-list">${toBring.map(b=>`<li>${escapeHtml(b)}</li>`).join('')}</ul>
+        `:''}
+      </div>
+
+      <!-- Reviews Tab -->
+      <div class="tab-panel" id="tab-reviews">
+        <div id="reviewsList"><p class="muted">Loading reviews…</p></div>
+      </div>
+
+      <!-- Bottom CTA -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:24px;padding-top:20px;border-top:2px solid var(--line)">
+        <div class="pkg-price" style="font-size:1.6rem">
+          ${pkg.original_price&&pkg.price_per_person<pkg.original_price?`<span class="old">$${pkg.original_price}</span>`:''}
+          $${pkg.price_per_person}<small>/person</small>
+        </div>
+        <button class="btn btn-primary" onclick="closeDetailModal();openBooking(${pkg.package_id})" ${seatsLeft<=0?'disabled':''} style="padding:14px 32px;font-size:1rem">
+          ${seatsLeft<=0?'Sold Out':'Book Now'}
+        </button>
+      </div>
+    </div>
+  `;
+  document.getElementById('detailContent').innerHTML=html;
+  document.getElementById('detailModal').classList.add('open');
+  document.body.style.overflow='hidden';
+
+  loadPackageReviews(pkgId);
+}
+
+function closeDetailModal(){
+  document.getElementById('detailModal').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+function switchTab(tabEl, tabId){
+  tabEl.parentElement.querySelectorAll('.modal-tab').forEach(t=>t.classList.remove('active'));
+  tabEl.classList.add('active');
+  tabEl.closest('.modal-content').querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+tabId).classList.add('active');
+}
+
+async function loadPackageReviews(pkgId){
+  const el=document.getElementById('reviewsList');
+  try{
+    const reviews=await apiClient.get('/reviews/?entity_type=package&entity_id='+pkgId);
+    const items=reviews.items||reviews||[];
+    if(!items.length){el.innerHTML='<p class="muted">No reviews yet. Be the first to review!</p>';return}
+    el.innerHTML=items.map(r=>`
+      <div class="review-card">
+        <div class="review-header">
+          <div>
+            <strong>${escapeHtml(r.title||'Review')}</strong>
+            <div class="review-stars">${'<i class="bi bi-star-fill" style="color:var(--gold)"></i>'.repeat(r.rating||0)}${'<i class="bi bi-star" style="color:var(--gold)"></i>'.repeat(5-(r.rating||0))}</div>
+          </div>
+          <span class="review-date">${r.created_at?new Date(r.created_at).toLocaleDateString():''}</span>
+        </div>
+        <p style="font-size:.88rem;color:var(--muted);margin:8px 0 0;line-height:1.6">${escapeHtml(r.comment||'')}</p>
+        ${r.verified_visit?'<span style="font-size:.72rem;color:var(--forest);font-weight:600"><i class="bi bi-patch-check"></i> Verified Visit</span>':''}
+      </div>
+    `).join('');
+  }catch(e){el.innerHTML='<p class="muted">Could not load reviews.</p>'}
+}
+
+let selectedPkg=null;
+let selectedDate=null;
+
+function openBooking(pkgId){
+  const pkg=allPackages.find(p=>p.package_id===pkgId);
+  if(!pkg)return;
+  selectedPkg=pkg;
+  selectedDate=null;
+
+  const token=Storage.getToken();
+  if(!token){window.location.href='login.html?redirect=packages.html';return}
+
+  const dates=parseJson(pkg.available_dates);
+  const seatsLeft=(pkg.max_group_size||pkg.group_size_max||15)-(pkg.booked_count||0);
+  const seatsPercent=Math.max(0,Math.round((seatsLeft/(pkg.max_group_size||pkg.group_size_max||15))*100));
+  const seatsClass=seatsPercent>50?'green':seatsPercent>20?'yellow':'red';
+
+  let html=`
+    <h2 style="font-family:'Playfair Display',serif;margin:0 0 4px">Book: ${escapeHtml(pkg.package_name)}</h2>
+    <p style="color:var(--muted);font-size:.88rem;margin:0 0 20px">${escapeHtml(pkg.destination)}, ${escapeHtml(pkg.country)} · ${pkg.duration_days}D/${pkg.duration_nights}N</p>
+
+    <!-- Seat Availability -->
+    <div class="seat-indicator">
+      <span style="font-size:.82rem;font-weight:600">${seatsLeft} seats left</span>
+      <div class="seat-bar"><div class="seat-bar-fill ${seatsClass}" style="width:${seatsPercent}%"></div></div>
+      <span style="font-size:.78rem;color:var(--muted)">${seatsPercent}%</span>
+    </div>
+
+    <form class="booking-form" id="bookingForm" onsubmit="submitBooking(event)">
+      <!-- Travel Date -->
+      <div>
+        <label>Travel Date *</label>
+        ${dates.length?`
+          <div class="date-chips" id="dateChips">
+            ${dates.map(d=>`<div class="date-chip" data-date="${d}" onclick="selectDate('${d}',this)">${d}</div>`).join('')}
+          </div>
+        `:`<input type="date" id="bookDate" min="${new Date().toISOString().split('T')[0]}" required onchange="selectedDate=this.value">`}
+      </div>
+
+      <!-- Group Size -->
+      <div class="form-row">
+        <div>
+          <label>Number of Persons *</label>
+          <input type="number" id="bookPersons" min="${pkg.group_size_min}" max="${Math.min(pkg.group_size_max,seatsLeft)}" value="${pkg.group_size_min}" required oninput="updateBookingTotal()">
+        </div>
+        <div>
+          <label>Price per Person</label>
+          <div style="padding:10px 14px;background:#f8f9fa;border-radius:10px;font-weight:600">$${pkg.price_per_person}</div>
+        </div>
+      </div>
+
+      <!-- Contact Info -->
+      <div class="form-row">
+        <div><label>Contact Name *</label><input type="text" id="bookName" required></div>
+        <div><label>Contact Email *</label><input type="email" id="bookEmail" required></div>
+      </div>
+      <div class="form-row">
+        <div><label>Contact Phone</label><input type="tel" id="bookPhone" placeholder="+94..."></div>
+        <div><label>Emergency Contact</label><input type="text" id="bookEmergency" placeholder="Name + Phone"></div>
+      </div>
+
+      <!-- Dietary -->
+      <div>
+        <label>Dietary Requirements</label>
+        <select id="bookDietary">
+          <option value="">None</option>
+          <option value="Vegetarian">Vegetarian</option>
+          <option value="Vegan">Vegan</option>
+          <option value="Halal">Halal</option>
+          <option value="Kosher">Kosher</option>
+          <option value="Gluten-free">Gluten-free</option>
+          <option value="Other">Other (specify in requests)</option>
+        </select>
+      </div>
+
+      <!-- Special Requests -->
+      <div>
+        <label>Special Requests</label>
+        <textarea id="bookRequests" placeholder="Any special needs, accessibility requirements, etc."></textarea>
+      </div>
+
+      <!-- Summary -->
+      <div class="booking-summary" id="bookingSummary">
+        <div class="line"><span>${escapeHtml(pkg.package_name)}</span><span>${pkg.duration_days}D/${pkg.duration_nights}N</span></div>
+        <div class="line"><span>Per person</span><span>$${pkg.price_per_person}</span></div>
+        <div class="line"><span>Persons</span><span id="summaryPersons">${pkg.group_size_min}</span></div>
+        <div class="line total"><span>Total</span><span id="summaryTotal">$${(pkg.price_per_person*pkg.group_size_min).toFixed(2)}</span></div>
+      </div>
+
+      <!-- Cancellation Policy -->
+      <div style="font-size:.78rem;color:var(--muted);padding:10px;background:#f8f9fa;border-radius:10px">
+        <i class="bi bi-info-circle"></i> ${escapeHtml(pkg.cancellation_policy||'Free cancellation up to 48 hours before departure. Cancellations within 48 hours incur a 50% fee.')}
+      </div>
+
+      <button type="submit" class="btn-book primary" id="bookBtn">
+        <i class="bi bi-check-circle"></i> Confirm Booking
+      </button>
+    </form>
+  `;
+  document.getElementById('bookingContent').innerHTML=html;
+  document.getElementById('bookingModal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeBookingModal(){
+  document.getElementById('bookingModal').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+function selectDate(dateStr,el){
+  document.querySelectorAll('.date-chip').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedDate=dateStr;
+}
+
+function updateBookingTotal(){
+  if(!selectedPkg)return;
+  const persons=parseInt(document.getElementById('bookPersons').value)||1;
+  const total=(selectedPkg.price_per_person*persons).toFixed(2);
+  document.getElementById('summaryPersons').textContent=persons;
+  document.getElementById('summaryTotal').textContent='$'+total;
+}
+
+async function submitBooking(e){
+  e.preventDefault();
+  if(!selectedPkg)return;
+
+  const dateInput=document.getElementById('bookDate');
+  const travelDate=selectedDate||(dateInput?dateInput.value:null);
+  if(!travelDate){alert('Please select a travel date');return}
+
+  const btn=document.getElementById('bookBtn');
+  btn.disabled=true;
+  btn.innerHTML='<i class="bi bi-hourglass-split"></i> Processing…';
+
+  try{
+    const payload={
+      package_id:selectedPkg.package_id,
+      travel_date:travelDate,
+      num_persons:parseInt(document.getElementById('bookPersons').value)||1,
+      contact_name:document.getElementById('bookName').value,
+      contact_email:document.getElementById('bookEmail').value,
+      contact_phone:document.getElementById('bookPhone').value||null,
+      emergency_contact:document.getElementById('bookEmergency').value||null,
+      dietary_requirements:document.getElementById('bookDietary').value||null,
+      special_requests:document.getElementById('bookRequests').value||null,
+    };
+
+    const result=await apiClient.post('/packages/'+selectedPkg.package_id+'/book',payload);
+    closeBookingModal();
+    closeDetailModal();
+    alert('Booking Confirmed!\n\nBooking Ref: '+result.booking_ref+'\nTotal: $'+result.total_amount+'\nTravel Date: '+result.travel_date+'\nPersons: '+result.num_persons+'\n\nCheck your email for details.');
+    window.location.reload();
+  }catch(err){
+    alert('Booking failed: '+(err.message||'Please try again'));
+    btn.disabled=false;
+    btn.innerHTML='<i class="bi bi-check-circle"></i> Confirm Booking';
+  }
+}
+
+document.getElementById('detailModal')?.addEventListener('click',function(e){if(e.target===this)closeDetailModal()});
+document.getElementById('bookingModal')?.addEventListener('click',function(e){if(e.target===this)closeBookingModal()});
+</script>
+</body>
+</html>

@@ -1,3 +1,4 @@
+import logging
 from contextlib import contextmanager
 from typing import Generator
 
@@ -6,6 +7,8 @@ from sqlalchemy.orm import sessionmaker, Session
 
 from .config import settings
 from .models.base import Base  
+
+logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
 
 __all__ = ["Base", "Database", "get_db", "db_scope"]
 
@@ -23,7 +26,7 @@ class Database:
                 pool_size=10,
                 max_overflow=20,
                 pool_recycle=1800,    
-                echo=settings.APP_DEBUG and not settings.is_production,
+                echo=False,
                 future=True,
             )
         return cls._engine

@@ -1,30 +1,273 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ComfyGo</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ComfyGo · Stay beautifully</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap">
+  <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="index.html">ComfyGo Admin</a>
-            <div class="d-flex" id="nav-auth">
-            </div>
-        </div>
-    </nav>
-
-    <div class="container mt-5 text-center">
-        <h1>Welcome to ComfyGo</h1>
-        <p class="lead">Hotel & Travel Booking System</p>
-        <div id="home-actions" class="mt-4">
-        </div>
+<body>
+<nav class="site-nav overlay">
+  <div class="shell nav-inner">
+    <a class="brand" href="index.html"><b class="brand-mark">C</b>ComfyGo</a>
+    <div class="nav-links" id="navLinks">
+      <a class="active" href="index.html">Explore</a>
+      <a href="hotels.html">Hotels</a>
+      <a href="packages.html">Packages</a>
+      <a href="activities.html">Activities</a>
+      <a href="flights.html">Flights</a>
+      <a href="destinations.html">Destinations</a>
+      <a href="dining.html">Dining</a>
+      <a href="guides.html">Guides</a>
     </div>
+    <div class="nav-actions" id="navActions">
+      <a href="login.html">Log in</a>
+      <a class="btn btn-ghost" href="register.html">Sign up</a>
+    </div>
+    <button class="menu-toggle" data-menu><i class="bi bi-list"></i></button>
+  </div>
+</nav>
 
-    <script src="js/utils/storage.js"></script>
-    <script src="js/api/client.js"></script>
-    <script src="js/modules/auth.js"></script>
+<header class="hero">
+  <div class="shell">
+    <div class="hero-copy">
+      <span class="eyebrow" style="color:#ffc09d">YOUR JOURNEY, YOUR WAY</span>
+      <h1>Find your perfect stay.</h1>
+      <p>Discover beautiful hotels and trusted local guides for your next journey.</p>
+    </div>
+  </div>
+</header>
+
+<div class="search-wrap">
+  <form class="search-panel" data-search>
+    <div class="search-field"><label>Where</label><input required placeholder="City, hotel or landmark"></div>
+    <div class="search-field"><label>Check in</label><input type="date"></div>
+    <div class="search-field"><label>Check out</label><input type="date"></div>
+    <div class="search-field"><label>Guests</label><select><option>2 guests</option><option>1 guest</option><option>3 guests</option></select></div>
+    <button class="btn btn-primary"><i class="bi bi-search"></i>Search</button>
+  </form>
+</div>
+
+<section class="section">
+  <div class="shell">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">CURATED FOR YOU</span>
+        <h2>Stays worth travelling for</h2>
+        <p>A handpicked collection of homes, hotels and hideaways.</p>
+      </div>
+        <a class="btn btn-ghost" href="hotels.html">View all stays <i class="bi bi-arrow-up-right"></i></a>
+    </div>
+    <div class="hotel-grid" id="featured-hotels"></div>
+  </div>
+</section>
+
+<section class="section" id="top-restaurants">
+  <div class="shell">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">TASTE THE JOURNEY</span>
+        <h2>Top restaurants near you</h2>
+        <p>Handpicked dining spots to complete every journey.</p>
+      </div>
+      <a class="btn btn-ghost" href="dining.html">View all dining <i class="bi bi-arrow-up-right"></i></a>
+    </div>
+    <div class="hotel-grid" id="home-restaurants"></div>
+  </div>
+</section>
+
+<section class="section section-soft" id="guides">
+  <div class="shell">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">GO FURTHER</span>
+        <h2>Meet your local guide</h2>
+        <p>Knowledgeable people who make every place feel like home.</p>
+      </div>
+      <a class="btn btn-ghost" href="guides.html">Explore guides <i class="bi bi-arrow-up-right"></i></a>
+    </div>
+    <div class="guide-grid" id="home-guides"></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="shell">
+    <div class="section-head"><div><span class="eyebrow">WHY COMFYGO</span><h2>Travel with confidence</h2></div></div>
+    <div class="feature-grid">
+      <div class="feature"><i class="bi bi-patch-check feature-icon"></i><h3>Trusted hotels</h3><p>Every stay is thoughtfully reviewed for quality and character.</p></div>
+      <div class="feature"><i class="bi bi-compass feature-icon"></i><h3>Local guides</h3><p>Connect with experienced locals who know the place best.</p></div>
+      <div class="feature"><i class="bi bi-calendar2-check feature-icon"></i><h3>Easy booking</h3><p>A calm, clear booking experience from discovery to check-in.</p></div>
+      <div class="feature"><i class="bi bi-shield-check feature-icon"></i><h3>Secure payment</h3><p>Simple, protected payments with support when you need it.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="deals">
+  <div class="shell">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">HOT DEALS</span>
+        <h2>Save on your next trip</h2>
+        <p>Limited-time offers on packages and stays.</p>
+      </div>
+    </div>
+    <div id="deals-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;min-height:280px"></div>
+  </div>
+</section>
+
+<section class="section section-soft" id="inspiration">
+  <div class="shell">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">TRAVEL INSPIRATION</span>
+        <h2>Find your next story</h2>
+        <p>Discover tourist spots and hidden gems across South Asia and beyond.</p>
+      </div>
+      <a class="btn btn-ghost" href="destinations.html">View all destinations <i class="bi bi-arrow-up-right"></i></a>
+    </div>
+    <div class="inspiration" id="inspiration-grid"></div>
+  </div>
+</section>
+
+<div class="shell">
+  <section class="cta">
+    <span class="eyebrow" style="color:#ffbd95">THE WORLD IS WAITING</span>
+    <h2>Ready for your next adventure?</h2>
+    <p>Find a stay that makes the journey just as memorable as the destination.</p>
+    <a class="btn" href="hotels.html">Explore hotels <i class="bi bi-arrow-right"></i></a>
+  </section>
+</div>
+
+<footer class="footer">
+  <div class="shell">
+    <div class="footer-grid">
+      <div><a class="brand" href="index.html"><b class="brand-mark">C</b>ComfyGo</a><p>Thoughtful stays and real local experiences, beautifully connected.</p></div>
+      <div><h4>Explore</h4><a href="hotels.html">Hotels</a><a href="packages.html">Packages</a><a href="activities.html">Activities</a><a href="flights.html">Flights</a><a href="destinations.html">Destinations</a><a href="dining.html">Dining</a><a href="guides.html">Local guides</a></div>
+      <div><h4>Company</h4><a href="#">About us</a><a href="#">Contact</a><a href="#">Careers</a></div>
+      <div><h4>Support</h4><a href="#">Help centre</a><a href="#">Privacy</a><a href="#">Terms</a></div>
+    </div>
+    <div class="footer-bottom">&copy; 2026 ComfyGo. Travel well, stay better.</div>
+  </div>
+</footer>
+<div class="toast" id="toast"></div>
+
+<script src="js/utils/storage.js?v=5"></script>
+<script src="js/api/client.js?v=5"></script>
+<script src="js/ui.js?v=5"></script>
+<script>
+(function() {
+  var hotels = document.getElementById('featured-hotels');
+  var guides = document.getElementById('home-guides');
+  var deals  = document.getElementById('deals-grid');
+  var spots  = document.getElementById('inspiration-grid');
+  var rests  = document.getElementById('home-restaurants');
+
+  var form = document.querySelector('[data-search]');
+  if (form) form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    var q = form.querySelector('input').value.trim();
+    if (q) window.location.href = 'hotels.html?city=' + encodeURIComponent(q);
+  });
+
+  Promise.allSettled([
+    apiClient.get('/hotels/?limit=6'),
+    apiClient.get('/guides/?limit=3'),
+    apiClient.get('/promotions/?limit=6'),
+    apiClient.get('/tourist-spots/?limit=8'),
+    apiClient.get('/restaurants/top?limit=3')
+  ]).then(function(results) {
+    renderHotels(results[0].status === 'fulfilled' ? results[0].value : null);
+    renderGuides(results[1].status === 'fulfilled' ? results[1].value : null);
+    renderDeals(results[2].status === 'fulfilled' ? results[2].value : null);
+    renderSpots(results[3].status === 'fulfilled' ? results[3].value : null);
+    renderRestaurants(results[4].status === 'fulfilled' ? results[4].value : null);
+  });
+
+  function renderHotels(data) {
+    var h = (data && data.items) || [];
+    if (!h.length) { hotels.innerHTML = ''; return; }
+    var imgs = [
+      'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=85',
+      'https://images.unsplash.com/photo-1601918774946-25832a4be0d6?auto=format&fit=crop&w=800&q=85',
+      'https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=800&q=85'
+    ];
+    hotels.innerHTML = h.slice(0,3).map(function(hotel, i) {
+      var r = hotel.hotel_rating ? Number(hotel.hotel_rating).toFixed(1) : 'New';
+      var p = 80 + (hotel.hotel_id * 17 % 200);
+      return '<article class="hotel-card"><div class="hotel-image"><img src="'+imgs[i%imgs.length]+'" alt="'+escapeHtml(hotel.hotel_name)+'"></div><div class="card-content"><div class="card-top"><h3>'+escapeHtml(hotel.hotel_name)+'</h3><span class="rating"><i class="bi bi-star-fill"></i> '+r+'</span></div><div class="location"><i class="bi bi-geo-alt"></i> '+escapeHtml(hotel.hotel_city)+', '+escapeHtml(hotel.hotel_country)+'</div><div class="card-foot"><span class="price">$'+p+' <small>/ night</small></span><a class="btn-text" href="hotels_details.html?id='+hotel.hotel_id+'">View stay <i class="bi bi-arrow-right"></i></a></div></div></article>';
+    }).join('');
+  }
+
+  function renderGuides(data) {
+    var g = (data && data.items) || [];
+    if (!g.length) { guides.innerHTML = ''; return; }
+    var portraits = [
+      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=85',
+      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=85',
+      'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=85'
+    ];
+    guides.innerHTML = g.map(function(gd, i) {
+      var exp = gd.guide_experience || 0;
+      return '<article class="guide-card"><img src="'+portraits[i%portraits.length]+'" alt="'+escapeHtml(gd.guide_name)+'"><span class="rating"><i class="bi bi-star-fill"></i> '+(4+(i%3===0?1:0))+'.'+(i%3)+'</span><h3>'+escapeHtml(gd.guide_name)+'</h3><p>'+escapeHtml(gd.guide_city||'Multiple locations')+'</p><div class="guide-meta"><span><i class="bi bi-translate"></i> '+escapeHtml(gd.guide_language||'English')+'</span><span>'+(exp>0?exp+' years':'New guide')+'</span></div></article>';
+    }).join('');
+  }
+
+  function renderDeals(data) {
+    var p = (data && data.items) || [];
+    if (!p.length) { deals.innerHTML = ''; return; }
+    deals.innerHTML = p.map(function(d) {
+      return '<div style="background:#fff;border-radius:14px;overflow:hidden;border:1px solid var(--line)"><div style="height:160px;position:relative;overflow:hidden"><img src="'+(d.image||'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=600&q=85')+'" style="width:100%;height:100%;object-fit:cover;display:block" alt="'+escapeHtml(d.title||'Deal')+'">'+(d.badge?'<span style="position:absolute;top:10px;left:10px;padding:4px 10px;border-radius:999px;font-size:.7rem;font-weight:700;background:var(--forest);color:#fff">'+escapeHtml(d.badge)+'</span>':'')+(d.discount_percent?'<span style="position:absolute;top:10px;right:10px;padding:4px 10px;border-radius:999px;font-size:.75rem;font-weight:700;background:#d94a4a;color:#fff">-'+d.discount_percent+'%</span>':'')+'</div><div style="padding:18px"><h3 style="font-size:1.05rem;margin:0 0 6px">'+escapeHtml(d.title||'')+'</h3><p style="font-size:.82rem;color:var(--muted);margin:0 0 10px;line-height:1.6">'+escapeHtml((d.description||'').substring(0,100))+((d.description||'').length>100?'…':'')+'</p><div style="display:flex;justify-content:space-between;align-items:center"><div><span style="font-size:1.2rem;font-weight:700;color:var(--forest)">$'+(d.final_price||d.original_price||0)+'</span>'+(d.original_price?' <span style="text-decoration:line-through;color:var(--muted);font-size:.85rem">$'+d.original_price+'</span>':'')+'</div>'+(d.promo_code?'<span style="padding:4px 10px;border-radius:999px;font-size:.72rem;font-weight:700;background:var(--mint);color:var(--forest)">'+escapeHtml(d.promo_code)+'</span>':'')+'</div></div></div>';
+    }).join('');
+  }
+
+  function renderSpots(data) {
+    var s = (data && data.items) || [];
+    if (!s.length) { spots.innerHTML = ''; return; }
+    var imgs = [
+      'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=900&q=85',
+      'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=600&q=85',
+      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=85',
+      'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=600&q=85',
+      'https://images.unsplash.com/photo-1502920917128-1aa500764cbd?auto=format&fit=crop&w=600&q=85',
+      'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=600&q=85',
+      'https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=600&q=85',
+      'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=600&q=85',
+      'https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=600&q=85'
+    ];
+    var icons = {'Beach':'bi-water','Mountain':'bi-arrows-angle-expand','Historical':'bi-bank','Nature':'bi-tree','Cultural':'bi-music-note-beamed'};
+    spots.innerHTML = s.map(function(sp, i) {
+      var icon = icons[sp.spot_category] || 'bi-geo-alt';
+      var desc = sp.spot_description ? sp.spot_description.substring(0,80) + (sp.spot_description.length>80?'…':'') : '';
+      return '<a href="destinations_details.html?id='+sp.spot_id+'" class="inspiration-card'+(i===0?' large':'')+'" style="background-image:url(\''+imgs[i%imgs.length]+'\')"><div class="inspiration-overlay"><span class="inspiration-cat"><i class="bi '+icon+'"></i> '+escapeHtml(sp.spot_category||'Spot')+'</span><span class="inspiration-title">'+escapeHtml(sp.spot_name)+'</span><span class="inspiration-location"><i class="bi bi-geo-alt"></i> '+escapeHtml(sp.spot_city)+', '+escapeHtml(sp.spot_country)+'</span>'+(desc?'<span class="inspiration-desc">'+escapeHtml(desc)+'</span>':'')+'</div></a>';
+    }).join('');
+  }
+
+  function renderRestaurants(data) {
+    var r = (data && data.items) || [];
+    if (!r.length) { rests.innerHTML = ''; return; }
+    var imgs = [
+      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=85',
+      'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=600&q=85',
+      'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=85'
+    ];
+    rests.innerHTML = r.slice(0,3).map(function(rest, i) {
+      var rat = rest.rating ? Number(rest.rating).toFixed(1) : 'New';
+      var price = rest.price_range || '$$';
+      var dishes = [];
+      try { dishes = JSON.parse(rest.popular_dishes || '[]'); } catch(e){}
+      var dishTags = dishes.slice(0,3).map(function(d){return '<span style="display:inline-block;padding:2px 8px;border-radius:999px;font-size:.68rem;background:#fff0cf;color:#9a6716;font-weight:600">'+escapeHtml(d)+'</span>'}).join(' ');
+      var badges = '';
+      if(rest.vegetarian_options) badges += '<span style="display:inline-block;padding:2px 7px;border-radius:999px;font-size:.65rem;font-weight:700;background:#e2f4ea;color:#177457">Veg</span>';
+      if(rest.outdoor_seating) badges += '<span style="display:inline-block;padding:2px 7px;border-radius:999px;font-size:.65rem;font-weight:700;background:#e0f0ff;color:#1a6fb5">Outdoor</span>';
+      if(rest.delivery_available) badges += '<span style="display:inline-block;padding:2px 7px;border-radius:999px;font-size:.65rem;font-weight:700;background:#f0e8ff;color:#6b3fa0">Delivery</span>';
+      return '<article class="hotel-card"><div class="hotel-image" style="position:relative"><img src="'+imgs[i%imgs.length]+'" alt="'+escapeHtml(rest.restaurant_name)+'"><span style="position:absolute;top:12px;left:12px;padding:4px 10px;border-radius:999px;font-size:.72rem;font-weight:700;background:rgba(0,0,0,.6);color:#fff;backdrop-filter:blur(4px)">'+escapeHtml(price)+'</span></div><div class="card-content"><div class="card-top"><h3>'+escapeHtml(rest.restaurant_name)+'</h3><span class="rating"><i class="bi bi-star-fill"></i> '+rat+'</span></div><div class="location"><i class="bi bi-geo-alt"></i> '+escapeHtml(rest.destination)+', '+escapeHtml(rest.country)+'</div><p style="font-size:.85rem;color:var(--muted);margin:0 0 10px;line-height:1.5">'+escapeHtml((rest.description||'').substring(0,100))+((rest.description||'').length>100?'…':'')+'</p>'+(dishTags?'<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">'+dishTags+'</div>':'')+'<div class="card-foot"><div style="display:flex;gap:5px">'+badges+'</div><a class="btn-text" href="dining.html">View dining <i class="bi bi-arrow-right"></i></a></div></div></article>';
+    }).join('');
+  }
+})();
+</script>
 </body>
 </html>

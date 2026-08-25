@@ -12,7 +12,7 @@ class BookingBase(BaseModel):
     customer_id: int = Field(..., gt=0)
     hotel_id: int = Field(..., gt=0)
     guide_id: Optional[int] = Field(default=None, gt=0)
-    booking_date: date
+    booking_date: Optional[date] = None
     check_in_date: date
     check_out_date: date
     number_of_guests: int = Field(default=1, ge=1, le=20)
@@ -22,12 +22,14 @@ class BookingBase(BaseModel):
     def validate_dates(self) -> "BookingBase":
         if self.check_out_date <= self.check_in_date:
             raise ValueError("check_out_date must be after check_in_date")
-        if self.booking_date > self.check_in_date:
+        if self.booking_date and self.booking_date > self.check_in_date:
             raise ValueError("booking_date cannot be after check_in_date")
         return self
 
 
 class BookingCreate(BookingBase):
+    customer_id: Optional[int] = Field(default=None, gt=0)  # Set by server from auth token
+    booking_date: Optional[date] = None  # Auto-set to today if not provided
     booking_status: BookingStatus = BookingStatus.PENDING
 
 

@@ -13,8 +13,9 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 @router.post("/register/admin", response_model=TokenResponse, status_code=201)
 def register_admin(payload: AdminCreate, db: DBDep):
-    user = AuthService(db).register_admin(payload)
-    return AuthService(db).login_admin(AdminLogin(
+    service = AuthService(db)  
+    user = service.register_admin(payload)
+    return service.login_admin(AdminLogin(
         admin_email=payload.admin_email, 
         admin_password=payload.admin_password
     ))
@@ -25,8 +26,9 @@ def login_admin(payload: AdminLogin, db: DBDep):
 
 @router.post("/register/employee", response_model=TokenResponse, status_code=201)
 def register_employee(payload: EmployeeCreate, db: DBDep):
-    AuthService(db).register_employee(payload)
-    return AuthService(db).login_employee(EmployeeLogin(
+    service = AuthService(db)  
+    service.register_employee(payload)
+    return service.login_employee(EmployeeLogin(
         employee_email=payload.employee_email,
         employee_password=payload.employee_password
     ))
@@ -37,8 +39,9 @@ def login_employee(payload: EmployeeLogin, db: DBDep):
 
 @router.post("/register/customer", response_model=TokenResponse, status_code=201)
 def register_customer(payload: CustomerCreate, db: DBDep):
-    AuthService(db).register_customer(payload)
-    return AuthService(db).login_customer(CustomerLogin(
+    service = AuthService(db) 
+    service.register_customer(payload)
+    return service.login_customer(CustomerLogin(
         customer_email=payload.customer_email,
         customer_password=payload.customer_password
     ))

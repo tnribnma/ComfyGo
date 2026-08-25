@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Activities · ComfyGo</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .act-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+    .act-card{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:.3s;cursor:pointer}
+    .act-card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+    .act-img{height:180px;position:relative}
+    .act-img img{width:100%;height:100%;object-fit:cover}
+    .act-cat{position:absolute;top:12px;left:12px;padding:4px 10px;border-radius:999px;font-size:.7rem;font-weight:700;text-transform:uppercase;background:rgba(0,0,0,.6);color:#fff;backdrop-filter:blur(4px)}
+    .act-seats{position:absolute;bottom:12px;right:12px;padding:4px 10px;border-radius:999px;font-size:.72rem;font-weight:600;background:rgba(0,0,0,.7);color:#fff}
+    .act-seats.low{background:rgba(217,74,74,.9)}
+    .act-body{padding:18px}
+    .act-body h3{font-size:1.05rem;margin:0 0 6px}
+    .act-body .act-meta{display:flex;flex-wrap:wrap;gap:10px;font-size:.8rem;color:var(--muted);margin-bottom:10px}
+    .act-body .act-meta span{display:flex;align-items:center;gap:3px}
+    .act-body p{font-size:.85rem;color:var(--muted);line-height:1.6;margin:0 0 12px}
+    .act-footer{display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid var(--line)}
+    .act-price{font-size:1.2rem;font-weight:700;color:var(--forest)}
+    .act-price small{font-size:.75rem;font-weight:400;color:var(--muted)}
+    .difficulty-badge{padding:3px 8px;border-radius:999px;font-size:.7rem;font-weight:700;text-transform:uppercase}
+    .diff-beginner{background:#e2f4ea;color:#177457}
+    .diff-moderate{background:#fff0cf;color:#9a6716}
+    .diff-intermediate{background:#fff0ed;color:#a63b20}
+    .diff-advanced{background:#fee;color:#a33}
+    .filter-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:30px}
+    .filter-btn{padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:.85rem;font-weight:600;transition:.2s}
+    .filter-btn.active{background:var(--forest);color:#fff;border-color:var(--forest)}
+    .filter-btn:hover:not(.active){border-color:var(--forest);color:var(--forest)}
+    @media(max-width:900px){.act-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:600px){.act-grid{grid-template-columns:1fr}}
+
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;overflow-y:auto;padding:20px}
+    .modal-overlay.open{display:flex;justify-content:center;align-items:flex-start}
+    .modal-box{background:#fff;border-radius:20px;max-width:780px;width:100%;margin:40px auto;overflow:hidden;position:relative}
+    .modal-close{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;border:none;background:rgba(0,0,0,.5);color:#fff;font-size:1.2rem;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center}
+    .modal-hero{height:280px;position:relative;overflow:hidden}
+    .modal-hero img{width:100%;height:100%;object-fit:cover}
+    .modal-hero-overlay{position:absolute;bottom:0;left:0;right:0;padding:24px;background:linear-gradient(transparent,rgba(0,0,0,.7));color:#fff}
+    .modal-hero-overlay h2{font-family:'Playfair Display',serif;font-size:1.5rem;margin:0}
+    .modal-content{padding:28px}
+    .modal-tabs{display:flex;gap:0;border-bottom:2px solid var(--line);margin-bottom:20px}
+    .modal-tab{padding:10px 18px;cursor:pointer;font-weight:600;font-size:.85rem;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;transition:.2s}
+    .modal-tab.active{color:var(--forest);border-bottom-color:var(--forest)}
+    .tab-panel{display:none}
+    .tab-panel.active{display:block}
+    .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+    .detail-item{display:flex;align-items:flex-start;gap:10px;padding:12px;background:#f8f9fa;border-radius:10px}
+    .detail-item i{font-size:1.2rem;color:var(--forest);margin-top:2px}
+    .detail-item .label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+    .detail-item .value{font-weight:600;font-size:.88rem}
+    .highlights-list{list-style:none;padding:0;margin:0}
+    .highlights-list li{padding:5px 0;display:flex;align-items:center;gap:8px;font-size:.85rem}
+    .highlights-list li::before{content:none}
+    .excludes-list{list-style:none;padding:0;margin:0}
+    .excludes-list li{padding:5px 0;display:flex;align-items:center;gap:8px;font-size:.85rem;color:#a33}
+    .excludes-list li::before{content:none}
+    .gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+    .gallery-grid img{width:100%;height:110px;object-fit:cover;border-radius:8px}
+    .date-chips{display:flex;flex-wrap:wrap;gap:8px}
+    .date-chip{padding:8px 14px;border:1px solid var(--line);border-radius:10px;font-size:.82rem;cursor:pointer;transition:.2s}
+    .date-chip:hover,.date-chip.selected{background:var(--forest);color:#fff;border-color:var(--forest)}
+
+    .booking-form{display:grid;gap:14px}
+    .booking-form label{font-size:.82rem;font-weight:600;display:block;margin-bottom:4px}
+    .booking-form input,.booking-form select,.booking-form textarea{width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:10px;font-size:.88rem;font-family:inherit}
+    .booking-form input:focus,.booking-form select:focus,.booking-form textarea:focus{outline:none;border-color:var(--forest)}
+    .booking-form textarea{min-height:70px;resize:vertical}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .booking-summary{background:var(--mint);border-radius:12px;padding:20px;margin-bottom:16px}
+    .booking-summary .line{display:flex;justify-content:space-between;margin-bottom:6px;font-size:.88rem}
+    .booking-summary .total{font-size:1.2rem;font-weight:700;border-top:2px solid var(--forest);padding-top:8px;margin-top:8px;color:var(--forest)}
+    .seat-indicator{display:flex;align-items:center;gap:8px;margin-bottom:16px;padding:12px;border-radius:10px;background:#f0fdf4}
+    .seat-bar{flex:1;height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden}
+    .seat-bar-fill{height:100%;border-radius:4px;transition:.3s}
+    .seat-bar-fill.green{background:#22c55e}
+    .seat-bar-fill.yellow{background:#eab308}
+    .seat-bar-fill.red{background:#ef4444}
+    .btn-book{width:100%;padding:14px;font-size:1rem;font-weight:700;border:none;border-radius:12px;cursor:pointer;transition:.2s}
+    .btn-book.primary{background:var(--forest);color:#fff}
+    .btn-book.primary:hover{opacity:.9}
+    .btn-book:disabled{opacity:.5;cursor:not-allowed}
+  </style>
+</head>
+<body>
+<nav class="site-nav"><div class="shell nav-inner"><a class="brand" href="index.html"><b class="brand-mark">C</b>ComfyGo</a><div class="nav-links"><a href="index.html">Explore</a><a href="hotels.html">Hotels</a><a href="destinations.html">Destinations</a><a href="packages.html">Packages</a><a class="active" href="activities.html">Activities</a><a href="guides.html">Guides</a><a href="flights.html">Flights</a></div><div class="nav-actions"><a href="login.html">Log in</a><a class="btn btn-ghost" href="register.html">Sign up</a></div><button class="menu-toggle" data-menu><i class="bi bi-list"></i></button></div></nav>
+
+<header class="page-hero"><div class="shell"><span class="eyebrow">ADVENTURE AWAITS</span><h1 class="page-title">Activities & Experiences</h1><p>From surfing to temple treks — find your perfect adventure.</p></div></header>
+
+<main class="shell section" id="act-container" style="min-height:400px"><p class="muted">Loading activities…</p></main>
+
+<div class="modal-overlay" id="detailModal">
+  <div class="modal-box" id="detailBox">
+    <button class="modal-close" onclick="closeDetailModal()"><i class="bi bi-x-lg"></i></button>
+    <div id="detailContent"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="bookingModal">
+  <div class="modal-box" id="bookingBox">
+    <button class="modal-close" onclick="closeBookingModal()"><i class="bi bi-x-lg"></i></button>
+    <div style="padding:28px" id="bookingContent"></div>
+  </div>
+</div>
+
+<footer class="footer"><div class="shell"><div class="footer-grid"><div><a class="brand" href="index.html"><b class="brand-mark">C</b>ComfyGo</a><p>Thoughtful stays and real local experiences.</p></div><div><h4>Explore</h4><a href="hotels.html">Hotels</a><a href="activities.html">Activities</a><a href="destinations.html">Destinations</a><a href="packages.html">Packages</a></div><div><h4>Support</h4><a href="#">Help</a><a href="#">Privacy</a><a href="#">Terms</a></div></div><div class="footer-bottom">© 2026 ComfyGo.</div></div></footer>
+
+<script src="js/utils/storage.js?v=7"></script>
+<script src="js/api/client.js?v=7"></script>
+<script src="js/ui.js?v=7"></script>
+<script>
+function escapeHtml(t){const d=document.createElement('div');d.textContent=t||'';return d.innerHTML}
+function parseJson(s){try{return JSON.parse(s)}catch{return[]}}
+let allActivities=[];
+const catIcons={'Water':'bi-water','Land':'bi-compass','Cultural':'bi-music-note','Adventure':'bi-lightning'};
+const actImages=[
+  'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=600&q=85',
+  'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=85',
+  'https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=600&q=85',
+  'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=85',
+  'https://images.unsplash.com/photo-1528181304800-259b08848526?auto=format&fit=crop&w=600&q=85',
+  'https://images.unsplash.com/photo-1504214208698-ea1916a2195a?auto=format&fit=crop&w=600&q=85',
+];
+
+document.addEventListener('DOMContentLoaded',async()=>{
+  const container=document.getElementById('act-container');
+  try{
+    const data=await apiClient.get('/activities/?limit=100');
+    allActivities=data.items||[];
+    if(!allActivities.length){container.innerHTML='<p class="muted">No activities yet.</p>';return}
+    const cats=[...new Set(allActivities.map(a=>a.category).filter(Boolean))];
+    const dests=[...new Set(allActivities.map(a=>a.destination).filter(Boolean))];
+    container.innerHTML=`
+      <div class="section-head"><div><span class="eyebrow">ALL ACTIVITIES</span><h2>${allActivities.length} experiences across South Asia</h2></div></div>
+      <div class="filter-bar">
+        <button class="filter-btn active" onclick="filterAct('all',this)">All</button>
+        ${cats.map(c=>`<button class="filter-btn" onclick="filterAct('${c}',this)"><i class="bi ${catIcons[c]||'bi-circle'}"></i> ${c}</button>`).join('')}
+        ${dests.map(d=>`<button class="filter-btn" onclick="filterAct('dest:${d}',this)">${escapeHtml(d)}</button>`).join('')}
+      </div>
+      <div class="act-grid" id="act-grid">${allActivities.map((a,i)=>renderAct(a,i)).join('')}</div>
+    `;
+  }catch(e){container.innerHTML='<p class="muted">Could not load activities.</p>'}
+});
+
+function renderAct(a,i){
+  const diff=a.difficulty||'Beginner';
+  const diffClass='diff-'+diff.toLowerCase();
+  const icon=catIcons[a.category]||'bi-circle';
+  const remaining=(a.max_participants||20)-(a.booked_count||0);
+  const pct=Math.max(0,Math.round((remaining/(a.max_participants||20))*100));
+  const seatClass=pct>50?'':pct>20?'low':'low';
+
+  return `<div class="act-card" data-cat="${escapeHtml(a.category||'')}" data-dest="${escapeHtml(a.destination||'')}" onclick="openDetail(${a.activity_id})">
+    <div class="act-img">
+      <img src="${a.image||actImages[i%actImages.length]}" alt="${escapeHtml(a.activity_name)}" loading="lazy">
+      <span class="act-cat"><i class="bi ${icon}"></i> ${escapeHtml(a.category||'Activity')}</span>
+      <span class="act-seats ${remaining<5?'low':''}">${remaining} spot${remaining!==1?'s':''} left</span>
+    </div>
+    <div class="act-body">
+      <h3>${escapeHtml(a.activity_name)}</h3>
+      <div class="act-meta">
+        <span><i class="bi bi-geo-alt"></i> ${escapeHtml(a.destination)}, ${escapeHtml(a.country)}</span>
+        <span><i class="bi bi-clock"></i> ${escapeHtml(a.duration||'TBA')}</span>
+        <span class="difficulty-badge ${diffClass}">${diff}</span>
+        ${a.rating?`<span style="color:var(--gold)"><i class="bi bi-star-fill"></i> ${a.rating} ${a.review_count?`(${a.review_count})`:''}</span>`:''}
+      </div>
+      <p>${escapeHtml((a.description||'').substring(0,130))}${(a.description||'').length>130?'…':''}</p>
+      <div class="act-footer">
+        <div class="act-price">$${a.price}<small>/person</small></div>
+        <button class="btn btn-primary" onclick="event.stopPropagation();openBooking(${a.activity_id})" ${remaining<=0?'disabled':''}>
+          ${remaining<=0?'Full':'Book Now'}
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function filterAct(cat,btn){
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.act-card').forEach(c=>{
+    if(cat==='all')c.style.display='';
+    else if(cat.startsWith('dest:'))c.style.display=c.dataset.dest===cat.slice(5)?'':'none';
+    else c.style.display=c.dataset.cat===cat?'':'none';
+  });
+}
+
+function openDetail(actId){
+  const a=allActivities.find(x=>x.activity_id===actId);
+  if(!a)return;
+  const included=parseJson(a.included);
+  const excluded=parseJson(a.excluded);
+  const highlights=parseJson(a.highlights);
+  const gallery=parseJson(a.gallery_images);
+  const toBring=parseJson(a.what_to_bring);
+  const dates=parseJson(a.available_dates);
+  const icon=catIcons[a.category]||'bi-circle';
+  const remaining=(a.max_participants||20)-(a.booked_count||0);
+
+  let html=`
+    <div class="modal-hero">
+      <img src="${a.image||actImages[0]}" alt="${escapeHtml(a.activity_name)}">
+      <button class="modal-close" onclick="closeDetailModal()"><i class="bi bi-x-lg"></i></button>
+      <div class="modal-hero-overlay">
+        <h2>${escapeHtml(a.activity_name)}</h2>
+        <div style="display:flex;gap:16px;margin-top:8px;font-size:.85rem;opacity:.9">
+          <span><i class="bi bi-geo-alt"></i> ${escapeHtml(a.destination)}, ${escapeHtml(a.country)}</span>
+          <span><i class="bi bi-clock"></i> ${escapeHtml(a.duration||'TBA')}</span>
+          ${a.rating?`<span style="color:var(--gold)"><i class="bi bi-star-fill"></i> ${a.rating}</span>`:''}
+        </div>
+      </div>
+    </div>
+    <div class="modal-content">
+      <div class="modal-tabs">
+        <div class="modal-tab active" onclick="switchTab(this,'overview')">Overview</div>
+        <div class="modal-tab" onclick="switchTab(this,'details')">Details</div>
+        <div class="modal-tab" onclick="switchTab(this,'reviews')">Reviews</div>
+      </div>
+
+      <!-- Overview -->
+      <div class="tab-panel active" id="tab-overview">
+        <p style="font-size:.92rem;line-height:1.8;margin-bottom:16px">${escapeHtml(a.description||'')}</p>
+        ${highlights.length?`
+          <h4 style="margin-bottom:8px"><i class="bi bi-star" style="color:var(--gold)"></i> Highlights</h4>
+          <ul class="highlights-list">${highlights.map(h=>`<li>${escapeHtml(h)}</li>`).join('')}</ul>
+        `:''}
+        ${gallery.length?`
+          <h4 style="margin:16px 0 8px"><i class="bi bi-images"></i> Gallery</h4>
+          <div class="gallery-grid">${gallery.map(g=>`<img src="${escapeHtml(g)}" alt="Gallery" loading="lazy">`).join('')}</div>
+        `:''}
+      </div>
+
+      <!-- Details -->
+      <div class="tab-panel" id="tab-details">
+        <div class="detail-grid">
+          <div class="detail-item"><div><i class="bi bi-clock"></i></div><div><div class="label">Duration</div><div class="value">${escapeHtml(a.duration||'TBA')}</div></div></div>
+          <div class="detail-item"><div><i class="bi bi-activity"></i></div><div><div class="label">Difficulty</div><div class="value">${escapeHtml(a.difficulty||'Beginner')}</div></div></div>
+          <div class="detail-item"><div><i class="bi bi-people"></i></div><div><div class="label">Group Size</div><div class="value">Max ${a.max_participants||20} people</div></div></div>
+          <div class="detail-item"><div><i class="bi bi-calendar3"></i></div><div><div class="label">Schedule</div><div class="value">${escapeHtml(a.schedule||'TBA')}</div></div></div>
+          <div class="detail-item"><div><i class="bi bi-person-badge"></i></div><div><div class="label">Instructor</div><div class="value">${escapeHtml(a.instructor_guide||'Expert guide')}</div></div></div>
+          <div class="detail-item"><div><i class="bi bi-translate"></i></div><div><div class="label">Languages</div><div class="value">${escapeHtml(a.languages||'English')}</div></div></div>
+          <div class="detail-item"><div><i class="bi bi-geo-alt"></i></div><div><div class="label">Location</div><div class="value" style="font-size:.82rem">${escapeHtml(a.location_details||a.destination)}</div></div></div>
+          <div class="detail-item"><div><i class="bi bi-person-check"></i></div><div><div class="label">Min Age</div><div class="value">${a.min_age||0}+ years</div></div></div>
+        </div>
+        ${a.safety_info?`
+          <div style="padding:12px;background:#fff8e1;border-radius:10px;margin-bottom:16px;display:flex;gap:8px;align-items:flex-start">
+            <i class="bi bi-shield-check" style="color:#eab308;font-size:1.1rem;margin-top:2px"></i>
+            <div><div style="font-weight:600;font-size:.85rem;margin-bottom:2px">Safety Info</div><div style="font-size:.82rem;color:var(--muted)">${escapeHtml(a.safety_info)}</div></div>
+          </div>
+        `:''}
+        ${included.length?`
+          <h4 style="margin-bottom:6px"><i class="bi bi-check-circle" style="color:var(--forest)"></i> Included</h4>
+          <ul class="highlights-list">${included.map(i=>`<li>${escapeHtml(i)}</li>`).join('')}</ul>
+        `:''}
+        ${excluded.length?`
+          <h4 style="margin:14px 0 6px"><i class="bi bi-x-circle" style="color:#a33"></i> Not Included</h4>
+          <ul class="excludes-list">${excluded.map(e=>`<li>${escapeHtml(e)}</li>`).join('')}</ul>
+        `:''}
+        ${toBring.length?`
+          <h4 style="margin:14px 0 6px"><i class="bi bi-backpack2"></i> What to Bring</h4>
+          <ul class="highlights-list">${toBring.map(b=>`<li>${escapeHtml(b)}</li>`).join('')}</ul>
+        `:''}
+        ${a.cancellation_policy?`
+          <div style="margin-top:14px;padding:10px;background:#f8f9fa;border-radius:10px;font-size:.82rem;color:var(--muted)">
+            <i class="bi bi-arrow-left-circle"></i> ${escapeHtml(a.cancellation_policy)}
+          </div>
+        `:''}
+      </div>
+
+      <!-- Reviews -->
+      <div class="tab-panel" id="tab-reviews">
+        <div id="reviewsList"><p class="muted">Loading reviews…</p></div>
+      </div>
+
+      <!-- Bottom CTA -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:24px;padding-top:20px;border-top:2px solid var(--line)">
+        <div class="act-price" style="font-size:1.5rem">$${a.price}<small>/person</small></div>
+        <button class="btn btn-primary" onclick="closeDetailModal();openBooking(${a.activity_id})" ${remaining<=0?'disabled':''} style="padding:14px 32px;font-size:1rem">
+          ${remaining<=0?'Full':'Book Now'}
+        </button>
+      </div>
+    </div>
+  `;
+  document.getElementById('detailContent').innerHTML=html;
+  document.getElementById('detailModal').classList.add('open');
+  document.body.style.overflow='hidden';
+  loadActivityReviews(actId);
+}
+
+function closeDetailModal(){
+  document.getElementById('detailModal').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+function switchTab(tabEl, tabId){
+  tabEl.parentElement.querySelectorAll('.modal-tab').forEach(t=>t.classList.remove('active'));
+  tabEl.classList.add('active');
+  tabEl.closest('.modal-content').querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+tabId).classList.add('active');
+}
+
+async function loadActivityReviews(actId){
+  const el=document.getElementById('reviewsList');
+  try{
+    const reviews=await apiClient.get('/reviews/?entity_type=activity&entity_id='+actId);
+    const items=reviews.items||reviews||[];
+    if(!items.length){el.innerHTML='<p class="muted">No reviews yet. Be the first!</p>';return}
+    el.innerHTML=items.map(r=>`
+      <div style="padding:14px;border:1px solid var(--line);border-radius:12px;margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+          <div><strong>${escapeHtml(r.title||'Review')}</strong>
+          <div style="color:var(--gold)">${'<i class="bi bi-star-fill"></i>'.repeat(r.rating||0)}${'<i class="bi bi-star"></i>'.repeat(5-(r.rating||0))}</div></div>
+          <span style="font-size:.78rem;color:var(--muted)">${r.created_at?new Date(r.created_at).toLocaleDateString():''}</span>
+        </div>
+        <p style="font-size:.85rem;color:var(--muted);margin:6px 0 0;line-height:1.6">${escapeHtml(r.comment||'')}</p>
+        ${r.verified_visit?'<span style="font-size:.72rem;color:var(--forest);font-weight:600"><i class="bi bi-patch-check"></i> Verified</span>':''}
+      </div>
+    `).join('');
+  }catch(e){el.innerHTML='<p class="muted">Could not load reviews.</p>'}
+}
+
+let selectedAct=null;
+let selectedDate=null;
+
+function openBooking(actId){
+  const a=allActivities.find(x=>x.activity_id===actId);
+  if(!a)return;
+  selectedAct=a;
+  selectedDate=null;
+
+  const token=Storage.getToken();
+  if(!token){window.location.href='login.html?redirect=activities.html';return}
+
+  const dates=parseJson(a.available_dates);
+  const remaining=(a.max_participants||20)-(a.booked_count||0);
+  const pct=Math.max(0,Math.round((remaining/(a.max_participants||20))*100));
+  const seatClass=pct>50?'green':pct>20?'yellow':'red';
+
+  let html=`
+    <h2 style="font-family:'Playfair Display',serif;margin:0 0 4px">Book: ${escapeHtml(a.activity_name)}</h2>
+    <p style="color:var(--muted);font-size:.88rem;margin:0 0 20px">${escapeHtml(a.destination)} · ${escapeHtml(a.duration||'TBA')} · ${escapeHtml(a.difficulty||'Beginner')}</p>
+
+    <div class="seat-indicator">
+      <span style="font-size:.82rem;font-weight:600">${remaining} spots left</span>
+      <div class="seat-bar"><div class="seat-bar-fill ${seatClass}" style="width:${pct}%"></div></div>
+      <span style="font-size:.78rem;color:var(--muted)">${pct}%</span>
+    </div>
+
+    <form class="booking-form" id="bookingForm" onsubmit="submitBooking(event)">
+      <div>
+        <label>Booking Date *</label>
+        ${dates.length?`
+          <div class="date-chips" id="dateChips">
+            ${dates.map(d=>`<div class="date-chip" data-date="${d}" onclick="selectDate('${d}',this)">${d}</div>`).join('')}
+          </div>
+        `:`<input type="date" id="bookDate" min="${new Date().toISOString().split('T')[0]}" required onchange="selectedDate=this.value">`}
+      </div>
+
+      <div class="form-row">
+        <div>
+          <label>Number of Persons *</label>
+          <input type="number" id="bookPersons" min="1" max="${Math.min(remaining,50)}" value="1" required oninput="updateBookingTotal()">
+        </div>
+        <div>
+          <label>Participant Age</label>
+          <input type="number" id="bookAge" min="1" max="100" placeholder="Age">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div><label>Contact Name *</label><input type="text" id="bookName" required></div>
+        <div><label>Contact Email *</label><input type="email" id="bookEmail" required></div>
+      </div>
+      <div class="form-row">
+        <div><label>Contact Phone</label><input type="tel" id="bookPhone" placeholder="+94..."></div>
+        <div><label>Emergency Contact</label><input type="text" id="bookEmergency" placeholder="Name + Phone"></div>
+      </div>
+
+      <div class="form-row">
+        <div>
+          <label>Pick-up Location</label>
+          <input type="text" id="bookPickup" placeholder="Hotel or meeting point">
+        </div>
+        <div>
+          <label>Pick-up Time</label>
+          <input type="time" id="bookPickupTime">
+        </div>
+      </div>
+
+      <div>
+        <label>Dietary Requirements</label>
+        <select id="bookDietary">
+          <option value="">None</option>
+          <option value="Vegetarian">Vegetarian</option>
+          <option value="Vegan">Vegan</option>
+          <option value="Halal">Halal</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Health Conditions</label>
+        <textarea id="bookHealth" placeholder="Any medical conditions we should know about?" style="min-height:60px"></textarea>
+      </div>
+
+      <div>
+        <label>Special Requests</label>
+        <textarea id="bookRequests" placeholder="Any special needs or requests?"></textarea>
+      </div>
+
+      <div class="booking-summary" id="bookingSummary">
+        <div class="line"><span>${escapeHtml(a.activity_name)}</span><span>${escapeHtml(a.duration||'TBA')}</span></div>
+        <div class="line"><span>Per person</span><span>$${a.price}</span></div>
+        <div class="line"><span>Persons</span><span id="summaryPersons">1</span></div>
+        <div class="line total"><span>Total</span><span id="summaryTotal">$${a.price}</span></div>
+      </div>
+
+      ${a.cancellation_policy?`
+        <div style="font-size:.78rem;color:var(--muted);padding:10px;background:#f8f9fa;border-radius:10px">
+          <i class="bi bi-info-circle"></i> ${escapeHtml(a.cancellation_policy)}
+        </div>
+      `:''}
+
+      <button type="submit" class="btn-book primary" id="bookBtn">
+        <i class="bi bi-check-circle"></i> Confirm Booking
+      </button>
+    </form>
+  `;
+  document.getElementById('bookingContent').innerHTML=html;
+  document.getElementById('bookingModal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeBookingModal(){
+  document.getElementById('bookingModal').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+function selectDate(dateStr,el){
+  document.querySelectorAll('.date-chip').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedDate=dateStr;
+}
+
+function updateBookingTotal(){
+  if(!selectedAct)return;
+  const persons=parseInt(document.getElementById('bookPersons').value)||1;
+  const total=(selectedAct.price*persons).toFixed(2);
+  document.getElementById('summaryPersons').textContent=persons;
+  document.getElementById('summaryTotal').textContent='$'+total;
+}
+
+async function submitBooking(e){
+  e.preventDefault();
+  if(!selectedAct)return;
+
+  const dateInput=document.getElementById('bookDate');
+  const bookingDate=selectedDate||(dateInput?dateInput.value:null);
+  if(!bookingDate){alert('Please select a booking date');return}
+
+  const btn=document.getElementById('bookBtn');
+  btn.disabled=true;
+  btn.innerHTML='<i class="bi bi-hourglass-split"></i> Processing…';
+
+  try{
+    const payload={
+      activity_id:selectedAct.activity_id,
+      booking_date:bookingDate,
+      num_persons:parseInt(document.getElementById('bookPersons').value)||1,
+      participant_age:document.getElementById('bookAge').value?parseInt(document.getElementById('bookAge').value):null,
+      contact_name:document.getElementById('bookName').value,
+      contact_email:document.getElementById('bookEmail').value,
+      contact_phone:document.getElementById('bookPhone').value||null,
+      emergency_contact:document.getElementById('bookEmergency').value||null,
+      pick_up_location:document.getElementById('bookPickup').value||null,
+      pick_up_time:document.getElementById('bookPickupTime').value||null,
+      dietary_requirements:document.getElementById('bookDietary').value||null,
+      health_conditions:document.getElementById('bookHealth').value||null,
+      special_requests:document.getElementById('bookRequests').value||null,
+    };
+
+    const result=await apiClient.post('/activities/'+selectedAct.activity_id+'/book',payload);
+    closeBookingModal();
+    closeDetailModal();
+    alert('Booking Confirmed!\n\nBooking Ref: '+result.booking_ref+'\nActivity: '+selectedAct.activity_name+'\nDate: '+result.booking_date+'\nPersons: '+result.num_persons+'\nTotal: $'+result.total_amount+'\n\nCheck your email for details.');
+    window.location.reload();
+  }catch(err){
+    alert('Booking failed: '+(err.message||'Please try again'));
+    btn.disabled=false;
+    btn.innerHTML='<i class="bi bi-check-circle"></i> Confirm Booking';
+  }
+}
+
+document.getElementById('detailModal')?.addEventListener('click',function(e){if(e.target===this)closeDetailModal()});
+document.getElementById('bookingModal')?.addEventListener('click',function(e){if(e.target===this)closeBookingModal()});
+</script>
+</body>
+</html>

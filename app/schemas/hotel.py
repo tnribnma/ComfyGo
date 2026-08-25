@@ -13,6 +13,12 @@ class HotelBase(BaseModel):
     hotel_email: Optional[EmailStr] = None
     hotel_description: Optional[str] = None
     hotel_rating: Optional[float] = Field(default=None, ge=0, le=5)
+    price_per_night: Optional[float] = Field(default=None, ge=0)
+    breakfast_included: bool = False
+    free_cancellation: bool = False
+    has_pool: bool = False
+    has_wifi: bool = False
+    has_parking: bool = False
 
 
 class HotelCreate(HotelBase):
@@ -28,8 +34,20 @@ class HotelUpdate(BaseModel):
     hotel_email: Optional[EmailStr] = None
     hotel_description: Optional[str] = None
     hotel_rating: Optional[float] = Field(default=None, ge=0, le=5)
+    price_per_night: Optional[float] = Field(default=None, ge=0)
+    breakfast_included: Optional[bool] = None
+    free_cancellation: Optional[bool] = None
+    has_pool: Optional[bool] = None
+    has_wifi: Optional[bool] = None
+    has_parking: Optional[bool] = None
 
 
 class HotelOut(HotelBase, TimestampedOut):
     hotel_id: int
     model_config = ConfigDict(from_attributes=True)
+
+
+class DestinationOut(BaseModel):
+    city: str
+    country: str
+    hotel_count: int

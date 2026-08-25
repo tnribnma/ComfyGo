@@ -1,90 +1,427 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hotels - ComfyGo</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Hotels · ComfyGo</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;place-items:center}
+    .modal-overlay.open{display:grid}
+    .modal-box{background:#fff;border-radius:16px;padding:32px;max-width:480px;width:92%;box-shadow:0 20px 60px rgba(0,0,0,.2);position:relative;max-height:90vh;overflow-y:auto}
+    .modal-box h2{margin:0 0 6px;font-family:'Playfair Display',Georgia,serif;font-size:1.5rem}
+    .modal-box .hotel-tag{color:var(--muted);font-size:.88rem;margin:0 0 22px}
+    .modal-close{position:absolute;top:14px;right:16px;background:none;border:0;font-size:1.3rem;cursor:pointer;color:var(--muted)}
+    .modal-close:hover{color:var(--ink)}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .form-group{margin-bottom:15px}
+    .form-group label{display:block;font-weight:700;font-size:.76rem;margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+    .form-group input,.form-group select{width:100%;border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:.92rem;background:#fff}
+    .form-group input:focus,.form-group select:focus{border-color:var(--forest);outline:none;box-shadow:0 0 0 3px #0d5c5018}
+    .booking-summary{background:var(--mint);border-radius:10px;padding:14px 16px;margin:18px 0;font-size:.88rem}
+    .booking-summary .row{display:flex;justify-content:space-between;margin:4px 0}
+    .booking-summary .total{font-weight:700;font-size:1rem;border-top:1px solid var(--line);padding-top:8px;margin-top:8px}
+    .modal-actions{display:flex;gap:10px;margin-top:8px}
+    .modal-actions .btn{flex:1}
+    .modal-msg{display:none;padding:10px 12px;border-radius:8px;font-size:.84rem;margin-bottom:12px}
+    .modal-msg.error{display:block;background:#fff0ed;color:#a63b20}
+    .modal-msg.success{display:block;background:#e4f4eb;color:#176548}
+
+    .active-filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+    .filter-tag{display:inline-flex;align-items:center;gap:5px;background:var(--mint);color:var(--forest);padding:5px 10px;border-radius:20px;font-size:.78rem;font-weight:600}
+    .filter-tag button{background:none;border:0;color:var(--forest);font-size:.9rem;cursor:pointer;padding:0;line-height:1}
+    .filter-tag button:hover{color:#a63b20}
+
+    .sort-select{padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:.88rem}
+  </style>
 </head>
-<body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="dashboard.html">ComfyGo Admin</a>
-            <div class="d-flex">
-                <a href="dashboard.html" class="btn btn-outline-light btn-sm me-2">Back to Dashboard</a>
-                <button id="logout-btn" class="btn btn-danger btn-sm">Logout</button>
-            </div>
-        </div>
-    </nav>
-
-    <div class="container mt-4">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2>Manage Hotels</h2>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#hotelModal" onclick="resetForm()">+ Add Hotel</button>
-        </div>
-
-        <table class="table table-bordered table-hover bg-white">
-            <thead class="table-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>City</th>
-                    <th>Country</th>
-                    <th>Rating</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="hotels-table-body">
-            </tbody>
-        </table>
+<body>
+<nav class="site-nav">
+  <div class="shell nav-inner">
+    <a class="brand" href="index.html"><b class="brand-mark">C</b>ComfyGo</a>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html">Explore</a>
+      <a class="active" href="hotels.html">Hotels</a>
+      <a href="packages.html">Packages</a>
+      <a href="activities.html">Activities</a>
+      <a href="flights.html">Flights</a>
+      <a href="destinations.html">Destinations</a>
+      <a href="dining.html">Dining</a>
+      <a href="guides.html">Guides</a>
     </div>
-
-    <div class="modal fade" id="hotelModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalTitle">Add Hotel</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="hotel-form">
-                        <input type="hidden" id="hotel_id">
-                        <div class="mb-3">
-                            <label class="form-label">Hotel Name</label>
-                            <input type="text" class="form-control" id="hotel_name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Address</label>
-                            <input type="text" class="form-control" id="hotel_address" required>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">City</label>
-                                <input type="text" class="form-control" id="hotel_city" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Country</label>
-                                <input type="text" class="form-control" id="hotel_country" required>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Rating (0-5)</label>
-                            <input type="number" step="0.1" max="5" min="0" class="form-control" id="hotel_rating">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" onclick="saveHotel()">Save</button>
-                </div>
-            </div>
-        </div>
+    <div class="nav-actions">
+      <a href="login.html">Log in</a>
+      <a class="btn btn-primary" href="register.html">Sign up</a>
     </div>
+    <button class="menu-toggle" data-menu><i class="bi bi-list"></i></button>
+  </div>
+</nav>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/utils/storage.js"></script>
-    <script src="js/api/client.js"></script>
-    <script src="js/modules/auth.js"></script>
-    <script src="js/modules/hotels.js"></script>
+<header class="page-hero">
+  <div class="shell">
+    <span class="eyebrow">FIND YOUR PLACE</span>
+    <h1 class="page-title">Stays with a sense of place</h1>
+    <p>Explore distinctive hotels, homes and escapes across Bangladesh and beyond.</p>
+    <form class="listing-search" data-search>
+      <input required placeholder="Try Galle, Cox's Bazar, a hotel...">
+      <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i>Search</button>
+    </form>
+  </div>
+</header>
+
+<main class="shell listing-layout">
+  <aside class="filters" id="filtersPanel">
+    <h3>Filter stays</h3>
+    <div class="filter-group">
+      <label>Price per night <span id="priceLabel">$300</span></label>
+      <input type="range" id="priceRange" min="0" max="500" value="500" step="10">
+    </div>
+    <div class="filter-group">
+      <label>Guest rating</label>
+      <select id="ratingFilter">
+        <option value="">Any rating</option>
+        <option value="4.5">4.5 and above</option>
+        <option value="4.0">4.0 and above</option>
+        <option value="3.5">3.5 and above</option>
+        <option value="3.0">3.0 and above</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Amenities</label>
+      <label class="check"><input type="checkbox" id="filterBreakfast"> Breakfast included</label>
+      <label class="check"><input type="checkbox" id="filterPool"> Pool</label>
+      <label class="check"><input type="checkbox" id="filterWifi"> Free Wi-Fi</label>
+      <label class="check"><input type="checkbox" id="filterParking"> Parking</label>
+      <label class="check"><input type="checkbox" id="filterCancellation"> Free cancellation</label>
+    </div>
+    <button class="btn btn-primary" style="width:100%" id="applyFilters">Apply filters</button>
+    <button class="btn btn-ghost" style="width:100%;margin-top:8px" id="clearFilters">Clear all</button>
+  </aside>
+  <section>
+    <div class="active-filters" id="activeFilters"></div>
+    <div class="results-toolbar">
+      <span class="muted" data-result-count>Loading stays…</span>
+      <select class="sort-select" id="sortSelect">
+        <option value="">Recommended</option>
+        <option value="price_asc">Price: low to high</option>
+        <option value="price_desc">Price: high to low</option>
+        <option value="rating">Top rated</option>
+        <option value="name">Name A–Z</option>
+      </select>
+    </div>
+    <div data-hotel-results style="min-height:400px">
+      <p class="muted">Loading stays…</p>
+    </div>
+  </section>
+</main>
+
+<div class="modal-overlay" id="bookingModal">
+  <div class="modal-box">
+    <button class="modal-close" id="closeModal">&times;</button>
+    <h2>Book this stay</h2>
+    <p class="hotel-tag" id="modalHotelName"></p>
+    <div class="modal-msg" id="bookingMsg"></div>
+    <form id="bookingForm">
+      <input type="hidden" id="bookHotelId">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Check-in</label>
+          <input type="date" id="bookCheckIn" required>
+        </div>
+        <div class="form-group">
+          <label>Check-out</label>
+          <input type="date" id="bookCheckOut" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Guests</label>
+        <select id="bookGuests">
+          <option value="1">1 guest</option>
+          <option value="2" selected>2 guests</option>
+          <option value="3">3 guests</option>
+          <option value="4">4 guests</option>
+          <option value="5">5 guests</option>
+          <option value="6">6 guests</option>
+        </select>
+      </div>
+      <div class="booking-summary" id="bookingSummary" style="display:none">
+        <div class="row"><span>Price per night</span><span id="summaryPrice">—</span></div>
+        <div class="row"><span>Nights</span><span id="summaryNights">—</span></div>
+        <div class="row"><span>Guests</span><span id="summaryGuests">—</span></div>
+        <div class="row total"><span>Total</span><span id="summaryTotal">—</span></div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="cancelBooking">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="submitBooking">Confirm booking</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="js/utils/storage.js?v=6"></script>
+<script src="js/api/client.js?v=6"></script>
+<script src="js/ui.js?v=6"></script>
+<script>
+(function() {
+  var filters = { city: '', max_price: 500, min_rating: '', sort_by: '' };
+  var amenities = { breakfast_included: false, has_pool: false, has_wifi: false, has_parking: false, free_cancellation: false };
+  var allHotels = [];
+
+  var searchInput = document.querySelector('[data-search] input');
+  var searchForm = document.querySelector('[data-search]');
+  var priceRange = document.getElementById('priceRange');
+  var priceLabel = document.getElementById('priceLabel');
+  var ratingFilter = document.getElementById('ratingFilter');
+  var sortSelect = document.getElementById('sortSelect');
+  var resultsEl = document.querySelector('[data-hotel-results]');
+  var countEl = document.querySelector('[data-result-count]');
+  var activeFiltersEl = document.getElementById('activeFilters');
+
+  var urlCity = new URLSearchParams(location.search).get('city') || new URLSearchParams(location.search).get('q') || '';
+  if (urlCity && searchInput) {
+    searchInput.value = urlCity;
+    filters.city = urlCity;
+  }
+
+  async function loadHotels() {
+    resultsEl.innerHTML = '<p class="muted">Loading stays…</p>';
+    try {
+      var params = new URLSearchParams();
+      if (filters.city) params.set('city', filters.city);
+      if (filters.max_price < 500) params.set('max_price', filters.max_price);
+      if (filters.min_rating) params.set('min_rating', filters.min_rating);
+      if (filters.sort_by) params.set('sort_by', filters.sort_by);
+      if (amenities.breakfast_included) params.set('breakfast_included', 'true');
+      if (amenities.has_pool) params.set('has_pool', 'true');
+      if (amenities.has_wifi) params.set('has_wifi', 'true');
+      if (amenities.has_parking) params.set('has_parking', 'true');
+      if (amenities.free_cancellation) params.set('free_cancellation', 'true');
+      params.set('limit', '100');
+
+      var endpoint = '/hotels/search?' + params.toString();
+      var data = await apiClient.get(endpoint);
+      allHotels = data.items || [];
+      renderHotels(allHotels);
+    } catch (e) {
+      resultsEl.innerHTML = '<p class="muted">Unable to load stays. Make sure the API server is running.</p>';
+    }
+  }
+
+  function renderHotels(hotels) {
+    countEl.innerHTML = '<b style="color:var(--ink)">' + hotels.length + ' stays</b> to discover';
+    if (hotels.length === 0) {
+      resultsEl.innerHTML = '<p class="muted">No stays match your filters. Try adjusting your search.</p>';
+      return;
+    }
+    resultsEl.innerHTML = hotels.map(function(h) {
+      var r = h.hotel_rating ? Number(h.hotel_rating).toFixed(1) : 'New';
+      var price = h.price_per_night ? Number(h.price_per_night) : null;
+      var priceHtml = price ? '<span class="price">$' + price + ' <small>/ night</small></span>' : '<span class="price muted">Price on request</span>';
+      var badges = [];
+      if (h.breakfast_included) badges.push('<span style="color:var(--forest);font-size:.75rem"><i class="bi bi-cup-hot"></i> Breakfast</span>');
+      if (h.has_pool) badges.push('<span style="color:var(--forest);font-size:.75rem"><i class="bi bi-water"></i> Pool</span>');
+      if (h.free_cancellation) badges.push('<span style="color:var(--forest);font-size:.75rem"><i class="bi bi-shield-check"></i> Free cancel</span>');
+
+      return '<article class="result">' +
+        '<img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=900&q=85" alt="' + escapeHtml(h.hotel_name) + '">' +
+        '<div class="result-body">' +
+          '<div class="result-title"><div><h2>' + escapeHtml(h.hotel_name) + '</h2>' +
+          '<div class="location"><i class="bi bi-geo-alt"></i> ' + escapeHtml(h.hotel_city) + ', ' + escapeHtml(h.hotel_country) + '</div></div>' +
+          '<span class="rating"><i class="bi bi-star-fill"></i> ' + r + '</span></div>' +
+          '<p>' + escapeHtml(h.hotel_description || 'A thoughtful place to stay.') + '</p>' +
+          (badges.length ? '<div style="display:flex;gap:12px;margin-bottom:10px">' + badges.join('') + '</div>' : '') +
+          '<div class="result-bottom">' +
+            priceHtml +
+            '<div style="display:flex;gap:8px">' +
+              '<a class="btn btn-ghost" href="hotels_details.html?id=' + h.hotel_id + '" style="padding:8px 14px;font-size:.85rem">Details</a>' +
+              '<button class="btn btn-primary" style="padding:8px 14px;font-size:.85rem" onclick="openBookingModal(' + h.hotel_id + ', \'' + escapeHtml(h.hotel_name).replace(/'/g, "\\'") + '\', ' + (price || 0) + ')">Book now</button>' +
+            '</div>' +
+          '</div>' +
+        '</div></article>';
+    }).join('');
+  }
+
+  function renderFilterTags() {
+    var tags = [];
+    if (filters.city) tags.push({ label: 'City: ' + filters.city, clear: function() { filters.city = ''; searchInput.value = ''; } });
+    if (filters.max_price < 500) tags.push({ label: 'Max $' + filters.max_price + '/night', clear: function() { filters.max_price = 500; priceRange.value = 500; priceLabel.textContent = '$500'; } });
+    if (filters.min_rating) tags.push({ label: filters.min_rating + '+ stars', clear: function() { filters.min_rating = ''; ratingFilter.value = ''; } });
+    if (filters.sort_by) tags.push({ label: 'Sort: ' + filters.sort_by, clear: function() { filters.sort_by = ''; sortSelect.value = ''; } });
+    if (amenities.breakfast_included) tags.push({ label: 'Breakfast', clear: function() { amenities.breakfast_included = false; document.getElementById('filterBreakfast').checked = false; } });
+    if (amenities.has_pool) tags.push({ label: 'Pool', clear: function() { amenities.has_pool = false; document.getElementById('filterPool').checked = false; } });
+    if (amenities.has_wifi) tags.push({ label: 'Wi-Fi', clear: function() { amenities.has_wifi = false; document.getElementById('filterWifi').checked = false; } });
+    if (amenities.has_parking) tags.push({ label: 'Parking', clear: function() { amenities.has_parking = false; document.getElementById('filterParking').checked = false; } });
+    if (amenities.free_cancellation) tags.push({ label: 'Free cancel', clear: function() { amenities.free_cancellation = false; document.getElementById('filterCancellation').checked = false; } });
+
+    if (tags.length === 0) { activeFiltersEl.innerHTML = ''; return; }
+    activeFiltersEl.innerHTML = tags.map(function(t, i) {
+      return '<span class="filter-tag">' + t.label + ' <button data-clear="' + i + '">&times;</button></span>';
+    }).join('');
+    activeFiltersEl.querySelectorAll('button').forEach(function(btn, i) {
+      btn.addEventListener('click', function() {
+        tags[i].clear();
+        loadHotels();
+        renderFilterTags();
+      });
+    });
+  }
+
+  if (searchForm) {
+    searchForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      filters.city = searchInput.value.trim();
+      loadHotels();
+      renderFilterTags();
+    });
+  }
+
+  priceRange.addEventListener('input', function() {
+    priceLabel.textContent = '$' + this.value;
+  });
+
+  document.getElementById('applyFilters').addEventListener('click', function() {
+    filters.max_price = parseInt(priceRange.value);
+    filters.min_rating = ratingFilter.value;
+    amenities.breakfast_included = document.getElementById('filterBreakfast').checked;
+    amenities.has_pool = document.getElementById('filterPool').checked;
+    amenities.has_wifi = document.getElementById('filterWifi').checked;
+    amenities.has_parking = document.getElementById('filterParking').checked;
+    amenities.free_cancellation = document.getElementById('filterCancellation').checked;
+    loadHotels();
+    renderFilterTags();
+  });
+
+  document.getElementById('clearFilters').addEventListener('click', function() {
+    filters = { city: '', max_price: 500, min_rating: '', sort_by: '' };
+    amenities = { breakfast_included: false, has_pool: false, has_wifi: false, has_parking: false, free_cancellation: false };
+    searchInput.value = '';
+    priceRange.value = 500;
+    priceLabel.textContent = '$500';
+    ratingFilter.value = '';
+    sortSelect.value = '';
+    document.getElementById('filterBreakfast').checked = false;
+    document.getElementById('filterPool').checked = false;
+    document.getElementById('filterWifi').checked = false;
+    document.getElementById('filterParking').checked = false;
+    document.getElementById('filterCancellation').checked = false;
+    loadHotels();
+    renderFilterTags();
+  });
+
+  sortSelect.addEventListener('change', function() {
+    filters.sort_by = this.value;
+    loadHotels();
+    renderFilterTags();
+  });
+
+  var modal = document.getElementById('bookingModal');
+  var currentPrice = 0;
+
+  window.openBookingModal = function(hotelId, hotelName, pricePerNight) {
+    if (!Storage.isAuthenticated()) {
+      window.location.href = 'login.html';
+      return;
+    }
+    document.getElementById('bookHotelId').value = hotelId;
+    document.getElementById('modalHotelName').textContent = hotelName;
+    currentPrice = pricePerNight;
+    document.getElementById('bookingMsg').className = 'modal-msg';
+    document.getElementById('bookingMsg').textContent = '';
+    document.getElementById('bookingSummary').style.display = 'none';
+
+    var today = new Date().toISOString().split('T')[0];
+    document.getElementById('bookCheckIn').min = today;
+    document.getElementById('bookCheckOut').min = today;
+    document.getElementById('bookCheckIn').value = '';
+    document.getElementById('bookCheckOut').value = '';
+
+    modal.classList.add('open');
+  };
+
+  document.getElementById('closeModal').addEventListener('click', function() { modal.classList.remove('open'); });
+  document.getElementById('cancelBooking').addEventListener('click', function() { modal.classList.remove('open'); });
+  modal.addEventListener('click', function(e) { if (e.target === modal) modal.classList.remove('open'); });
+
+  ['bookCheckIn', 'bookCheckOut', 'bookGuests'].forEach(function(id) {
+    document.getElementById(id).addEventListener('change', updateSummary);
+    document.getElementById(id).addEventListener('input', updateSummary);
+  });
+
+  function updateSummary() {
+    var ci = document.getElementById('bookCheckIn').value;
+    var co = document.getElementById('bookCheckOut').value;
+    var guests = parseInt(document.getElementById('bookGuests').value) || 1;
+    if (!ci || !co || !currentPrice) {
+      document.getElementById('bookingSummary').style.display = 'none';
+      return;
+    }
+    var nights = Math.max(1, Math.round((new Date(co) - new Date(ci)) / 86400000));
+    if (nights < 1) {
+      document.getElementById('bookingSummary').style.display = 'none';
+      return;
+    }
+    var total = nights * currentPrice;
+    document.getElementById('summaryPrice').textContent = '$' + currentPrice;
+    document.getElementById('summaryNights').textContent = nights;
+    document.getElementById('summaryGuests').textContent = guests;
+    document.getElementById('summaryTotal').textContent = '$' + total;
+    document.getElementById('bookingSummary').style.display = 'block';
+  }
+
+  document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var msgEl = document.getElementById('bookingMsg');
+    var submitBtn = document.getElementById('submitBooking');
+
+    var hotelId = parseInt(document.getElementById('bookHotelId').value);
+    var checkIn = document.getElementById('bookCheckIn').value;
+    var checkOut = document.getElementById('bookCheckOut').value;
+    var guests = parseInt(document.getElementById('bookGuests').value) || 1;
+
+    if (!checkIn || !checkOut) {
+      msgEl.className = 'modal-msg error';
+      msgEl.textContent = 'Please select check-in and check-out dates.';
+      return;
+    }
+    if (new Date(checkOut) <= new Date(checkIn)) {
+      msgEl.className = 'modal-msg error';
+      msgEl.textContent = 'Check-out date must be after check-in date.';
+      return;
+    }
+
+    var nights = Math.max(1, Math.round((new Date(checkOut) - new Date(checkIn)) / 86400000));
+    var totalAmount = nights * currentPrice;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Booking…';
+
+    try {
+      await apiClient.post('/bookings/', {
+        hotel_id: hotelId,
+        check_in_date: checkIn,
+        check_out_date: checkOut,
+        number_of_guests: guests,
+        total_amount: totalAmount,
+      });
+      msgEl.className = 'modal-msg success';
+      msgEl.textContent = 'Booking confirmed! You can view it in My Bookings.';
+      setTimeout(function() { modal.classList.remove('open'); }, 2000);
+    } catch (err) {
+      msgEl.className = 'modal-msg error';
+      msgEl.textContent = err.message || 'Booking failed. Please try again.';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Confirm booking';
+    }
+  });
+
+  loadHotels();
+})();
+</script>
 </body>
 </html>

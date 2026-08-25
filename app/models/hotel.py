@@ -1,5 +1,5 @@
 from typing import List, TYPE_CHECKING, Optional
-from sqlalchemy import String, Integer, Numeric, Text
+from sqlalchemy import String, Integer, Numeric, Text, Boolean
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 from .base import Base, TimestampMixin
@@ -23,6 +23,14 @@ class Hotel(TimestampMixin, Base):
     hotel_rating: Mapped[Optional[float]] = mapped_column(
         Numeric(2, 1), nullable=True 
     )
+    price_per_night: Mapped[Optional[float]] = mapped_column(
+        Numeric(10, 2), nullable=True
+    )
+    breakfast_included: Mapped[bool] = mapped_column(Boolean, default=False)
+    free_cancellation: Mapped[bool] = mapped_column(Boolean, default=False)
+    has_pool: Mapped[bool] = mapped_column(Boolean, default=False)
+    has_wifi: Mapped[bool] = mapped_column(Boolean, default=False)
+    has_parking: Mapped[bool] = mapped_column(Boolean, default=False)
 
     employees: Mapped[List["Employee"]] = relationship(
         "Employee", back_populates="hotel"

@@ -34,6 +34,8 @@ def create_app() -> FastAPI:
         openapi_url=f"{settings.API_V1_PREFIX}/openapi.json",
         lifespan=lifespan,
     )
+    register_middleware(app)             
+    register_exception_handlers(app)    
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
@@ -41,8 +43,6 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    register_middleware(app)             
-    register_exception_handlers(app)    
     app.include_router(api_router, prefix=settings.API_V1_PREFIX)
 
     @app.get("/", include_in_schema=False)

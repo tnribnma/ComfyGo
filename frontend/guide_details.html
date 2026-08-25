@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Guide Profile · ComfyGo</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .detail-top{display:grid;grid-template-columns:1fr 340px;gap:50px;padding:35px 0 60px}
+    .guide-profile{display:flex;gap:24px;align-items:start}
+    .gp-avatar{width:110px;height:110px;border-radius:50%;background:var(--mint);color:var(--forest);display:grid;place-items:center;font-size:2.4rem;font-weight:700;flex-shrink:0}
+    .gp-info h1{margin:0;font-family:'Playfair Display',serif;font-size:2rem}
+    .gp-info .gp-city{color:var(--muted);font-size:.92rem;margin:6px 0 0}
+    .gp-info .gp-avail{display:inline-block;padding:4px 12px;border-radius:999px;font-size:.74rem;font-weight:700;margin-top:8px}
+    .avail-yes{color:#177457;background:#e2f4ea}
+    .avail-no{color:#a63b20;background:#fff0ed}
+    .gp-rating{display:flex;align-items:center;gap:6px;margin-top:10px;font-size:.92rem}
+    .gp-rating i{color:var(--gold)}
+
+    .guide-content{margin-top:30px}
+    .guide-content h2{font-size:1.15rem;margin:0 0 14px;font-family:'Playfair Display',serif}
+    .guide-content p{color:var(--muted);line-height:1.75;font-size:.92rem}
+
+    .spec-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+    .spec-tag{padding:6px 14px;border-radius:999px;font-size:.8rem;font-weight:600;background:var(--mint);color:var(--forest)}
+
+    .regions-list{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+    .region-chip{display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:999px;font-size:.82rem;font-weight:600;border:1px solid var(--line);background:#fff}
+
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:28px}
+    .info-card{background:var(--mint);border-radius:12px;padding:18px;text-align:center}
+    .info-card strong{display:block;font-size:1.4rem;color:var(--forest)}
+    .info-card small{font-size:.78rem;color:var(--muted)}
+
+    .contact-sidebar{position:sticky;top:90px;height:max-content}
+    .contact-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px;box-shadow:var(--shadow)}
+    .contact-card h3{margin:0 0 18px;font-size:1.05rem}
+    .rate-display{text-align:center;padding:18px;background:var(--mint);border-radius:12px;margin-bottom:20px}
+    .rate-display .rate-amount{font-size:2rem;font-weight:700;color:var(--forest)}
+    .rate-display small{color:var(--muted);font-size:.82rem}
+    .rate-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:.9rem}
+    .rate-row:last-child{border:0}
+    .rate-row span:first-child{color:var(--muted)}
+    .rate-row span:last-child{font-weight:700}
+
+    .contact-links{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+    .contact-link{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;border:1px solid var(--line);text-decoration:none;color:var(--ink);font-weight:600;font-size:.9rem;transition:.15s}
+    .contact-link:hover{border-color:var(--forest);background:var(--mint);color:var(--forest)}
+    .contact-link i{font-size:1.2rem;width:22px;text-align:center}
+    .contact-link.whatsapp{border-color:#25d36633;color:#25d366}
+    .contact-link.whatsapp:hover{background:#25d36610;border-color:#25d366}
+    .contact-link.phone{border-color:var(--forest);color:var(--forest)}
+    .contact-link.email{border-color:var(--orange);color:var(--orange)}
+    .contact-link.facebook{border-color:#1877f2;color:#1877f2}
+    .contact-link.instagram{border-color:#e4405f;color:#e4405f}
+
+    .guide-reviews{margin-top:30px}
+    .review-item{padding:16px 0;border-bottom:1px solid var(--line)}
+    .review-item:last-child{border:0}
+    .review-item .ri-head{display:flex;justify-content:space-between;align-items:center}
+    .review-item .ri-stars{color:var(--gold)}
+    .review-item p{margin:6px 0 0;font-size:.88rem;color:var(--muted);line-height:1.55}
+    .review-item .ri-meta{font-size:.76rem;color:var(--muted);margin-top:6px}
+
+    .book-guide-btn{width:100%;margin-top:16px}
+    .how-to-reach{margin-top:20px;padding:18px;background:#f8f9fa;border-radius:12px}
+    .how-to-reach h4{margin:0 0 10px;font-size:.92rem}
+    .how-to-reach p{margin:0;font-size:.85rem;color:var(--muted);line-height:1.6}
+
+    @media(max-width:800px){
+      .detail-top{grid-template-columns:1fr;gap:30px}
+      .guide-profile{flex-direction:column;align-items:center;text-align:center}
+      .contact-sidebar{position:static}
+      .info-grid{grid-template-columns:1fr 1fr}
+    }
+  </style>
+</head>
+<body>
+<nav class="site-nav">
+  <div class="shell nav-inner">
+    <a class="brand" href="index.html"><b class="brand-mark">C</b>ComfyGo</a>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html">Explore</a>
+      <a href="hotels.html">Hotels</a>
+      <a href="packages.html">Packages</a>
+      <a href="activities.html">Activities</a>
+      <a href="flights.html">Flights</a>
+      <a href="destinations.html">Destinations</a>
+      <a href="dining.html">Dining</a>
+      <a class="active" href="guides.html">Guides</a>
+    </div>
+    <div class="nav-actions" id="navActions">
+      <a href="login.html">Log in</a>
+      <a class="btn btn-primary" href="register.html">Sign up</a>
+    </div>
+    <button class="menu-toggle" data-menu><i class="bi bi-list"></i></button>
+  </div>
+</nav>
+
+<div class="shell crumb">
+  <a href="guides.html">Guides</a> <span>›</span> <span id="crumbName">Guide</span>
+</div>
+
+<main class="shell">
+  <div class="detail-top">
+    <div>
+      <div class="guide-profile">
+        <div class="gp-avatar" id="guideAvatar">?</div>
+        <div class="gp-info">
+          <h1 id="guideName">Loading…</h1>
+          <div class="gp-city" id="guideCity"><i class="bi bi-geo-alt"></i> —</div>
+          <span class="gp-avail" id="guideAvail">—</span>
+          <div class="gp-rating" id="guideRating"></div>
+        </div>
+      </div>
+
+      <div class="guide-content">
+        <h2>About this guide</h2>
+        <p id="guideBio">Loading…</p>
+
+        <h2>Specialties</h2>
+        <div class="spec-tags" id="guideSpecs"></div>
+
+        <h2>Regions covered</h2>
+        <div class="regions-list" id="guideRegions"></div>
+
+        <div class="info-grid" id="guideStats"></div>
+
+        <div class="how-to-reach" id="howToReach">
+          <h4><i class="bi bi-info-circle"></i> How to reach this guide</h4>
+          <p id="reachText">Contact this guide directly via WhatsApp, phone, or email to discuss your trip and arrange a meeting.</p>
+        </div>
+
+        <div class="guide-reviews" id="guideReviews"></div>
+      </div>
+    </div>
+
+    <aside class="contact-sidebar">
+      <div class="contact-card">
+        <h3>Contact & Rates</h3>
+        <div class="rate-display" id="rateDisplay"></div>
+        <div id="rateDetails"></div>
+        <div class="contact-links" id="contactLinks"></div>
+        <a class="btn btn-primary book-guide-btn" id="bookGuideBtn" href="#">Book this guide</a>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="shell">
+    <div class="footer-grid">
+      <div><a class="brand" href="index.html"><b class="brand-mark">C</b>ComfyGo</a><p>Thoughtful stays and real local experiences, beautifully connected.</p></div>
+      <div><h4>Explore</h4><a href="hotels.html">Hotels</a><a href="packages.html">Packages</a><a href="activities.html">Activities</a><a href="flights.html">Flights</a><a href="destinations.html">Destinations</a><a href="dining.html">Dining</a><a href="guides.html">Local guides</a></div>
+      <div><h4>Company</h4><a href="#">About us</a><a href="#">Contact</a><a href="#">Careers</a></div>
+      <div><h4>Support</h4><a href="#">Help centre</a><a href="#">Privacy</a><a href="#">Terms</a></div>
+    </div>
+    <div class="footer-bottom">&copy; 2026 ComfyGo. Travel well, stay better.</div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+<script src="js/utils/storage.js?v=8"></script>
+<script src="js/api/client.js?v=8"></script>
+<script src="js/ui.js?v=8"></script>
+<script>
+(function() {
+  var guideId = new URLSearchParams(location.search).get('id');
+  if (!guideId) { window.location.href = 'guides.html'; return; }
+
+  var portraits = [
+    'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=85',
+    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=85',
+    'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=85',
+    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=85',
+    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=85',
+    'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=200&q=85',
+    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=200&q=85',
+    'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=85',
+  ];
+
+  function esc(text) { var d = document.createElement('div'); d.textContent = text || ''; return d.innerHTML; }
+  function starsHtml(r) {
+    var n = Math.round(r || 0);
+    var html = '';
+    for (var i = 1; i <= 5; i++) html += i <= n ? '<i class="bi bi-star-fill"></i>' : '<i class="bi bi-star"></i>';
+    return html;
+  }
+  function timeAgo(ts) {
+    if (!ts) return '';
+    var diff = Date.now() - new Date(ts).getTime();
+    var mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'just now';
+    if (mins < 60) return mins + 'm ago';
+    var hrs = Math.floor(mins / 60);
+    if (hrs < 24) return hrs + 'h ago';
+    return Math.floor(hrs / 24) + 'd ago';
+  }
+
+  async function loadGuide() {
+    try {
+      var g = await apiClient.get('/guides/' + guideId);
+      renderGuide(g);
+    } catch (err) {
+      document.querySelector('.detail-top').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><i class="bi bi-signpost-2"></i><p>Guide not found.</p><a class="btn btn-primary" href="guides.html" style="margin-top:12px">Browse guides</a></div>';
+    }
+  }
+
+  function renderGuide(g) {
+    document.title = (g.guide_name || 'Guide') + ' · ComfyGo';
+    var idx = (g.guide_id || 0) % portraits.length;
+    var initials = (g.guide_name || '?').split(' ').map(function(w) { return w[0]; }).join('').substring(0, 2).toUpperCase();
+
+    document.getElementById('crumbName').textContent = g.guide_name;
+    document.getElementById('guideAvatar').textContent = initials;
+    document.getElementById('guideName').textContent = g.guide_name;
+    document.getElementById('guideCity').innerHTML = '<i class="bi bi-geo-alt"></i> ' + esc(g.guide_city || 'Multiple locations') + ' · ' + esc(g.guide_language || 'English');
+
+    var avail = g.is_available;
+    var availEl = document.getElementById('guideAvail');
+    availEl.className = 'gp-avail ' + (avail ? 'avail-yes' : 'avail-no');
+    availEl.innerHTML = avail ? '<i class="bi bi-check-circle"></i> Available for booking' : '<i class="bi bi-x-circle"></i> Currently unavailable';
+
+    if (g.avg_rating) {
+      document.getElementById('guideRating').innerHTML = starsHtml(g.avg_rating) + ' <b>' + Number(g.avg_rating).toFixed(1) + '</b> <span style="color:var(--muted)">(' + (g.total_reviews || 0) + ' reviews)</span>';
+    }
+
+    document.getElementById('guideBio').textContent = g.bio || 'This guide has not added a bio yet. Contact them directly to learn more about their services.';
+
+    var specs = (g.specialties || '').split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+    document.getElementById('guideSpecs').innerHTML = specs.length > 0
+      ? specs.map(function(s) { return '<span class="spec-tag">' + esc(s) + '</span>'; }).join('')
+      : '<span class="muted">No specialties listed</span>';
+
+    var regions = (g.regions || g.guide_city || '').split(',').map(function(r) { return r.trim(); }).filter(Boolean);
+    document.getElementById('guideRegions').innerHTML = regions.length > 0
+      ? regions.map(function(r) { return '<span class="region-chip"><i class="bi bi-geo-alt"></i> ' + esc(r) + '</span>'; }).join('')
+      : '<span class="muted">No regions listed</span>';
+
+    var exp = g.guide_experience || 0;
+    document.getElementById('guideStats').innerHTML =
+      '<div class="info-card"><strong>' + exp + '</strong><small>Year' + (exp !== 1 ? 's' : '') + ' experience</small></div>' +
+      '<div class="info-card"><strong>' + (g.total_reviews || 0) + '</strong><small>Total reviews</small></div>' +
+      (g.hourly_rate ? '<div class="info-card"><strong>$' + Number(g.hourly_rate) + '</strong><small>Per hour</small></div>' : '') +
+      (g.daily_rate ? '<div class="info-card"><strong>$' + Number(g.daily_rate) + '</strong><small>Per day</small></div>' : '');
+
+    var reachParts = [];
+    if (g.guide_phone) reachParts.push('Call at ' + g.guide_phone);
+    if (g.whatsapp) reachParts.push('Message on WhatsApp at ' + g.whatsapp);
+    if (g.guide_email) reachParts.push('Email at ' + g.guide_email);
+    if (reachParts.length > 0) {
+      document.getElementById('reachText').textContent = 'You can reach ' + g.guide_name.split(' ')[0] + ' through: ' + reachParts.join(', ') + '. They typically respond within a few hours.';
+    }
+
+    if (g.hourly_rate || g.daily_rate) {
+      document.getElementById('rateDisplay').innerHTML = '<div class="rate-amount">$' + (g.hourly_rate ? Number(g.hourly_rate) : Number(g.daily_rate)) + '</div><small>' + (g.hourly_rate ? 'per hour' : 'per day') + '</small>';
+    } else {
+      document.getElementById('rateDisplay').innerHTML = '<div class="rate-amount" style="font-size:1.2rem">Contact for rates</div><small>Discuss pricing directly</small>';
+    }
+
+    var rateHtml = '';
+    if (g.hourly_rate) rateHtml += '<div class="rate-row"><span>Hourly rate</span><span>$' + Number(g.hourly_rate) + '</span></div>';
+    if (g.daily_rate) rateHtml += '<div class="rate-row"><span>Daily rate</span><span>$' + Number(g.daily_rate) + '</span></div>';
+    rateHtml += '<div class="rate-row"><span>Experience</span><span>' + exp + ' year' + (exp !== 1 ? 's' : '') + '</span></div>';
+    rateHtml += '<div class="rate-row"><span>Languages</span><span>' + esc(g.guide_language || 'English') + '</span></div>';
+    document.getElementById('rateDetails').innerHTML = rateHtml;
+
+    var linksHtml = '';
+    if (g.whatsapp) linksHtml += '<a href="https://wa.me/' + g.whatsapp.replace(/[^0-9]/g, '') + '" target="_blank" class="contact-link whatsapp"><i class="bi bi-whatsapp"></i>WhatsApp ' + esc(g.whatsapp) + '</a>';
+    if (g.guide_phone) linksHtml += '<a href="tel:' + esc(g.guide_phone) + '" class="contact-link phone"><i class="bi bi-telephone"></i>Call ' + esc(g.guide_phone) + '</a>';
+    if (g.guide_email) linksHtml += '<a href="mailto:' + esc(g.guide_email) + '" class="contact-link email"><i class="bi bi-envelope"></i>Email ' + esc(g.guide_email) + '</a>';
+    if (g.facebook) linksHtml += '<a href="' + esc(g.facebook) + '" target="_blank" class="contact-link facebook"><i class="bi bi-facebook"></i>Facebook</a>';
+    if (g.instagram) linksHtml += '<a href="' + esc(g.instagram) + '" target="_blank" class="contact-link instagram"><i class="bi bi-instagram"></i>Instagram</a>';
+    document.getElementById('contactLinks').innerHTML = linksHtml || '<p class="muted" style="text-align:center">No contact info available</p>';
+
+    document.getElementById('bookGuideBtn').href = 'hotels.html?guide=' + g.guide_id;
+
+    loadReviews(g.guide_id);
+  }
+
+  async function loadReviews(guideId) {
+    try {
+      var data = await apiClient.get('/reviews/?entity_type=guide&entity_id=' + guideId + '&limit=20');
+      var reviews = data.items || [];
+      var container = document.getElementById('guideReviews');
+      if (reviews.length === 0) {
+        container.innerHTML = '<h2>Reviews</h2><p class="muted">No reviews yet for this guide.</p>';
+        return;
+      }
+      var html = '<h2>Reviews (' + reviews.length + ')</h2>';
+      reviews.forEach(function(r) {
+        html += '<div class="review-item"><div class="ri-head"><b>' + esc(r.title || 'Review') + '</b><span class="ri-stars">' + starsHtml(r.rating) + '</span></div>' + (r.comment ? '<p>' + esc(r.comment) + '</p>' : '') + '<div class="ri-meta">' + timeAgo(r.created_at) + (r.verified_visit ? ' · <span style="color:var(--forest)"><i class="bi bi-patch-check"></i> Verified</span>' : '') + '</div></div>';
+      });
+      container.innerHTML = html;
+    } catch (e) {
+      document.getElementById('guideReviews').innerHTML = '<h2>Reviews</h2><p class="muted">Could not load reviews.</p>';
+    }
+  }
+
+  loadGuide();
+})();
+</script>
+</body>
+</html>

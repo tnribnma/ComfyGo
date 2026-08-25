@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Flights & Transport · ComfyGo</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .tab-bar{display:flex;gap:0;margin-bottom:28px;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+    .tab-btn{flex:1;padding:14px;text-align:center;font-weight:700;font-size:.92rem;border:0;background:transparent;cursor:pointer;transition:.2s;color:var(--muted)}
+    .tab-btn.active{background:var(--forest);color:#fff}
+    .tab-btn:hover:not(.active){background:var(--mint)}
+    .tab-panel{display:none}
+    .tab-panel.active{display:block}
+
+    .search-bar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px}
+    .search-bar input,.search-bar select{flex:1;min-width:140px;padding:10px 14px;border:1px solid var(--line);border-radius:8px;font-size:.9rem}
+    .search-bar .btn{min-width:120px}
+
+    .flight-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:0;margin-bottom:14px;overflow:hidden;transition:.25s}
+    .flight-card:hover{box-shadow:var(--shadow)}
+    .flight-main{display:flex;align-items:center;padding:20px 22px}
+    .flight-airline{width:140px;flex-shrink:0}
+    .flight-airline .airline-name{font-weight:700;font-size:.92rem}
+    .flight-airline .flight-num{font-size:.8rem;color:var(--muted)}
+    .flight-route{flex:1;display:flex;align-items:center;gap:18px;justify-content:center}
+    .flight-point{text-align:center}
+    .flight-point .time{font-size:1.35rem;font-weight:700}
+    .flight-point .city{font-size:.82rem;color:var(--muted)}
+    .flight-point .airport{font-size:.7rem;color:var(--orange);font-weight:600}
+    .flight-line{flex:1;max-width:200px;position:relative;text-align:center}
+    .flight-line::before{content:'';position:absolute;top:50%;left:0;right:0;height:1px;background:var(--line)}
+    .flight-line span{position:relative;background:#fff;padding:0 8px;font-size:.78rem;color:var(--muted)}
+    .flight-line .dur{font-weight:600;color:var(--forest)}
+    .flight-prices{text-align:right;width:220px;flex-shrink:0}
+    .flight-prices .price-economy{font-size:1.2rem;font-weight:700;color:var(--forest)}
+    .flight-prices .price-label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+    .flight-prices .price-row{display:flex;justify-content:flex-end;gap:14px;margin-top:4px}
+    .flight-prices .price-business{font-size:.85rem;color:var(--orange);font-weight:600}
+    .flight-prices .price-first{font-size:.85rem;color:#8b5cf6;font-weight:600}
+
+    .flight-details{display:none;border-top:1px solid var(--line);background:#f9faf9;padding:18px 22px}
+    .flight-details.open{display:block}
+    .detail-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+    .detail-item{display:flex;flex-direction:column;gap:2px}
+    .detail-item .label{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+    .detail-item .value{font-size:.9rem;font-weight:600;color:var(--ink)}
+    .detail-item .value.highlight{color:var(--forest)}
+
+    .seats-bar{display:flex;align-items:center;gap:12px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+    .seats-bar .seats-info{font-size:.82rem;color:var(--muted)}
+    .seats-bar .seats-info strong{color:var(--forest)}
+    .seats-bar .seats-info.low strong{color:#d94a4a}
+
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;place-items:center}
+    .modal-overlay.show{display:grid}
+    .modal{background:#fff;border-radius:16px;padding:30px;max-width:480px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.2);position:relative}
+    .modal-close{position:absolute;top:14px;right:14px;border:0;background:none;font-size:1.3rem;cursor:pointer;color:var(--muted)}
+    .modal h2{margin:0 0 18px;font-family:'Playfair Display',serif;font-size:1.5rem}
+    .modal .summary{background:var(--mint);border-radius:10px;padding:14px;margin-bottom:18px;font-size:.88rem;line-height:1.7}
+    .modal .summary strong{color:var(--forest)}
+    .modal label{display:block;font-weight:700;font-size:.78rem;margin:14px 0 5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+    .modal select,.modal input[type="number"]{width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:8px;font-size:.9rem;background:#fff}
+    .modal .total-line{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:14px;margin-top:18px;font-weight:700;font-size:1.05rem}
+    .modal .total-line .amount{color:var(--forest);font-size:1.2rem}
+    .modal .btn{width:100%;margin-top:14px}
+
+    .transport-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+    .transport-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;transition:.25s}
+    .transport-card:hover{box-shadow:var(--shadow);transform:translateY(-2px)}
+    .transport-card .type-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+    .type-badge.bus{background:#dbeafe;color:#1d4ed8}
+    .type-badge.train{background:#fef3c7;color:#92400e}
+    .type-badge.taxi{background:#fce7f3;color:#9d174d}
+    .type-badge.car-rental{background:#e0e7ff;color:#4338ca}
+    .transport-card h3{font-size:1.05rem;margin:0 0 4px}
+    .transport-card .route{color:var(--muted);font-size:.85rem;margin-bottom:12px}
+    .transport-card .meta{display:flex;flex-wrap:wrap;gap:12px;font-size:.82rem;color:var(--muted);margin-bottom:14px}
+    .transport-card .meta i{margin-right:4px;color:var(--forest)}
+    .transport-card .features{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+    .transport-card .feat-tag{padding:3px 8px;border-radius:6px;font-size:.72rem;background:var(--mint);color:var(--forest);font-weight:600}
+    .transport-card .card-foot{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:12px}
+    .transport-card .card-foot .price{font-size:1.15rem;font-weight:700;color:var(--forest)}
+    .transport-card .card-foot .price small{font-size:.75rem;color:var(--muted);font-weight:500}
+    .transport-card .card-foot .seats-left{font-size:.78rem;color:var(--muted)}
+    .transport-card .card-foot .seats-left strong{color:var(--forest)}
+    .transport-card .card-foot .seats-left.low strong{color:#d94a4a}
+
+    .filter-pills{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+    .filter-pill{padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:.82rem;font-weight:600;cursor:pointer;transition:.2s}
+    .filter-pill.active{background:var(--forest);color:#fff;border-color:var(--forest)}
+    .filter-pill:hover:not(.active){border-color:var(--forest);color:var(--forest)}
+
+    @media(max-width:800px){
+      .flight-main{flex-direction:column;align-items:stretch;gap:12px}
+      .flight-airline,.flight-prices{text-align:center;width:auto}
+      .flight-prices{text-align:center}
+      .flight-prices .price-row{justify-content:center}
+      .detail-grid{grid-template-columns:1fr 1fr}
+      .transport-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+<nav class="site-nav"><div class="shell nav-inner"><a class="brand" href="index.html"><b class="brand-mark">C</b>ComfyGo</a><div class="nav-links" id="navLinks"><a href="index.html">Explore</a><a href="hotels.html">Hotels</a><a href="packages.html">Packages</a><a href="activities.html">Activities</a><a class="active" href="flights.html">Flights</a><a href="destinations.html">Destinations</a><a href="dining.html">Dining</a><a href="guides.html">Guides</a></div><div class="nav-actions" id="navActions"><a href="login.html">Log in</a><a class="btn btn-ghost" href="register.html">Sign up</a></div><button class="menu-toggle" data-menu><i class="bi bi-list"></i></button></div></nav>
+
+<header class="page-hero"><div class="shell"><span class="eyebrow">GET THERE</span><h1 class="page-title">Flights & Local Transport</h1><p>Book flights and find buses, trains, taxis and car rentals for your journey.</p></div></header>
+
+<main class="shell section" style="padding-top:40px">
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('flights')"><i class="bi bi-airplane"></i> Flights</button>
+    <button class="tab-btn" onclick="switchTab('transport')"><i class="bi bi-bus-front"></i> Local Transport</button>
+  </div>
+
+  <div id="tab-flights" class="tab-panel active">
+    <div class="search-bar">
+      <input type="text" id="from-city" placeholder="From city…">
+      <input type="text" id="to-city" placeholder="To city…">
+      <select id="cabin-filter">
+        <option value="">All classes</option>
+        <option value="Economy">Economy</option>
+        <option value="Business">Business</option>
+        <option value="First">First Class</option>
+      </select>
+      <button class="btn btn-primary" onclick="searchFlights()"><i class="bi bi-search"></i> Search</button>
+    </div>
+    <div id="flights-container" style="min-height:300px"><p class="muted">Loading flights…</p></div>
+  </div>
+
+  <div id="tab-transport" class="tab-panel">
+    <div class="filter-pills">
+      <button class="filter-pill active" onclick="filterTransport('')">All</button>
+      <button class="filter-pill" onclick="filterTransport('Bus')"><i class="bi bi-bus-front"></i> Bus</button>
+      <button class="filter-pill" onclick="filterTransport('Train')"><i class="bi bi-train-front"></i> Train</button>
+      <button class="filter-pill" onclick="filterTransport('Taxi')"><i class="bi bi-taxi-front"></i> Taxi</button>
+      <button class="filter-pill" onclick="filterTransport('Car Rental')"><i class="bi bi-car-front"></i> Car Rental</button>
+    </div>
+    <div class="search-bar">
+      <input type="text" id="t-from-city" placeholder="From city…">
+      <input type="text" id="t-to-city" placeholder="To city…">
+      <button class="btn btn-primary" onclick="searchTransport()"><i class="bi bi-search"></i> Search</button>
+    </div>
+    <div id="transport-container" style="min-height:300px"><p class="muted">Loading transport options…</p></div>
+  </div>
+</main>
+
+<div class="modal-overlay" id="booking-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <h2 id="modal-title">Book Your Trip</h2>
+    <div class="summary" id="modal-summary"></div>
+    <label>Number of Seats</label>
+    <input type="number" id="modal-seats" value="1" min="1" max="9" onchange="updateModalTotal()">
+    <div class="total-line">
+      <span>Total</span>
+      <span class="amount" id="modal-total">$0</span>
+    </div>
+    <button class="btn btn-primary" id="modal-book-btn" onclick="confirmBooking()"><i class="bi bi-check-circle"></i> Confirm Booking</button>
+    <p id="modal-error" style="color:#d94a4a;font-size:.85rem;margin-top:10px;display:none"></p>
+  </div>
+</div>
+
+<footer class="footer"><div class="shell"><div class="footer-grid"><div><a class="brand" href="index.html"><b class="brand-mark">C</b>ComfyGo</a><p>Thoughtful stays and real local experiences.</p></div><div><h4>Explore</h4><a href="hotels.html">Hotels</a><a href="flights.html">Flights</a><a href="destinations.html">Destinations</a></div><div><h4>Support</h4><a href="#">Help</a><a href="#">Privacy</a><a href="#">Terms</a></div></div><div class="footer-bottom">© 2026 ComfyGo.</div></div></footer>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/utils/storage.js?v=5"></script>
+<script src="js/api/client.js?v=5"></script>
+<script src="js/ui.js?v=5"></script>
+<script>
+function escapeHtml(t){const d=document.createElement('div');d.textContent=t||'';return d.innerHTML}
+
+let allFlights=[];
+let allTransport=[];
+let currentTransportType='';
+let bookingContext=null;
+
+function switchTab(tab){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  if(tab==='flights'){
+    document.querySelectorAll('.tab-btn')[0].classList.add('active');
+    document.getElementById('tab-flights').classList.add('active');
+  }else{
+    document.querySelectorAll('.tab-btn')[1].classList.add('active');
+    document.getElementById('tab-transport').classList.add('active');
+  }
+}
+
+document.addEventListener('DOMContentLoaded',async()=>{
+  try{
+    const data=await apiClient.get('/flights/?limit=200');
+    allFlights=data.items||[];
+    renderFlights(allFlights);
+  }catch(e){document.getElementById('flights-container').innerHTML='<p class="muted">Could not load flights.</p>'}
+
+  try{
+    const data=await apiClient.get('/local-transport/?limit=200');
+    allTransport=data.items||[];
+    renderTransport(allTransport);
+  }catch(e){document.getElementById('transport-container').innerHTML='<p class="muted">Could not load transport options.</p>'}
+});
+
+function renderFlights(flights){
+  const c=document.getElementById('flights-container');
+  if(!flights.length){c.innerHTML='<p class="muted">No flights found. Try a different search.</p>';return}
+  c.innerHTML=flights.map(f=>{
+    const seats=f.available_seats||0;
+    const total=f.total_seats||180;
+    const pct=Math.round((seats/total)*100);
+    const low=seats<20;
+    return `
+    <div class="flight-card" id="flight-${f.flight_id}">
+      <div class="flight-main">
+        <div class="flight-airline">
+          <div class="airline-name">${escapeHtml(f.airline)}</div>
+          <div class="flight-num">${escapeHtml(f.flight_number)}</div>
+        </div>
+        <div class="flight-route">
+          <div class="flight-point">
+            <div class="time">${escapeHtml(f.departure_time)}</div>
+            <div class="city">${escapeHtml(f.departure_city)}</div>
+            ${f.departure_airport?`<div class="airport">${escapeHtml(f.departure_airport)}</div>`:''}
+          </div>
+          <div class="flight-line">
+            <span class="dur">${escapeHtml(f.duration)}</span>
+            <span>${escapeHtml(f.stops)}</span>
+          </div>
+          <div class="flight-point">
+            <div class="time">${escapeHtml(f.arrival_time)}</div>
+            <div class="city">${escapeHtml(f.arrival_city)}</div>
+            ${f.arrival_airport?`<div class="airport">${escapeHtml(f.arrival_airport)}</div>`:''}
+          </div>
+        </div>
+        <div class="flight-prices">
+          <div class="price-label">from</div>
+          <div class="price-economy">$${f.price_economy}</div>
+          <div class="price-row">
+            ${f.price_business?`<span class="price-business">Biz $${f.price_business}</span>`:''}
+            ${f.price_first_class?`<span class="price-first">1st $${f.price_first_class}</span>`:''}
+          </div>
+        </div>
+      </div>
+      <div class="seats-bar" style="padding:0 22px 12px">
+        <div class="seats-info ${low?'low':''}">
+          <strong>${seats}</strong> of ${total} seats left (${pct}% available)
+        </div>
+        <div style="flex:1">
+          <div style="height:6px;background:var(--line);border-radius:3px;overflow:hidden">
+            <div style="height:100%;width:${pct}%;background:${low?'#d94a4a':'var(--forest)'};border-radius:3px;transition:width .3s"></div>
+          </div>
+        </div>
+        <button class="btn btn-primary" style="padding:8px 18px;font-size:.82rem" onclick="openFlightBooking(${f.flight_id})">
+          <i class="bi bi-ticket-perforated"></i> Book
+        </button>
+      </div>
+      <div class="flight-details" id="details-${f.flight_id}">
+        <div class="detail-grid">
+          <div class="detail-item"><span class="label">Airline</span><span class="value">${escapeHtml(f.airline)}</span></div>
+          <div class="detail-item"><span class="label">Flight</span><span class="value">${escapeHtml(f.flight_number)}</span></div>
+          <div class="detail-item"><span class="label">Departure</span><span class="value">${escapeHtml(f.departure_city)}${f.departure_airport?' ('+escapeHtml(f.departure_airport)+')':''}</span></div>
+          <div class="detail-item"><span class="label">Arrival</span><span class="value">${escapeHtml(f.arrival_city)}${f.arrival_airport?' ('+escapeHtml(f.arrival_airport)+')':''}</span></div>
+          <div class="detail-item"><span class="label">Departure Time</span><span class="value">${escapeHtml(f.departure_time)}</span></div>
+          <div class="detail-item"><span class="label">Arrival Time</span><span class="value">${escapeHtml(f.arrival_time)}</span></div>
+          <div class="detail-item"><span class="label">Duration</span><span class="value highlight">${escapeHtml(f.duration)}</span></div>
+          <div class="detail-item"><span class="label">Stops</span><span class="value">${escapeHtml(f.stops)}</span></div>
+          <div class="detail-item"><span class="label">Cabin Class</span><span class="value">${escapeHtml(f.cabin_class)}</span></div>
+          <div class="detail-item"><span class="label">Baggage</span><span class="value">${escapeHtml(f.baggage_allowance||'Standard')}</span></div>
+          <div class="detail-item"><span class="label">Economy Price</span><span class="value highlight">$${f.price_economy}/person</span></div>
+          <div class="detail-item"><span class="label">Business Price</span><span class="value">${f.price_business?'$'+f.price_business+'/person':'N/A'}</span></div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function searchFlights(){
+  const from=document.getElementById('from-city').value.toLowerCase();
+  const to=document.getElementById('to-city').value.toLowerCase();
+  const cabin=document.getElementById('cabin-filter').value.toLowerCase();
+  const filtered=allFlights.filter(f=>{
+    const matchFrom=!from||f.departure_city.toLowerCase().includes(from);
+    const matchTo=!to||f.arrival_city.toLowerCase().includes(to);
+    return matchFrom&&matchTo;
+  });
+  renderFlights(filtered);
+}
+
+function renderTransport(items){
+  const c=document.getElementById('transport-container');
+  if(!items.length){c.innerHTML='<p class="muted">No transport options found.</p>';return}
+  const icons={'Bus':'bi-bus-front','Train':'bi-train-front','Taxi':'bi-taxi-front','Car Rental':'bi-car-front'};
+  c.innerHTML='<div class="transport-grid">'+items.map(t=>{
+    const seats=t.available_seats||0;
+    const total=t.total_seats||40;
+    const low=seats<5;
+    const typeClass=(t.transport_type||'').toLowerCase().replace(/\s+/g,'-');
+    const features=(t.features||'').split(',').filter(Boolean);
+    return `
+    <div class="transport-card">
+      <div class="type-badge ${typeClass}"><i class="bi ${icons[t.transport_type]||'bi-geo-alt'}"></i> ${escapeHtml(t.transport_type)}</div>
+      <h3>${escapeHtml(t.provider_name)}</h3>
+      <div class="route">${escapeHtml(t.route_name||t.departure_city+' → '+t.arrival_city)}</div>
+      <div class="meta">
+        ${t.departure_time?`<span><i class="bi bi-clock"></i> ${escapeHtml(t.departure_time)}${t.arrival_time?' → '+escapeHtml(t.arrival_time):''}</span>`:''}
+        ${t.duration?`<span><i class="bi bi-hourglass-split"></i> ${escapeHtml(t.duration)}</span>`:''}
+        ${t.frequency?`<span><i class="bi bi-arrow-repeat"></i> ${escapeHtml(t.frequency)}</span>`:''}
+      </div>
+      ${features.length?`<div class="features">${features.map(f=>`<span class="feat-tag">${escapeHtml(f.trim())}</span>`).join('')}</div>`:''}
+      <div class="card-foot">
+        <div>
+          <div class="price">$${t.price_per_person} <small>/ person</small></div>
+          <div class="seats-left ${low?'low':''}"><strong>${seats}</strong> seats left</div>
+        </div>
+        <button class="btn btn-primary" style="padding:8px 16px;font-size:.82rem" onclick="openTransportBooking(${t.transport_id})">
+          <i class="bi bi-ticket-perforated"></i> Book
+        </button>
+      </div>
+    </div>`;
+  }).join('')+'</div>';
+}
+
+function filterTransport(type){
+  currentTransportType=type;
+  document.querySelectorAll('.filter-pill').forEach(b=>b.classList.remove('active'));
+  event.target.closest('.filter-pill').classList.add('active');
+  const filtered=type?allTransport.filter(t=>t.transport_type===type):allTransport;
+  renderTransport(filtered);
+}
+
+function searchTransport(){
+  const from=document.getElementById('t-from-city').value.toLowerCase();
+  const to=document.getElementById('t-to-city').value.toLowerCase();
+  let filtered=allTransport;
+  if(from) filtered=filtered.filter(t=>t.departure_city.toLowerCase().includes(from));
+  if(to) filtered=filtered.filter(t=>t.arrival_city.toLowerCase().includes(to));
+  if(currentTransportType) filtered=filtered.filter(t=>t.transport_type===currentTransportType);
+  renderTransport(filtered);
+}
+
+function openFlightBooking(flightId){
+  const f=allFlights.find(x=>x.flight_id===flightId);
+  if(!f)return;
+  bookingContext={type:'flight',id:flightId,data:f};
+  const modal=document.getElementById('booking-modal');
+  document.getElementById('modal-title').textContent='Book Flight';
+  document.getElementById('modal-summary').innerHTML=`
+    <strong>${escapeHtml(f.airline)}</strong> · ${escapeHtml(f.flight_number)}<br>
+    ${escapeHtml(f.departure_city)} → ${escapeHtml(f.arrival_city)}<br>
+    ${escapeHtml(f.departure_time)} → ${escapeHtml(f.arrival_time)} · ${escapeHtml(f.duration)} · ${escapeHtml(f.stops)}<br>
+    Baggage: ${escapeHtml(f.baggage_allowance||'Standard')}
+  `;
+  document.getElementById('modal-seats').value=1;
+  document.getElementById('modal-seats').max=9;
+  updateModalTotal();
+  modal.classList.add('show');
+}
+
+function openTransportBooking(transportId){
+  const t=allTransport.find(x=>x.transport_id===transportId);
+  if(!t)return;
+  bookingContext={type:'transport',id:transportId,data:t};
+  const modal=document.getElementById('booking-modal');
+  document.getElementById('modal-title').textContent='Book Transport';
+  document.getElementById('modal-summary').innerHTML=`
+    <strong>${escapeHtml(t.transport_type)}</strong> · ${escapeHtml(t.provider_name)}<br>
+    ${escapeHtml(t.route_name||t.departure_city+' → '+t.arrival_city)}<br>
+    ${t.departure_time?escapeHtml(t.departure_time)+' → '+escapeHtml(t.arrival_time)+' · ':''}${t.duration?escapeHtml(t.duration)+' · ':''}${escapeHtml(t.frequency||'Available')}<br>
+    ${t.features?'Features: '+escapeHtml(t.features):''}
+  `;
+  document.getElementById('modal-seats').value=1;
+  document.getElementById('modal-seats').max=10;
+  updateModalTotal();
+  modal.classList.add('show');
+}
+
+function updateModalTotal(){
+  if(!bookingContext)return;
+  const seats=parseInt(document.getElementById('modal-seats').value)||1;
+  const price=bookingContext.type==='flight'?parseFloat(bookingContext.data.price_economy):parseFloat(bookingContext.data.price_per_person);
+  document.getElementById('modal-total').textContent='$'+(price*seats).toFixed(2);
+}
+
+function closeModal(){
+  document.getElementById('booking-modal').classList.remove('show');
+  bookingContext=null;
+  document.getElementById('modal-error').style.display='none';
+}
+
+async function confirmBooking(){
+  if(!bookingContext)return;
+  const btn=document.getElementById('modal-book-btn');
+  const errEl=document.getElementById('modal-error');
+  errEl.style.display='none';
+  btn.disabled=true;
+  btn.innerHTML='<i class="bi bi-hourglass-split"></i> Processing…';
+
+  try{
+    const seats=parseInt(document.getElementById('modal-seats').value)||1;
+    let result;
+    if(bookingContext.type==='flight'){
+      result=await apiClient.post(`/flights/${bookingContext.id}/book`,{seats_to_book:seats,cabin_class:'Economy'});
+    }else{
+      result=await apiClient.post(`/local-transport/${bookingContext.id}/book`,{seats_to_book:seats});
+    }
+    btn.innerHTML='<i class="bi bi-check-circle"></i> Booked!';
+    btn.style.background='#278363';
+
+    if(bookingContext.type==='flight'){
+      const f=allFlights.find(x=>x.flight_id===bookingContext.id);
+      if(f)f.available_seats=result.remaining_seats;
+    }else{
+      const t=allTransport.find(x=>x.transport_id===bookingContext.id);
+      if(t)t.available_seats=result.remaining_seats;
+    }
+
+    showToast(`Booked ${seats} seat(s) — Total: $${result.total_price}`);
+    setTimeout(()=>{closeModal();renderFlights(allFlights);renderTransport(allTransport);},1500);
+  }catch(e){
+    errEl.textContent=e.message||'Booking failed. Please try again.';
+    errEl.style.display='block';
+    btn.disabled=false;
+    btn.innerHTML='<i class="bi bi-check-circle"></i> Confirm Booking';
+  }
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(window._toastT);window._toastT=setTimeout(()=>t.classList.remove('show'),3500);
+}
+</script>
+</body>
+</html>

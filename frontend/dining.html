@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Dining · ComfyGo</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .rest-hero-bg{background:linear-gradient(90deg,rgba(11,35,31,.72),rgba(11,35,31,.25)),url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=2200&q=85') center/cover no-repeat;padding:100px 0 60px;color:#fff}
+    .rest-hero-bg h1{font-family:'Playfair Display',Georgia,serif;font-size:clamp(2.4rem,5vw,3.8rem);margin:12px 0 10px}
+    .rest-hero-bg p{color:#ffffffcc;font-size:1.05rem}
+
+    .dining-search{max-width:820px;margin:-28px auto 0;padding:0 24px;position:relative;z-index:3}
+    .dining-search-bar{display:flex;background:#fff;border-radius:14px;box-shadow:0 14px 42px rgba(18,48,42,.12);overflow:hidden}
+    .dining-search-bar input{flex:1;border:0;padding:16px 20px;font-size:.95rem;outline:0}
+    .dining-search-bar button{background:var(--forest);color:#fff;border:0;padding:16px 28px;font-weight:700;font-size:.95rem;cursor:pointer;transition:.2s}
+    .dining-search-bar button:hover{background:var(--forest-dark)}
+
+    .dining-stats{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin:35px 0 0}
+    .dining-stat{text-align:center;padding:14px 22px;background:#fff;border:1px solid var(--line);border-radius:12px;min-width:110px}
+    .dining-stat strong{display:block;font-size:1.5rem;color:var(--forest)}
+    .dining-stat span{font-size:.75rem;color:var(--muted);font-weight:600}
+
+    .cuisine-chips{display:flex;gap:10px;flex-wrap:wrap;margin:30px 0;justify-content:center}
+    .cuisine-chip{padding:8px 18px;border-radius:999px;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:.85rem;font-weight:600;transition:.2s;display:flex;align-items:center;gap:6px}
+    .cuisine-chip.active{background:var(--forest);color:#fff;border-color:var(--forest)}
+    .cuisine-chip:hover:not(.active){border-color:var(--forest);color:var(--forest)}
+    .cuisine-chip i{font-size:1rem}
+
+    .filter-row{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0;align-items:center}
+    .filter-group{display:flex;gap:6px;flex-wrap:wrap}
+    .filter-label{font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center}
+    .filter-pill{padding:6px 14px;border-radius:999px;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:.8rem;font-weight:600;transition:.2s}
+    .filter-pill.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+    .filter-pill:hover:not(.active){border-color:var(--forest);color:var(--forest)}
+    .filter-divider{width:1px;height:28px;background:var(--line);margin:0 4px}
+
+    .rest-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+    .rest-card{display:flex;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:.3s;cursor:pointer;position:relative}
+    .rest-card:hover{box-shadow:var(--shadow);transform:translateY(-3px)}
+    .rest-img{width:220px;min-height:220px;flex-shrink:0;position:relative}
+    .rest-img img{width:100%;height:100%;object-fit:cover}
+    .rest-price-badge{position:absolute;top:12px;left:12px;padding:4px 10px;border-radius:999px;font-size:.75rem;font-weight:700;background:rgba(0,0,0,.6);color:#fff;backdrop-filter:blur(4px)}
+    .rest-featured-badge{position:absolute;top:12px;right:12px;padding:4px 10px;border-radius:999px;font-size:.7rem;font-weight:700;background:var(--orange);color:#fff}
+    .rest-body{padding:20px;flex:1;display:flex;flex-direction:column}
+    .rest-body h3{font-size:1.1rem;margin:0 0 4px}
+    .rest-body .cuisine{font-size:.82rem;color:var(--forest);font-weight:600;margin-bottom:6px}
+    .rest-body .rest-meta{display:flex;flex-wrap:wrap;gap:8px;font-size:.78rem;color:var(--muted);margin-bottom:8px}
+    .rest-body .rest-meta span{display:flex;align-items:center;gap:3px}
+    .rest-body p{font-size:.85rem;color:var(--muted);line-height:1.6;margin:0 0 10px;flex:1}
+    .dish-list{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+    .dish-tag{padding:3px 8px;border-radius:999px;font-size:.7rem;background:#fff0cf;color:#9a6716;font-weight:600}
+    .rest-footer{display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid var(--line)}
+    .feature-badges{display:flex;gap:5px;flex-wrap:wrap}
+    .feat-badge{padding:3px 8px;border-radius:999px;font-size:.68rem;font-weight:700}
+    .feat-veg{background:#e2f4ea;color:#177457}
+    .feat-outdoor{background:#e0f0ff;color:#1a6fb5}
+    .feat-delivery{background:#f0e8ff;color:#6b3fa0}
+    .feat-reserve{background:#fff0cf;color:#9a6716}
+    .feat-wifi{background:#e8f4ff;color:#2563eb}
+    .feat-parking{background:#f0f0f0;color:#555}
+    .feat-music{background:#fde8e8;color:#c0392b}
+    .rest-contact{font-size:.78rem;color:var(--muted);margin-top:6px;display:flex;gap:12px;flex-wrap:wrap}
+    .rest-contact a{color:var(--forest);font-weight:600}
+
+    .detail-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;align-items:center;justify-content:center;padding:24px}
+    .detail-overlay.open{display:flex}
+    .detail-modal{background:#fff;border-radius:18px;max-width:800px;width:100%;max-height:90vh;overflow-y:auto;position:relative}
+    .detail-close{position:absolute;top:16px;right:16px;border:0;background:#fff;border-radius:50%;width:36px;height:36px;font-size:1.2rem;cursor:pointer;z-index:10;box-shadow:0 2px 10px rgba(0,0,0,.15);display:grid;place-items:center}
+    .detail-gallery{display:grid;grid-template-columns:2fr 1fr;grid-template-rows:220px 220px;gap:8px;padding:8px}
+    .detail-gallery img{width:100%;height:100%;object-fit:cover;border-radius:10px}
+    .detail-gallery img:first-child{grid-row:span 2}
+    .detail-content{padding:28px 32px 32px}
+    .detail-content h2{font-family:'Playfair Display',Georgia,serif;font-size:1.8rem;margin:0 0 6px}
+    .detail-content .detail-cuisine{color:var(--forest);font-weight:600;font-size:.9rem;margin-bottom:12px}
+    .detail-content .detail-meta{display:flex;flex-wrap:wrap;gap:14px;font-size:.88rem;color:var(--muted);margin-bottom:16px}
+    .detail-content .detail-meta span{display:flex;align-items:center;gap:4px}
+    .detail-content p{color:var(--muted);line-height:1.7;margin-bottom:20px}
+    .detail-section-title{font-size:1rem;font-weight:700;margin:22px 0 10px;display:flex;align-items:center;gap:8px}
+    .detail-features{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+    .detail-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+    .detail-info-item{display:flex;align-items:center;gap:8px;font-size:.88rem;color:var(--muted)}
+    .detail-info-item i{color:var(--forest);font-size:1rem}
+    .detail-dishes{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+
+    .review-section{margin-top:24px;border-top:1px solid var(--line);padding-top:20px}
+    .review-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+    .review-header h3{font-size:1rem;margin:0}
+    .review-rating-big{font-size:2rem;font-weight:700;color:var(--forest)}
+    .review-rating-big small{font-size:.85rem;color:var(--muted);font-weight:500}
+    .review-item{padding:14px 0;border-bottom:1px solid var(--line)}
+    .review-item:last-child{border-bottom:none}
+    .review-item .review-stars{color:var(--gold);font-size:.85rem;margin-bottom:4px}
+    .review-item .review-title{font-weight:700;font-size:.9rem;margin-bottom:2px}
+    .review-item .review-text{font-size:.84rem;color:var(--muted);line-height:1.6}
+    .review-item .review-meta{font-size:.75rem;color:var(--muted);margin-top:4px}
+
+    .no-results{text-align:center;padding:60px 20px;color:var(--muted)}
+    .no-results i{font-size:3rem;color:var(--line);margin-bottom:12px;display:block}
+
+    @media(max-width:800px){
+      .rest-grid{grid-template-columns:1fr}
+      .rest-card{flex-direction:column}
+      .rest-img{width:100%;height:180px}
+      .detail-gallery{grid-template-columns:1fr;grid-template-rows:200px}
+      .detail-gallery img:first-child{grid-row:auto}
+      .detail-content{padding:20px}
+      .detail-info-grid{grid-template-columns:1fr}
+      .dining-search-bar{flex-direction:column}
+      .dining-search-bar button{padding:12px}
+    }
+  </style>
+</head>
+<body>
+<nav class="site-nav">
+  <div class="shell nav-inner">
+    <a class="brand" href="index.html"><b class="brand-mark">C</b>ComfyGo</a>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html">Explore</a>
+      <a href="hotels.html">Hotels</a>
+      <a href="packages.html">Packages</a>
+      <a href="activities.html">Activities</a>
+      <a href="flights.html">Flights</a>
+      <a href="destinations.html">Destinations</a>
+      <a class="active" href="dining.html">Dining</a>
+      <a href="guides.html">Guides</a>
+    </div>
+    <div class="nav-actions" id="navActions">
+      <a href="login.html">Log in</a>
+      <a class="btn btn-ghost" href="register.html">Sign up</a>
+    </div>
+    <button class="menu-toggle" data-menu><i class="bi bi-list"></i></button>
+  </div>
+</nav>
+
+<div class="rest-hero-bg">
+  <div class="shell" style="text-align:center">
+    <span class="eyebrow" style="color:#ffc09d">TASTE THE JOURNEY</span>
+    <h1>Restaurants & Dining</h1>
+    <p>Discover the best restaurants, cafés, and street food at every destination.</p>
+  </div>
+</div>
+
+<div class="dining-search">
+  <div class="dining-search-bar">
+    <input type="text" id="search-input" placeholder="Search by name, cuisine, or destination...">
+    <button onclick="applySearch()"><i class="bi bi-search"></i> Search</button>
+  </div>
+  <div class="dining-stats" id="dining-stats"></div>
+</div>
+
+<main class="shell section" id="rest-container" style="min-height:400px">
+  <p class="muted" style="text-align:center">Loading restaurants…</p>
+</main>
+
+<div class="detail-overlay" id="detail-overlay" onclick="if(event.target===this)closeDetail()">
+  <div class="detail-modal" id="detail-modal">
+    <button class="detail-close" onclick="closeDetail()"><i class="bi bi-x-lg"></i></button>
+    <div id="detail-body"></div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="shell">
+    <div class="footer-grid">
+      <div><a class="brand" href="index.html"><b class="brand-mark">C</b>ComfyGo</a><p>Thoughtful stays and real local experiences.</p></div>
+      <div><h4>Explore</h4><a href="hotels.html">Hotels</a><a href="dining.html">Dining</a><a href="destinations.html">Destinations</a></div>
+      <div><h4>Support</h4><a href="#">Help</a><a href="#">Privacy</a><a href="#">Terms</a></div>
+    </div>
+    <div class="footer-bottom">© 2026 ComfyGo.</div>
+  </div>
+</footer>
+
+<script src="js/utils/storage.js?v=6"></script>
+<script src="js/api/client.js?v=6"></script>
+<script src="js/ui.js?v=6"></script>
+<script>
+var ALL_RESTAURANTS = [];
+var CURRENT_FILTERS = { cuisine: 'all', destination: 'all', price: 'all', features: [] };
+
+var REST_IMAGES = [
+  'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=85',
+  'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=600&q=85',
+  'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=85',
+  'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=85',
+  'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=600&q=85',
+  'https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?auto=format&fit=crop&w=600&q=85',
+  'https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=600&q=85',
+  'https://images.unsplash.com/photo-1537047902294-62a40c20a6ae?auto=format&fit=crop&w=600&q=85',
+];
+
+var CUISINE_ICONS = {
+  'Italian':'bi-pizza','Indian':'bi-fire','Thai':'bi-cup-hot','Japanese':'bi-cup-straw',
+  'Chinese':'bi-egg-fried','Mexican':'bi-emoji-smile','French':'bi-gem',
+  'Seafood':'bi-water','Vegan':'bi-leaf','Mediterranean':'bi-sun',
+  'Korean':'bi-emoji-laughing','American':'bi-flag','Middle Eastern':'bi-moon'
+};
+
+function escapeHtml(t){var d=document.createElement('div');d.textContent=t||'';return d.innerHTML}
+function parseJson(s){try{return JSON.parse(s)}catch{return[]}}
+function starsHtml(r){var n=Math.round(r||0);return '<i class="bi bi-star-fill" style="color:var(--gold)"></i>'.repeat(n)+'<i class="bi bi-star" style="color:var(--gold)"></i>'.repeat(5-n)}
+
+document.addEventListener('DOMContentLoaded', async function(){
+  try{
+    var data = await apiClient.get('/restaurants/?limit=200');
+    ALL_RESTAURANTS = data.items || [];
+  }catch(e){
+    ALL_RESTAURANTS = [];
+  }
+
+  if(!ALL_RESTAURANTS.length){
+    document.getElementById('rest-container').innerHTML='<div class="no-results"><i class="bi bi-shop"></i><p>No restaurants available yet.</p></div>';
+    return;
+  }
+
+  renderStats();
+  renderFilters();
+  renderGrid(ALL_RESTAURANTS);
+
+  document.getElementById('search-input').addEventListener('keyup', function(e){
+    if(e.key==='Enter') applySearch();
+  });
+});
+
+function renderStats(){
+  var el = document.getElementById('dining-stats');
+  var total = ALL_RESTAURANTS.length;
+  var cuisines = new Set(ALL_RESTAURANTS.map(function(r){return r.cuisine}));
+  var destinations = new Set(ALL_RESTAURANTS.map(function(r){return r.destination}));
+  var avgRating = ALL_RESTAURANTS.reduce(function(s,r){return s+(parseFloat(r.rating)||0)},0)/total;
+  el.innerHTML =
+    '<div class="dining-stat"><strong>'+total+'</strong><span>Restaurants</span></div>' +
+    '<div class="dining-stat"><strong>'+cuisines.size+'</strong><span>Cuisines</span></div>' +
+    '<div class="dining-stat"><strong>'+destinations.size+'</strong><span>Destinations</span></div>' +
+    '<div class="dining-stat"><strong>'+(avgRating?avgRating.toFixed(1):'-')+'</strong><span>Avg Rating</span></div>';
+}
+
+function renderFilters(){
+  var cuisines = [...new Set(ALL_RESTAURANTS.map(function(r){return r.cuisine}))].sort();
+  var destinations = [...new Set(ALL_RESTAURANTS.map(function(r){return r.destination}))].sort();
+  var prices = ['all','$','$$','$$$','$$$$'];
+  var priceLabels = {'all':'All','$':'$','$$':'$$','$$$':'$$','$$$$':'$$$$'};
+
+  var container = document.getElementById('rest-container');
+  var filterHtml =
+    '<div class="cuisine-chips" id="cuisine-chips">' +
+      '<button class="cuisine-chip active" onclick="filterCuisine(\'all\',this)"><i class="bi bi-grid"></i> All</button>' +
+      cuisines.map(function(c){
+        var icon = CUISINE_ICONS[c] || 'bi-egg-fried';
+        return '<button class="cuisine-chip" onclick="filterCuisine(\''+escapeHtml(c)+'\',this)"><i class="bi '+icon+'"></i> '+escapeHtml(c)+'</button>';
+      }).join('') +
+    '</div>' +
+    '<div class="filter-row">' +
+      '<span class="filter-label"><i class="bi bi-geo-alt"></i> Destination:</span>' +
+      '<div class="filter-group" id="dest-filters">' +
+        '<button class="filter-pill active" onclick="filterDestination(\'all\',this)">All</button>' +
+        destinations.map(function(d){
+          return '<button class="filter-pill" onclick="filterDestination(\''+escapeHtml(d)+'\',this)">'+escapeHtml(d)+'</button>';
+        }).join('') +
+      '</div>' +
+      '<div class="filter-divider"></div>' +
+      '<span class="filter-label"><i class="bi bi-cash-stack"></i> Price:</span>' +
+      '<div class="filter-group" id="price-filters">' +
+        prices.map(function(p){
+          return '<button class="filter-pill'+(p==='all'?' active':'')+'" onclick="filterPrice(\''+p+'\',this)">'+priceLabels[p]+'</button>';
+        }).join('') +
+      '</div>' +
+      '<div class="filter-divider"></div>' +
+      '<span class="filter-label">Features:</span>' +
+      '<div class="filter-group">' +
+        '<button class="filter-pill" onclick="toggleFeature(\'vegetarian\',this)" data-feat="vegetarian"><i class="bi bi-leaf"></i> Veg</button>' +
+        '<button class="filter-pill" onclick="toggleFeature(\'outdoor\',this)" data-feat="outdoor"><i class="bi bi-sun"></i> Outdoor</button>' +
+        '<button class="filter-pill" onclick="toggleFeature(\'delivery\',this)" data-feat="delivery"><i class="bi bi-truck"></i> Delivery</button>' +
+        '<button class="filter-pill" onclick="toggleFeature(\'reservations\',this)" data-feat="reservations"><i class="bi bi-calendar-check"></i> Reservations</button>' +
+        '<button class="filter-pill" onclick="toggleFeature(\'wifi\',this)" data-feat="wifi"><i class="bi bi-wifi"></i> Wifi</button>' +
+      '</div>' +
+    '</div>' +
+    '<div id="rest-grid" class="rest-grid" style="margin-top:20px"></div>';
+
+  container.innerHTML = filterHtml;
+}
+
+function applySearch(){
+  var q = document.getElementById('search-input').value.toLowerCase().trim();
+  if(!q){renderGrid(ALL_RESTAURANTS);return;}
+  var filtered = ALL_RESTAURANTS.filter(function(r){
+    return (r.restaurant_name||'').toLowerCase().indexOf(q)!==-1 ||
+           (r.cuisine||'').toLowerCase().indexOf(q)!==-1 ||
+           (r.destination||'').toLowerCase().indexOf(q)!==-1 ||
+           (r.description||'').toLowerCase().indexOf(q)!==-1;
+  });
+  renderGrid(filtered);
+}
+
+function filterCuisine(cuisine, btn){
+  document.querySelectorAll('#cuisine-chips .cuisine-chip').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  CURRENT_FILTERS.cuisine = cuisine;
+  applyFilters();
+}
+
+function filterDestination(dest, btn){
+  document.querySelectorAll('#dest-filters .filter-pill').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  CURRENT_FILTERS.destination = dest;
+  applyFilters();
+}
+
+function filterPrice(price, btn){
+  document.querySelectorAll('#price-filters .filter-pill').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  CURRENT_FILTERS.price = price;
+  applyFilters();
+}
+
+function toggleFeature(feat, btn){
+  btn.classList.toggle('active');
+  var idx = CURRENT_FILTERS.features.indexOf(feat);
+  if(idx===-1) CURRENT_FILTERS.features.push(feat);
+  else CURRENT_FILTERS.features.splice(idx,1);
+  applyFilters();
+}
+
+function applyFilters(){
+  var f = CURRENT_FILTERS;
+  var filtered = ALL_RESTAURANTS.filter(function(r){
+    if(f.cuisine!=='all' && r.cuisine!==f.cuisine) return false;
+    if(f.destination!=='all' && r.destination!==f.destination) return false;
+    if(f.price!=='all' && r.price_range!==f.price) return false;
+    if(f.features.indexOf('vegetarian')!==-1 && !r.vegetarian_options) return false;
+    if(f.features.indexOf('outdoor')!==-1 && !r.outdoor_seating) return false;
+    if(f.features.indexOf('delivery')!==-1 && !r.delivery_available) return false;
+    if(f.features.indexOf('reservations')!==-1 && !r.accepts_reservations) return false;
+    if(f.features.indexOf('wifi')!==-1 && !r.wifi) return false;
+    return true;
+  });
+  renderGrid(filtered);
+}
+
+function renderGrid(restaurants){
+  var grid = document.getElementById('rest-grid');
+  if(!restaurants.length){
+    grid.innerHTML = '<div class="no-results" style="grid-column:1/-1"><i class="bi bi-search"></i><p>No restaurants match your filters.</p></div>';
+    return;
+  }
+  grid.innerHTML = restaurants.map(function(r,i){return renderCard(r,i)}).join('');
+}
+
+function getRestImage(r,i){
+  var imgs = parseJson(r.images);
+  if(imgs.length) return imgs[i%imgs.length];
+  if(r.image) return r.image;
+  return REST_IMAGES[i%REST_IMAGES.length];
+}
+
+function renderCard(r,i){
+  var dishes = parseJson(r.popular_dishes);
+  var img = getRestImage(r,i);
+  var stars = starsHtml(r.rating);
+  var badges = '';
+  if(r.vegetarian_options) badges += '<span class="feat-badge feat-veg"><i class="bi bi-leaf"></i> Veg</span>';
+  if(r.outdoor_seating) badges += '<span class="feat-badge feat-outdoor"><i class="bi bi-sun"></i> Outdoor</span>';
+  if(r.delivery_available) badges += '<span class="feat-badge feat-delivery"><i class="bi bi-truck"></i> Delivery</span>';
+  if(r.accepts_reservations) badges += '<span class="feat-badge feat-reserve"><i class="bi bi-calendar-check"></i> Reserve</span>';
+  if(r.wifi) badges += '<span class="feat-badge feat-wifi"><i class="bi bi-wifi"></i> Wifi</span>';
+  if(r.parking) badges += '<span class="feat-badge feat-parking"><i class="bi bi-p-circle"></i> Parking</span>';
+  if(r.live_music) badges += '<span class="feat-badge feat-music"><i class="bi bi-music-note-beamed"></i> Live Music</span>';
+
+  return '<div class="rest-card" onclick="openDetail('+i+')">' +
+    '<div class="rest-img">' +
+      '<img src="'+img+'" alt="'+escapeHtml(r.restaurant_name)+'">' +
+      '<span class="rest-price-badge">'+escapeHtml(r.price_range||'$')+'</span>' +
+      (r.is_featured?'<span class="rest-featured-badge"><i class="bi bi-star-fill"></i> Featured</span>':'') +
+    '</div>' +
+    '<div class="rest-body">' +
+      '<h3>'+escapeHtml(r.restaurant_name)+'</h3>' +
+      '<div class="cuisine">'+escapeHtml(r.cuisine)+'</div>' +
+      '<div class="rest-meta">' +
+        '<span><i class="bi bi-geo-alt"></i> '+escapeHtml(r.destination)+'</span>' +
+        '<span style="color:var(--gold)">'+stars+' '+(r.rating||'')+'</span>' +
+        (r.opening_hours?'<span><i class="bi bi-clock"></i> '+escapeHtml(r.opening_hours)+'</span>':'') +
+      '</div>' +
+      '<p>'+escapeHtml((r.description||'').substring(0,120))+((r.description||'').length>120?'…':'')+'</p>' +
+      (dishes.length?'<div class="dish-list">'+dishes.slice(0,5).map(function(d){return '<span class="dish-tag"><i class="bi bi-egg-fried"></i> '+escapeHtml(d)+'</span>'}).join('')+'</div>':'') +
+      '<div class="rest-footer">' +
+        '<span style="font-size:.78rem;color:var(--muted)">'+escapeHtml(r.address||'')+'</span>' +
+        '<div class="feature-badges">'+badges+'</div>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+function openDetail(idx){
+  var r = ALL_RESTAURANTS[idx];
+  if(!r) return;
+  var dishes = parseJson(r.popular_dishes);
+  var imgs = parseJson(r.images);
+  var img = getRestImage(r,idx);
+  var stars = starsHtml(r.rating);
+
+  var galleryHtml = '';
+  if(imgs.length>0){
+    galleryHtml = '<div class="detail-gallery">' +
+      '<img src="'+imgs[0]+'" alt="Main">' +
+      (imgs[1]?'<img src="'+imgs[1]+'" alt="">':'') +
+      (imgs[2]?'<img src="'+imgs[2]+'" alt="">':'<img src="'+REST_IMAGES[2]+'" alt="">') +
+    '</div>';
+  } else {
+    galleryHtml = '<div class="detail-gallery">' +
+      '<img src="'+img+'" alt="'+escapeHtml(r.restaurant_name)+'">' +
+      '<img src="'+REST_IMAGES[(idx+1)%REST_IMAGES.length]+'" alt="Interior">' +
+      '<img src="'+REST_IMAGES[(idx+2)%REST_IMAGES.length]+'" alt="Food">' +
+    '</div>';
+  }
+
+  var features = '';
+  if(r.vegetarian_options) features += '<span class="feat-badge feat-veg"><i class="bi bi-leaf"></i> Vegetarian Options</span>';
+  if(r.outdoor_seating) features += '<span class="feat-badge feat-outdoor"><i class="bi bi-sun"></i> Outdoor Seating</span>';
+  if(r.delivery_available) features += '<span class="feat-badge feat-delivery"><i class="bi bi-truck"></i> Delivery</span>';
+  if(r.accepts_reservations) features += '<span class="feat-badge feat-reserve"><i class="bi bi-calendar-check"></i> Accepts Reservations</span>';
+  if(r.wifi) features += '<span class="feat-badge feat-wifi"><i class="bi bi-wifi"></i> Free Wifi</span>';
+  if(r.parking) features += '<span class="feat-badge feat-parking"><i class="bi bi-p-circle"></i> Parking Available</span>';
+  if(r.live_music) features += '<span class="feat-badge feat-music"><i class="bi bi-music-note-beamed"></i> Live Music</span>';
+
+  var html = galleryHtml +
+    '<div class="detail-content">' +
+      '<h2>'+escapeHtml(r.restaurant_name)+'</h2>' +
+      '<div class="detail-cuisine">'+escapeHtml(r.cuisine)+' cuisine</div>' +
+      '<div class="detail-meta">' +
+        '<span><i class="bi bi-geo-alt"></i> '+escapeHtml(r.destination)+(r.country?', '+escapeHtml(r.country):'')+'</span>' +
+        '<span style="color:var(--gold)">'+stars+' <b>'+(r.rating||'N/A')+'</b></span>' +
+        '<span><i class="bi bi-cash-stack"></i> '+escapeHtml(r.price_range||'N/A')+'</span>' +
+      '</div>' +
+      (r.description?'<p>'+escapeHtml(r.description)+'</p>':'') +
+      (features?'<div class="detail-section-title"><i class="bi bi-patch-check"></i> Features</div><div class="detail-features">'+features+'</div>':'') +
+      '<div class="detail-section-title"><i class="bi bi-info-circle"></i> Details</div>' +
+      '<div class="detail-info-grid">' +
+        (r.address?'<div class="detail-info-item"><i class="bi bi-geo-alt-fill"></i> '+escapeHtml(r.address)+'</div>':'') +
+        (r.phone?'<div class="detail-info-item"><i class="bi bi-telephone-fill"></i> '+escapeHtml(r.phone)+'</div>':'') +
+        (r.opening_hours?'<div class="detail-info-item"><i class="bi bi-clock-fill"></i> '+escapeHtml(r.opening_hours)+'</div>':'') +
+        (r.website?'<div class="detail-info-item"><i class="bi bi-globe"></i> <a href="'+escapeHtml(r.website)+'" target="_blank">Website</a></div>':'') +
+        (r.latitude?'<div class="detail-info-item"><i class="bi bi-pin-map"></i> '+r.latitude.toFixed(4)+', '+(r.longitude||0).toFixed(4)+'</div>':'') +
+      '</div>' +
+      (dishes.length?'<div class="detail-section-title"><i class="bi bi-egg-fried"></i> Popular Dishes</div><div class="detail-dishes">'+dishes.map(function(d){return '<span class="dish-tag"><i class="bi bi-egg-fried"></i> '+escapeHtml(d)+'</span>'}).join('')+'</div>':'') +
+      '<div class="review-section" id="detail-reviews"></div>' +
+    '</div>';
+
+  document.getElementById('detail-body').innerHTML = html;
+  document.getElementById('detail-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  loadRestaurantReviews(r.restaurant_id);
+}
+
+function closeDetail(){
+  document.getElementById('detail-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', function(e){if(e.key==='Escape') closeDetail()});
+
+async function loadRestaurantReviews(restaurantId){
+  var el = document.getElementById('detail-reviews');
+  try{
+    var stats = await apiClient.get('/reviews/stats?entity_type=restaurant&entity_id='+restaurantId);
+    var reviews = await apiClient.get('/reviews/?entity_type=restaurant&entity_id='+restaurantId+'&limit=5');
+    var items = reviews.items || [];
+    var avg = stats.avg_rating;
+    var total = stats.total_reviews;
+
+    var html = '<div class="review-header"><h3><i class="bi bi-chat-left-text"></i> Reviews</h3>' +
+      '<div class="review-rating-big">'+(avg?Number(avg).toFixed(1):'-')+' <small>('+total+' reviews)</small></div></div>';
+
+    if(items.length){
+      items.forEach(function(rev){
+        var rStars = starsHtml(rev.rating);
+        html += '<div class="review-item">' +
+          '<div class="review-stars">'+rStars+'</div>' +
+          (rev.title?'<div class="review-title">'+escapeHtml(rev.title)+'</div>':'') +
+          (rev.comment?'<div class="review-text">'+escapeHtml(rev.comment)+'</div>':'') +
+          (rev.verified_visit?'<div class="review-meta"><i class="bi bi-patch-check-fill" style="color:var(--forest)"></i> Verified Visit</div>':'') +
+        '</div>';
+      });
+    } else {
+      html += '<p style="color:var(--muted);font-size:.88rem">No reviews yet. Be the first to review!</p>';
+    }
+
+    el.innerHTML = html;
+  }catch(e){
+    el.innerHTML = '<div class="review-header"><h3><i class="bi bi-chat-left-text"></i> Reviews</h3><div class="review-rating-big">- <small>(0 reviews)</small></div></div><p style="color:var(--muted);font-size:.88rem">No reviews yet.</p>';
+  }
+}
+</script>
+</body>
+</html>

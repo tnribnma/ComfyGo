@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Local Guides · ComfyGo</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .guide-layout{display:grid;grid-template-columns:260px 1fr;gap:36px;padding:0 0 90px}
+    .filter-panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;height:max-content;position:sticky;top:90px}
+    .filter-panel h3{margin:0 0 18px;font-size:1rem}
+    .fg{border-top:1px solid var(--line);padding:14px 0}
+    .fg:first-of-type{border:0;padding-top:0}
+    .fg label{display:block;font-weight:700;font-size:.82rem;margin-bottom:6px;color:var(--muted)}
+    .fg select,.fg input[type=number]{width:100%;border:1px solid var(--line);border-radius:8px;padding:9px 10px;font-size:.88rem;background:#fff}
+    .fg select:focus,.fg input:focus{border-color:var(--forest);outline:none}
+    .fg .check{display:block;margin:6px 0 0;color:var(--muted);font-size:.85rem;font-weight:500}
+    .fg .check input{width:auto;margin:0 7px 0 0;accent-color:var(--forest)}
+    .active-filters{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px}
+    .filter-tag{display:inline-flex;align-items:center;gap:5px;background:var(--mint);color:var(--forest);padding:4px 10px;border-radius:20px;font-size:.76rem;font-weight:600}
+    .filter-tag button{background:none;border:0;color:var(--forest);font-size:.9rem;cursor:pointer;padding:0;line-height:1}
+
+    .results-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    .results-toolbar select{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:.86rem}
+
+    .guide-card-enhanced{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;transition:transform .2s,box-shadow .2s}
+    .guide-card-enhanced:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+    .gce-header{display:flex;gap:16px;padding:22px 22px 0}
+    .gce-avatar{width:72px;height:72px;border-radius:50%;object-fit:cover;flex-shrink:0;background:var(--mint);display:grid;place-items:center;font-size:1.5rem;font-weight:700;color:var(--forest)}
+    .gce-info{flex:1;min-width:0}
+    .gce-info h3{margin:0;font-size:1.08rem}
+    .gce-info .gce-city{color:var(--muted);font-size:.84rem;margin:3px 0 0}
+    .gce-avail{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.68rem;font-weight:700;margin-top:6px}
+    .avail-yes{color:#177457;background:#e2f4ea}
+    .avail-no{color:#a63b20;background:#fff0ed}
+    .gce-rating{display:flex;align-items:center;gap:5px;margin-top:5px;font-size:.84rem}
+    .gce-rating i{color:var(--gold)}
+
+    .gce-body{padding:14px 22px}
+    .gce-bio{font-size:.85rem;color:var(--muted);line-height:1.55;margin:0 0 12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+    .gce-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+    .gce-tag{padding:3px 9px;border-radius:999px;font-size:.7rem;font-weight:600;background:var(--mint);color:var(--forest)}
+
+    .gce-rates{display:flex;gap:16px;font-size:.84rem;margin-bottom:12px}
+    .gce-rates .rate{display:flex;align-items:center;gap:4px}
+    .gce-rates .rate i{color:var(--forest);font-size:.9rem}
+    .gce-rates .rate strong{color:var(--ink)}
+
+    .gce-regions{font-size:.8rem;color:var(--muted);margin-bottom:14px}
+    .gce-regions i{margin-right:4px;color:var(--forest)}
+
+    .gce-footer{border-top:1px solid var(--line);padding:14px 22px;display:flex;justify-content:space-between;align-items:center}
+    .gce-contact{display:flex;gap:8px}
+    .gce-contact a{width:34px;height:34px;border-radius:8px;display:grid;place-items:center;border:1px solid var(--line);color:var(--muted);font-size:1rem;transition:.15s}
+    .gce-contact a:hover{border-color:var(--forest);color:var(--forest);background:var(--mint)}
+    .gce-contact a.whatsapp{color:#25d366;border-color:#25d36633}
+    .gce-contact a.whatsapp:hover{background:#25d36615}
+    .gce-detail-link{font-size:.84rem;font-weight:700;color:var(--forest);text-decoration:none;display:flex;align-items:center;gap:4px}
+    .gce-detail-link:hover{text-decoration:underline}
+
+    .guides-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:20px}
+    .empty-state{text-align:center;padding:50px 20px;color:var(--muted)}
+    .empty-state i{font-size:2.2rem;display:block;margin-bottom:10px;opacity:.35}
+
+    @media(max-width:800px){
+      .guide-layout{grid-template-columns:1fr}
+      .filter-panel{position:static}
+      .guides-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+<nav class="site-nav">
+  <div class="shell nav-inner">
+    <a class="brand" href="index.html"><b class="brand-mark">C</b>ComfyGo</a>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html">Explore</a>
+      <a href="hotels.html">Hotels</a>
+      <a href="packages.html">Packages</a>
+      <a href="activities.html">Activities</a>
+      <a href="flights.html">Flights</a>
+      <a href="destinations.html">Destinations</a>
+      <a href="dining.html">Dining</a>
+      <a class="active" href="guides.html">Guides</a>
+    </div>
+    <div class="nav-actions" id="navActions">
+      <a href="login.html">Log in</a>
+      <a class="btn btn-primary" href="register.html">Sign up</a>
+    </div>
+    <button class="menu-toggle" data-menu><i class="bi bi-list"></i></button>
+  </div>
+</nav>
+
+<header class="page-hero">
+  <div class="shell">
+    <span class="eyebrow">GO FURTHER</span>
+    <h1 class="page-title">Meet your local guides</h1>
+    <p>Knowledgeable people who make every place feel like home. Filter by region, language, specialty and more.</p>
+  </div>
+</header>
+
+<main class="shell guide-layout">
+  <aside class="filter-panel">
+    <h3><i class="bi bi-funnel"></i> Filter guides</h3>
+    <div class="fg">
+      <label>Region / City</label>
+      <select id="filterCity"><option value="">All regions</option></select>
+    </div>
+    <div class="fg">
+      <label>Language</label>
+      <select id="filterLanguage"><option value="">All languages</option></select>
+    </div>
+    <div class="fg">
+      <label>Minimum experience</label>
+      <select id="filterExperience">
+        <option value="">Any experience</option>
+        <option value="1">1+ years</option>
+        <option value="3">3+ years</option>
+        <option value="5">5+ years</option>
+        <option value="8">8+ years</option>
+        <option value="10">10+ years</option>
+      </select>
+    </div>
+    <div class="fg">
+      <label>Max hourly rate ($)</label>
+      <input type="number" id="filterMaxRate" placeholder="e.g. 40" min="0" step="5">
+    </div>
+    <div class="fg">
+      <label>Specialty</label>
+      <select id="filterSpecialty">
+        <option value="">All specialties</option>
+        <option value="Cultural">Cultural tours</option>
+        <option value="Trekking">Trekking & Nature</option>
+        <option value="Food">Food tours</option>
+        <option value="Historical">Historical</option>
+        <option value="Beach">Beach & Water sports</option>
+        <option value="Wildlife">Wildlife</option>
+        <option value="Photography">Photography</option>
+        <option value="Adventure">Adventure</option>
+        <option value="Wellness">Wellness</option>
+      </select>
+    </div>
+    <div class="fg">
+      <label>Availability</label>
+      <label class="check"><input type="checkbox" id="filterAvailable" checked> Show only available guides</label>
+    </div>
+    <button class="btn btn-primary" style="width:100%" id="applyFilters">Apply filters</button>
+    <button class="btn btn-ghost" style="width:100%;margin-top:8px" id="clearFilters">Clear all</button>
+  </aside>
+
+  <section>
+    <div class="active-filters" id="activeFilters"></div>
+    <div class="results-toolbar">
+      <span class="muted" id="resultCount">Loading guides…</span>
+      <select id="sortSelect">
+        <option value="">Most experienced</option>
+        <option value="rating">Highest rated</option>
+        <option value="price_asc">Price: low to high</option>
+        <option value="price_desc">Price: high to low</option>
+        <option value="name">Name A–Z</option>
+      </select>
+    </div>
+    <div class="guides-grid" id="guidesGrid">
+      <p class="muted">Loading guides…</p>
+    </div>
+  </section>
+</main>
+
+<div class="shell">
+  <section class="cta">
+    <span class="eyebrow" style="color:#ffbd95">TRAVEL WITH CONFIDENCE</span>
+    <h2>Want a personalised experience?</h2>
+    <p>Book a guide for your next trip and discover hidden gems only locals know about.</p>
+    <a class="btn" href="hotels.html">Explore stays <i class="bi bi-arrow-right"></i></a>
+  </section>
+</div>
+
+<footer class="footer">
+  <div class="shell">
+    <div class="footer-grid">
+      <div><a class="brand" href="index.html"><b class="brand-mark">C</b>ComfyGo</a><p>Thoughtful stays and real local experiences, beautifully connected.</p></div>
+      <div><h4>Explore</h4><a href="hotels.html">Hotels</a><a href="packages.html">Packages</a><a href="activities.html">Activities</a><a href="flights.html">Flights</a><a href="destinations.html">Destinations</a><a href="dining.html">Dining</a><a href="guides.html">Local guides</a></div>
+      <div><h4>Company</h4><a href="#">About us</a><a href="#">Contact</a><a href="#">Careers</a></div>
+      <div><h4>Support</h4><a href="#">Help centre</a><a href="#">Privacy</a><a href="#">Terms</a></div>
+    </div>
+    <div class="footer-bottom">&copy; 2026 ComfyGo. Travel well, stay better.</div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+<script src="js/utils/storage.js?v=8"></script>
+<script src="js/api/client.js?v=8"></script>
+<script src="js/ui.js?v=8"></script>
+<script>
+(function() {
+  var filters = { city: '', language: '', min_experience: '', max_rate: '', specialty: '', is_available: true, sort_by: '' };
+  var allGuides = [];
+  var filterOptions = { cities: [], languages: [] };
+
+  var portraits = [
+    'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=85',
+    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=85',
+    'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=85',
+    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=85',
+    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=85',
+    'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=200&q=85',
+    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=200&q=85',
+    'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=85',
+  ];
+
+  var grid = document.getElementById('guidesGrid');
+  var countEl = document.getElementById('resultCount');
+  var activeFiltersEl = document.getElementById('activeFilters');
+
+  async function loadFilterOptions() {
+    try {
+      var data = await apiClient.get('/guides/filter-options');
+      filterOptions = data;
+      var citySel = document.getElementById('filterCity');
+      (data.cities || []).forEach(function(c) {
+        var opt = document.createElement('option');
+        opt.value = c.guide_city;
+        opt.textContent = c.guide_city + ' (' + c.count + ')';
+        citySel.appendChild(opt);
+      });
+      var langSel = document.getElementById('filterLanguage');
+      (data.languages || []).forEach(function(l) {
+        var opt = document.createElement('option');
+        opt.value = l.guide_language;
+        opt.textContent = l.guide_language + ' (' + l.count + ')';
+        langSel.appendChild(opt);
+      });
+    } catch (e) { console.log('Could not load filter options'); }
+  }
+
+  async function loadGuides() {
+    grid.innerHTML = '<p class="muted">Loading guides…</p>';
+    try {
+      var params = new URLSearchParams();
+      if (filters.city) params.set('city', filters.city);
+      if (filters.language) params.set('language', filters.language);
+      if (filters.min_experience) params.set('min_experience', filters.min_experience);
+      if (filters.max_rate) params.set('max_rate', filters.max_rate);
+      if (filters.specialty) params.set('specialty', filters.specialty);
+      if (filters.sort_by) params.set('sort_by', filters.sort_by);
+      params.set('limit', '100');
+
+      var hasFilters = filters.city || filters.language || filters.min_experience || filters.max_rate || filters.specialty || filters.sort_by;
+      var endpoint = hasFilters ? '/guides/search?' + params.toString() : '/guides/?limit=100';
+      var data = await apiClient.get(endpoint);
+      allGuides = data.items || [];
+
+      if (filters.is_available) {
+        allGuides = allGuides.filter(function(g) { return g.is_available; });
+      }
+
+      renderGuides(allGuides);
+    } catch (e) {
+      grid.innerHTML = '<p class="muted">Could not load guides. Make sure the API server is running.</p>';
+    }
+  }
+
+  function renderGuides(guides) {
+    countEl.innerHTML = '<b style="color:var(--ink)">' + guides.length + ' guide' + (guides.length !== 1 ? 's' : '') + '</b> found';
+    if (guides.length === 0) {
+      grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><i class="bi bi-signpost-2"></i><p>No guides match your filters. Try adjusting your search.</p></div>';
+      return;
+    }
+    grid.innerHTML = guides.map(function(g, i) {
+      var initials = (g.guide_name || '?').split(' ').map(function(w) { return w[0]; }).join('').substring(0, 2).toUpperCase();
+      var exp = g.guide_experience || 0;
+      var expText = exp > 0 ? exp + ' year' + (exp > 1 ? 's' : '') : 'New';
+      var avail = g.is_available;
+      var specs = (g.specialties || '').split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+      var regions = (g.regions || g.guide_city || '').split(',').map(function(r) { return r.trim(); }).filter(Boolean);
+      var rating = g.avg_rating ? Number(g.avg_rating).toFixed(1) : null;
+      var hourly = g.hourly_rate ? '$' + Number(g.hourly_rate) : null;
+      var daily = g.daily_rate ? '$' + Number(g.daily_rate) : null;
+
+      var contactHtml = '';
+      if (g.whatsapp) contactHtml += '<a href="https://wa.me/' + g.whatsapp.replace(/[^0-9]/g, '') + '" target="_blank" class="whatsapp" title="WhatsApp"><i class="bi bi-whatsapp"></i></a>';
+      if (g.facebook) contactHtml += '<a href="' + escapeHtml(g.facebook) + '" target="_blank" title="Facebook"><i class="bi bi-facebook"></i></a>';
+      if (g.instagram) contactHtml += '<a href="' + escapeHtml(g.instagram) + '" target="_blank" title="Instagram"><i class="bi bi-instagram"></i></a>';
+      if (g.guide_phone) contactHtml += '<a href="tel:' + escapeHtml(g.guide_phone) + '" title="Call"><i class="bi bi-telephone"></i></a>';
+      if (g.guide_email) contactHtml += '<a href="mailto:' + escapeHtml(g.guide_email) + '" title="Email"><i class="bi bi-envelope"></i></a>';
+
+      return '<article class="guide-card-enhanced">' +
+        '<div class="gce-header">' +
+          '<div class="gce-avatar">' + initials + '</div>' +
+          '<div class="gce-info">' +
+            '<h3>' + escapeHtml(g.guide_name) + '</h3>' +
+            '<div class="gce-city"><i class="bi bi-geo-alt"></i> ' + escapeHtml(g.guide_city || 'Multiple locations') + ' · ' + escapeHtml(g.guide_language || 'English') + '</div>' +
+            '<span class="gce-avail ' + (avail ? 'avail-yes' : 'avail-no') + '">' + (avail ? '<i class="bi bi-check-circle"></i> Available' : '<i class="bi bi-x-circle"></i> Unavailable') + '</span>' +
+            (rating ? '<div class="gce-rating"><i class="bi bi-star-fill"></i> ' + rating + ' <span style="color:var(--muted)">(' + (g.total_reviews || 0) + ' reviews)</span></div>' : '') +
+          '</div>' +
+        '</div>' +
+        '<div class="gce-body">' +
+          (g.bio ? '<p class="gce-bio">' + escapeHtml(g.bio) + '</p>' : '') +
+          (specs.length ? '<div class="gce-tags">' + specs.map(function(s) { return '<span class="gce-tag">' + escapeHtml(s) + '</span>'; }).join('') + '</div>' : '') +
+          '<div class="gce-rates">' +
+            (hourly ? '<span class="rate"><i class="bi bi-clock"></i> <strong>' + hourly + '</strong>/hr</span>' : '') +
+            (daily ? '<span class="rate"><i class="bi bi-calendar-day"></i> <strong>' + daily + '</strong>/day</span>' : '') +
+            '<span class="rate"><i class="bi bi-briefcase"></i> ' + expText + '</span>' +
+          '</div>' +
+          (regions.length ? '<div class="gce-regions"><i class="bi bi-geo-alt"></i> ' + regions.map(escapeHtml).join(' · ') + '</div>' : '') +
+        '</div>' +
+        '<div class="gce-footer">' +
+          '<div class="gce-contact">' + contactHtml + '</div>' +
+          '<a class="gce-detail-link" href="guide_details.html?id=' + g.guide_id + '">Full profile <i class="bi bi-arrow-right"></i></a>' +
+        '</div>' +
+      '</article>';
+    }).join('');
+  }
+
+  function renderFilterTags() {
+    var tags = [];
+    if (filters.city) tags.push({ label: 'Region: ' + filters.city, clear: function() { filters.city = ''; document.getElementById('filterCity').value = ''; } });
+    if (filters.language) tags.push({ label: 'Language: ' + filters.language, clear: function() { filters.language = ''; document.getElementById('filterLanguage').value = ''; } });
+    if (filters.min_experience) tags.push({ label: filters.min_experience + '+ years exp', clear: function() { filters.min_experience = ''; document.getElementById('filterExperience').value = ''; } });
+    if (filters.max_rate) tags.push({ label: 'Max $' + filters.max_rate + '/hr', clear: function() { filters.max_rate = ''; document.getElementById('filterMaxRate').value = ''; } });
+    if (filters.specialty) tags.push({ label: 'Specialty: ' + filters.specialty, clear: function() { filters.specialty = ''; document.getElementById('filterSpecialty').value = ''; } });
+    if (filters.sort_by) tags.push({ label: 'Sort: ' + filters.sort_by, clear: function() { filters.sort_by = ''; document.getElementById('sortSelect').value = ''; } });
+
+    if (tags.length === 0) { activeFiltersEl.innerHTML = ''; return; }
+    activeFiltersEl.innerHTML = tags.map(function(t, i) {
+      return '<span class="filter-tag">' + t.label + ' <button data-clear="' + i + '">&times;</button></span>';
+    }).join('');
+    activeFiltersEl.querySelectorAll('button').forEach(function(btn, i) {
+      btn.addEventListener('click', function() {
+        tags[i].clear();
+        loadGuides();
+        renderFilterTags();
+      });
+    });
+  }
+
+  document.getElementById('applyFilters').addEventListener('click', function() {
+    filters.city = document.getElementById('filterCity').value;
+    filters.language = document.getElementById('filterLanguage').value;
+    filters.min_experience = document.getElementById('filterExperience').value;
+    filters.max_rate = document.getElementById('filterMaxRate').value;
+    filters.specialty = document.getElementById('filterSpecialty').value;
+    filters.is_available = document.getElementById('filterAvailable').checked;
+    loadGuides();
+    renderFilterTags();
+  });
+
+  document.getElementById('clearFilters').addEventListener('click', function() {
+    filters = { city: '', language: '', min_experience: '', max_rate: '', specialty: '', is_available: true, sort_by: '' };
+    document.getElementById('filterCity').value = '';
+    document.getElementById('filterLanguage').value = '';
+    document.getElementById('filterExperience').value = '';
+    document.getElementById('filterMaxRate').value = '';
+    document.getElementById('filterSpecialty').value = '';
+    document.getElementById('filterAvailable').checked = true;
+    document.getElementById('sortSelect').value = '';
+    loadGuides();
+    renderFilterTags();
+  });
+
+  document.getElementById('sortSelect').addEventListener('change', function() {
+    filters.sort_by = this.value;
+    loadGuides();
+    renderFilterTags();
+  });
+
+  loadFilterOptions();
+  loadGuides();
+})();
+</script>
+</body>
+</html>

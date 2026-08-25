@@ -6,6 +6,13 @@ from ...services import PaymentService, BookingService
 
 router = APIRouter(prefix="/payments", tags=["Payments"])
 
+@router.get("/", response_model=PaginatedResponse[PaymentOut])
+def list_payments(db: DBDep, _: CurrentAdminDep, skip: int = 0, limit: int = 100):
+    from ...repositories import PaymentRepository
+    repo = PaymentRepository(db)
+    items = repo.get_multi(skip=skip, limit=limit)
+    return PaginatedResponse[PaymentOut](items=items, total=len(items), page=1, page_size=limit, pages=1)
+
 @router.post("/", response_model=PaymentOut, status_code=201)
 def process_payment(payload: PaymentCreate, db: DBDep, user: CurrentCustomerDep):
     booking = BookingService(db).get(payload.booking_id)

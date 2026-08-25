@@ -6,6 +6,8 @@ from .base import Base, TimestampMixin
 
 if TYPE_CHECKING:
     from .booking import Booking
+    from .package_booking import PackageBooking
+    from .activity_booking import ActivityBooking
 
 
 class Customer(TimestampMixin, Base):
@@ -24,6 +26,12 @@ class Customer(TimestampMixin, Base):
 
     bookings: Mapped[List["Booking"]] = relationship(
         "Booking", back_populates="customer", cascade="all, delete-orphan"
+    )
+    package_bookings: Mapped[List["PackageBooking"]] = relationship(
+        "PackageBooking", back_populates="customer"
+    )
+    activity_bookings: Mapped[List["ActivityBooking"]] = relationship(
+        "ActivityBooking", back_populates="customer"
     )
 
     def __repr__(self) -> str:

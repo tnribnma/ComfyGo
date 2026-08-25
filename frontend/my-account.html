@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>My Account · ComfyGo</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .account-layout{display:grid;grid-template-columns:260px 1fr;gap:36px;padding:40px 0 90px;min-height:70vh}
+    .account-sidebar{position:sticky;top:90px;height:max-content}
+    .profile-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px;text-align:center}
+    .profile-avatar{width:80px;height:80px;border-radius:50%;background:var(--forest);color:#fff;display:grid;place-items:center;font-size:2rem;font-weight:700;margin:0 auto 14px}
+    .profile-card h2{margin:0;font-size:1.2rem}
+    .profile-card p{color:var(--muted);font-size:.85rem;margin:4px 0 0}
+    .profile-meta{display:flex;flex-direction:column;gap:10px;margin-top:18px;text-align:left;border-top:1px solid var(--line);padding-top:16px}
+    .profile-meta .meta-row{display:flex;align-items:center;gap:10px;font-size:.85rem;color:var(--muted)}
+    .profile-meta .meta-row i{color:var(--forest);font-size:1rem;width:18px;text-align:center}
+    .profile-meta .meta-row span{color:var(--ink);font-weight:500}
+
+    .account-nav{margin-top:16px}
+    .account-nav a{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;font-size:.88rem;font-weight:600;color:var(--muted);transition:.15s}
+    .account-nav a:hover,.account-nav a.active{background:var(--mint);color:var(--forest)}
+    .account-nav a i{font-size:1.1rem;width:20px;text-align:center}
+
+    .account-main .section-panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px;margin-bottom:20px}
+    .section-panel h2{margin:0 0 6px;font-family:'Playfair Display',serif;font-size:1.3rem}
+    .section-panel .section-desc{color:var(--muted);font-size:.88rem;margin:0 0 22px}
+
+    .stat-row{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px}
+    .stat-mini{background:var(--mint);border-radius:12px;padding:16px;text-align:center}
+    .stat-mini strong{display:block;font-size:1.5rem;color:var(--forest)}
+    .stat-mini small{font-size:.75rem;color:var(--muted)}
+
+    .booking-list{display:flex;flex-direction:column;gap:0}
+    .booking-card{display:grid;grid-template-columns:1fr auto;align-items:center;padding:16px 0;border-bottom:1px solid var(--line);gap:14px}
+    .booking-card:last-child{border:0}
+    .booking-card .bc-left h3{margin:0;font-size:1rem}
+    .booking-card .bc-left p{margin:4px 0 0;font-size:.84rem;color:var(--muted)}
+    .booking-card .bc-right{text-align:right;white-space:nowrap}
+    .booking-card .bc-right .amount{font-weight:700;color:var(--forest);font-size:1.05rem}
+
+    .status{display:inline-block;border-radius:999px;padding:4px 10px;font-size:.7rem;font-weight:700}
+    .status-confirmed{color:#177457;background:#e2f4ea}
+    .status-pending{color:#9a6716;background:#fff0cf}
+    .status-cancelled{color:#a63b20;background:#fff0ed}
+    .status-completed{color:#1a6fb5;background:#e0f0ff}
+
+    .review-card{padding:14px 0;border-bottom:1px solid var(--line)}
+    .review-card:last-child{border:0}
+    .review-card .rc-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .review-card .rc-head h3{margin:0;font-size:.95rem}
+    .review-card .stars{color:var(--gold);font-size:.9rem}
+    .review-card p{margin:6px 0 0;font-size:.85rem;color:var(--muted);line-height:1.55}
+    .review-card .rc-meta{font-size:.76rem;color:var(--muted);margin-top:6px}
+
+    .guide-card-mini{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--line)}
+    .guide-card-mini:last-child{border:0}
+    .guide-avatar{width:46px;height:46px;border-radius:50%;background:var(--mint);color:var(--forest);display:grid;place-items:center;font-weight:700;font-size:1rem;flex-shrink:0}
+    .guide-card-mini .gc-info h3{margin:0;font-size:.92rem}
+    .guide-card-mini .gc-info p{margin:3px 0 0;font-size:.82rem;color:var(--muted)}
+
+    .empty-state{text-align:center;padding:40px 20px;color:var(--muted)}
+    .empty-state i{font-size:2.2rem;display:block;margin-bottom:10px;opacity:.35}
+    .empty-state p{margin:0}
+
+    @media(max-width:800px){
+      .account-layout{grid-template-columns:1fr}
+      .account-sidebar{position:static}
+      .stat-row{grid-template-columns:repeat(2,1fr)}
+      .booking-card{grid-template-columns:1fr}
+      .booking-card .bc-right{text-align:left}
+    }
+  </style>
+</head>
+<body>
+<nav class="site-nav">
+  <div class="shell nav-inner">
+    <a class="brand" href="index.html"><b class="brand-mark">C</b>ComfyGo</a>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html">Explore</a>
+      <a href="hotels.html">Hotels</a>
+      <a href="packages.html">Packages</a>
+      <a href="activities.html">Activities</a>
+      <a href="flights.html">Flights</a>
+      <a href="destinations.html">Destinations</a>
+      <a href="dining.html">Dining</a>
+      <a href="guides.html">Guides</a>
+    </div>
+    <div class="nav-actions" id="navActions"></div>
+    <button class="menu-toggle" data-menu><i class="bi bi-list"></i></button>
+  </div>
+</nav>
+
+<header class="page-hero">
+  <div class="shell">
+    <span class="eyebrow">MY ACCOUNT</span>
+    <h1 class="page-title">Your travel dashboard</h1>
+    <p>Everything you've booked, reviewed and discovered — all in one place.</p>
+  </div>
+</header>
+
+<main class="shell account-layout">
+  <aside class="account-sidebar">
+    <div class="profile-card">
+      <div class="profile-avatar" id="profileAvatar">?</div>
+      <h2 id="profileName">Loading…</h2>
+      <p id="profileEmail"></p>
+      <div class="profile-meta">
+        <div class="meta-row"><i class="bi bi-telephone"></i><span id="profilePhone">—</span></div>
+        <div class="meta-row"><i class="bi bi-geo-alt"></i><span id="profileAddress">—</span></div>
+        <div class="meta-row"><i class="bi bi-calendar3"></i>Member since <span id="profileSince">—</span></div>
+      </div>
+    </div>
+    <nav class="account-nav">
+      <a href="#overview" class="active" data-section="overview"><i class="bi bi-grid-1x2"></i>Overview</a>
+      <a href="#hotel-bookings" data-section="hotel-bookings"><i class="bi bi-buildings"></i>Hotel Bookings</a>
+      <a href="#package-bookings" data-section="package-bookings"><i class="bi bi-map"></i>Package Bookings</a>
+      <a href="#activity-bookings" data-section="activity-bookings"><i class="bi bi-compass"></i>Activity Bookings</a>
+      <a href="#reviews" data-section="reviews"><i class="bi bi-chat-left-text"></i>My Reviews</a>
+      <a href="#guides" data-section="guides"><i class="bi bi-signpost-2"></i>Guides I've Met</a>
+    </nav>
+  </aside>
+
+  <div class="account-main">
+
+    <div id="section-overview" class="section-panel">
+      <h2>Overview</h2>
+      <p class="section-desc">A quick snapshot of your travel activity.</p>
+      <div class="stat-row" id="statsGrid">
+        <div class="stat-mini"><strong id="stat-hotel">—</strong><small>Hotel Bookings</small></div>
+        <div class="stat-mini"><strong id="stat-pkg">—</strong><small>Package Bookings</small></div>
+        <div class="stat-mini"><strong id="stat-act">—</strong><small>Activity Bookings</small></div>
+        <div class="stat-mini"><strong id="stat-reviews">—</strong><small>Reviews</small></div>
+        <div class="stat-mini"><strong id="stat-total">—</strong><small>Total Spent</small></div>
+      </div>
+      <div id="overviewContent"><p class="muted">Loading your data…</p></div>
+    </div>
+
+    <div id="section-hotel-bookings" class="section-panel" style="display:none">
+      <h2>Hotel Bookings</h2>
+      <p class="section-desc">All your hotel stays and reservations.</p>
+      <div id="hotelBookingsList"><p class="muted">Loading…</p></div>
+    </div>
+
+    <div id="section-package-bookings" class="section-panel" style="display:none">
+      <h2>Package Bookings</h2>
+      <p class="section-desc">Tour packages you've booked.</p>
+      <div id="pkgBookingsList"><p class="muted">Loading…</p></div>
+    </div>
+
+    <div id="section-activity-bookings" class="section-panel" style="display:none">
+      <h2>Activity Bookings</h2>
+      <p class="section-desc">Activities and experiences you've booked.</p>
+      <div id="actBookingsList"><p class="muted">Loading…</p></div>
+    </div>
+
+    <div id="section-reviews" class="section-panel" style="display:none">
+      <h2>My Reviews</h2>
+      <p class="section-desc">Reviews you've written for hotels, packages, restaurants and more.</p>
+      <div id="reviewsList"><p class="muted">Loading…</p></div>
+    </div>
+
+    <div id="section-guides" class="section-panel" style="display:none">
+      <h2>Guides I've Met</h2>
+      <p class="section-desc">Local guides you've booked with on your trips.</p>
+      <div id="guidesList"><p class="muted">Loading…</p></div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+<script src="js/utils/storage.js?v=7"></script>
+<script src="js/api/client.js?v=7"></script>
+<script src="js/ui.js?v=7"></script>
+<script>
+(function() {
+  if (!Storage.isAuthenticated()) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  var actions = document.getElementById('navActions');
+  if (actions) {
+    actions.innerHTML =
+      '<a href="my-account.html" style="font-weight:700;color:var(--forest)"><i class="bi bi-person-circle"></i> My Account</a>' +
+      '<button class="btn btn-ghost" id="logoutBtn">Log out</button>';
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+      if (confirm('Log out?')) { Storage.clear(); window.location.href = 'index.html'; }
+    });
+  }
+
+  var navLinks = document.querySelectorAll('.account-nav a');
+  navLinks.forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      var section = link.getAttribute('data-section');
+      navLinks.forEach(function(l) { l.classList.remove('active'); });
+      link.classList.add('active');
+      document.querySelectorAll('.account-main .section-panel').forEach(function(p) { p.style.display = 'none'; });
+      var target = document.getElementById('section-' + section);
+      if (target) target.style.display = 'block';
+    });
+  });
+
+  var dashboardData = null;
+
+  function esc(text) { var d = document.createElement('div'); d.textContent = text || ''; return d.innerHTML; }
+  function money(n) { return '$' + Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }); }
+  function statusClass(s) {
+    if (s === 'confirmed' || s === 'completed') return 'status-' + s;
+    if (s === 'cancelled') return 'status-cancelled';
+    return 'status-pending';
+  }
+  function starsHtml(r) {
+    var n = Math.round(r || 0);
+    var html = '';
+    for (var i = 1; i <= 5; i++) {
+      html += i <= n ? '<i class="bi bi-star-fill"></i>' : '<i class="bi bi-star"></i>';
+    }
+    return html;
+  }
+  function timeAgo(ts) {
+    if (!ts) return '';
+    var diff = Date.now() - new Date(ts).getTime();
+    var mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'just now';
+    if (mins < 60) return mins + 'm ago';
+    var hrs = Math.floor(mins / 60);
+    if (hrs < 24) return hrs + 'h ago';
+    return Math.floor(hrs / 24) + 'd ago';
+  }
+  function formatDate(d) {
+    if (!d) return '—';
+    return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  async function loadDashboard() {
+    try {
+      dashboardData = await apiClient.get('/customers/me/dashboard');
+      renderProfile(dashboardData.profile);
+      renderStats(dashboardData.stats);
+      renderOverview(dashboardData);
+      renderHotelBookings(dashboardData.hotel_bookings);
+      renderPkgBookings(dashboardData.package_bookings);
+      renderActBookings(dashboardData.activity_bookings);
+      renderReviews(dashboardData.reviews);
+      renderGuides(dashboardData.guides);
+    } catch (err) {
+      console.error('Failed to load dashboard:', err);
+      document.getElementById('overviewContent').innerHTML = '<p class="muted">Could not load your data. Please try again.</p>';
+    }
+  }
+
+  function renderProfile(p) {
+    var initials = (p.name || '?').split(' ').map(function(w) { return w[0]; }).join('').substring(0, 2).toUpperCase();
+    document.getElementById('profileAvatar').textContent = initials;
+    document.getElementById('profileName').textContent = p.name || 'Customer';
+    document.getElementById('profileEmail').textContent = p.email || '';
+    document.getElementById('profilePhone').textContent = p.phone || 'Not set';
+    document.getElementById('profileAddress').textContent = p.address || 'Not set';
+    if (p.member_since) {
+      document.getElementById('profileSince').textContent = new Date(p.member_since).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    }
+  }
+
+  function renderStats(s) {
+    document.getElementById('stat-hotel').textContent = s.hotel_bookings;
+    document.getElementById('stat-pkg').textContent = s.package_bookings;
+    document.getElementById('stat-act').textContent = s.activity_bookings;
+    document.getElementById('stat-reviews').textContent = s.reviews_written;
+    document.getElementById('stat-total').textContent = money(s.total_spent);
+  }
+
+  function renderOverview(data) {
+    var html = '';
+    if (data.hotel_bookings.length > 0) {
+      html += '<h3 style="font-size:.92rem;margin:0 0 10px;color:var(--muted)">Recent Hotel Bookings</h3>';
+      html += '<div class="booking-list">';
+      data.hotel_bookings.slice(0, 3).forEach(function(b) {
+        html += '<div class="booking-card"><div class="bc-left"><h3>' + esc(b.hotel_name) + '</h3><p><i class="bi bi-geo-alt"></i> ' + esc(b.city) + ', ' + esc(b.country) + ' · ' + formatDate(b.check_in) + ' → ' + formatDate(b.check_out) + '</p></div><div class="bc-right"><span class="amount">' + money(b.amount) + '</span><br><span class="status ' + statusClass(b.status) + '">' + b.status + '</span></div></div>';
+      });
+      html += '</div>';
+    }
+    if (data.package_bookings.length > 0) {
+      html += '<h3 style="font-size:.92rem;margin:18px 0 10px;color:var(--muted)">Recent Package Bookings</h3>';
+      html += '<div class="booking-list">';
+      data.package_bookings.slice(0, 3).forEach(function(b) {
+        html += '<div class="booking-card"><div class="bc-left"><h3>' + esc(b.package_name) + '</h3><p><i class="bi bi-geo-alt"></i> ' + esc(b.destination) + ' · ' + formatDate(b.travel_date) + ' · ' + b.persons + ' person' + (b.persons > 1 ? 's' : '') + '</p></div><div class="bc-right"><span class="amount">' + money(b.amount) + '</span><br><span class="status ' + statusClass(b.status) + '">' + b.status + '</span></div></div>';
+      });
+      html += '</div>';
+    }
+    if (data.activity_bookings.length > 0) {
+      html += '<h3 style="font-size:.92rem;margin:18px 0 10px;color:var(--muted)">Recent Activity Bookings</h3>';
+      html += '<div class="booking-list">';
+      data.activity_bookings.slice(0, 3).forEach(function(b) {
+        html += '<div class="booking-card"><div class="bc-left"><h3>' + esc(b.activity_name) + '</h3><p><i class="bi bi-geo-alt"></i> ' + esc(b.destination) + ' · ' + formatDate(b.date) + ' · ' + b.persons + ' person' + (b.persons > 1 ? 's' : '') + '</p></div><div class="bc-right"><span class="amount">' + money(b.amount) + '</span><br><span class="status ' + statusClass(b.status) + '">' + b.status + '</span></div></div>';
+      });
+      html += '</div>';
+    }
+    if (!html) {
+      html = '<div class="empty-state"><i class="bi bi-calendar2-check"></i><p>No bookings yet. Start exploring!</p><a class="btn btn-primary" href="hotels.html" style="margin-top:14px">Browse hotels</a></div>';
+    }
+    document.getElementById('overviewContent').innerHTML = html;
+  }
+
+  function renderHotelBookings(bookings) {
+    var el = document.getElementById('hotelBookingsList');
+    if (bookings.length === 0) {
+      el.innerHTML = '<div class="empty-state"><i class="bi bi-buildings"></i><p>No hotel bookings yet.</p><a class="btn btn-primary" href="hotels.html" style="margin-top:10px">Browse hotels</a></div>';
+      return;
+    }
+    var html = '<div class="booking-list">';
+    bookings.forEach(function(b) {
+      html += '<div class="booking-card"><div class="bc-left"><h3>' + esc(b.hotel_name) + '</h3><p><i class="bi bi-geo-alt"></i> ' + esc(b.city) + ', ' + esc(b.country) + '</p><p><i class="bi bi-calendar3"></i> ' + formatDate(b.check_in) + ' → ' + formatDate(b.check_out) + ' · ' + b.guests + ' guest' + (b.guests > 1 ? 's' : '') + (b.guide_name ? ' · Guide: ' + esc(b.guide_name) : '') + '</p></div><div class="bc-right"><span class="amount">' + money(b.amount) + '</span><br><span class="status ' + statusClass(b.status) + '">' + b.status + '</span><br><small style="color:var(--muted)">' + timeAgo(b.booked_at) + '</small></div></div>';
+    });
+    html += '</div>';
+    el.innerHTML = html;
+  }
+
+  function renderPkgBookings(bookings) {
+    var el = document.getElementById('pkgBookingsList');
+    if (bookings.length === 0) {
+      el.innerHTML = '<div class="empty-state"><i class="bi bi-map"></i><p>No package bookings yet.</p><a class="btn btn-primary" href="packages.html" style="margin-top:10px">Browse packages</a></div>';
+      return;
+    }
+    var html = '<div class="booking-list">';
+    bookings.forEach(function(b) {
+      html += '<div class="booking-card"><div class="bc-left"><h3>' + esc(b.package_name) + '</h3><p><i class="bi bi-geo-alt"></i> ' + esc(b.destination) + '</p><p><i class="bi bi-calendar3"></i> ' + formatDate(b.travel_date) + ' · ' + b.persons + ' person' + (b.persons > 1 ? 's' : '') + ' · Ref: ' + esc(b.ref) + '</p></div><div class="bc-right"><span class="amount">' + money(b.amount) + '</span><br><span class="status ' + statusClass(b.status) + '">' + b.status + '</span><br><small style="color:var(--muted)">' + timeAgo(b.booked_at) + '</small></div></div>';
+    });
+    html += '</div>';
+    el.innerHTML = html;
+  }
+
+  function renderActBookings(bookings) {
+    var el = document.getElementById('actBookingsList');
+    if (bookings.length === 0) {
+      el.innerHTML = '<div class="empty-state"><i class="bi bi-compass"></i><p>No activity bookings yet.</p><a class="btn btn-primary" href="activities.html" style="margin-top:10px">Browse activities</a></div>';
+      return;
+    }
+    var html = '<div class="booking-list">';
+    bookings.forEach(function(b) {
+      html += '<div class="booking-card"><div class="bc-left"><h3>' + esc(b.activity_name) + '</h3><p><i class="bi bi-geo-alt"></i> ' + esc(b.destination) + '</p><p><i class="bi bi-calendar3"></i> ' + formatDate(b.date) + ' · ' + b.persons + ' person' + (b.persons > 1 ? 's' : '') + ' · Ref: ' + esc(b.ref) + '</p></div><div class="bc-right"><span class="amount">' + money(b.amount) + '</span><br><span class="status ' + statusClass(b.status) + '">' + b.status + '</span><br><small style="color:var(--muted)">' + timeAgo(b.booked_at) + '</small></div></div>';
+    });
+    html += '</div>';
+    el.innerHTML = html;
+  }
+
+  function renderReviews(reviews) {
+    var el = document.getElementById('reviewsList');
+    if (reviews.length === 0) {
+      el.innerHTML = '<div class="empty-state"><i class="bi bi-chat-left-text"></i><p>No reviews written yet.</p></div>';
+      return;
+    }
+    var html = '';
+    reviews.forEach(function(r) {
+      var typeLabel = r.entity_type ? r.entity_type.charAt(0).toUpperCase() + r.entity_type.slice(1) : '';
+      html += '<div class="review-card"><div class="rc-head"><h3>' + esc(r.title || typeLabel + ' #' + r.entity_id) + '</h3><span class="stars">' + starsHtml(r.rating) + '</span></div>' + (r.comment ? '<p>' + esc(r.comment) + '</p>' : '') + '<div class="rc-meta">' + typeLabel + ' #' + r.entity_id + (r.verified ? ' · <span style="color:var(--forest)"><i class="bi bi-patch-check"></i> Verified visit</span>' : '') + ' · ' + timeAgo(r.created_at) + '</div></div>';
+    });
+    el.innerHTML = html;
+  }
+
+  function renderGuides(guides) {
+    var el = document.getElementById('guidesList');
+    if (guides.length === 0) {
+      el.innerHTML = '<div class="empty-state"><i class="bi bi-signpost-2"></i><p>No guides booked yet.</p><a class="btn btn-primary" href="guides.html" style="margin-top:10px">Browse guides</a></div>';
+      return;
+    }
+    var html = '';
+    guides.forEach(function(g) {
+      var initials = (g.name || '?').split(' ').map(function(w) { return w[0]; }).join('').substring(0, 2).toUpperCase();
+      html += '<div class="guide-card-mini"><div class="guide-avatar">' + initials + '</div><div class="gc-info"><h3>' + esc(g.name) + '</h3><p><i class="bi bi-geo-alt"></i> ' + esc(g.city || 'Multiple locations') + ' · <i class="bi bi-translate"></i> ' + esc(g.language || 'General') + ' · ' + (g.experience > 0 ? g.experience + ' yrs experience' : 'New guide') + '</p></div></div>';
+    });
+    el.innerHTML = html;
+  }
+
+  loadDashboard();
+})();
+</script>
+</body>
+</html>

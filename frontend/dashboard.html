@@ -1,70 +1,633 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - ComfyGo</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Dashboard · ComfyGo</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .today-banner{background:linear-gradient(135deg,#0d5c50,#084339);color:#fff;border-radius:13px;padding:20px 24px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+    .today-banner h2{font-family:'Playfair Display',serif;font-size:1.3rem;margin:0}
+    .today-banner p{margin:4px 0 0;font-size:.85rem;color:#ffffffcc}
+    .today-stats{display:flex;gap:24px;flex-wrap:wrap}
+    .today-stat{text-align:center}
+    .today-stat strong{display:block;font-size:1.6rem}
+    .today-stat small{font-size:.72rem;color:#ffffffaa}
+    .revenue-stat{background:linear-gradient(135deg,#0d5c50,#1a7a6a);color:#fff}
+    .revenue-stat strong{color:#7dffc8}
+    .status-bar{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+    .status-pip{padding:3px 10px;border-radius:999px;font-size:.72rem;font-weight:700}
+    .pip-confirmed{background:#e2f4ea;color:#177457}
+    .pip-pending{background:#fff0cf;color:#9a6716}
+    .pip-cancelled{background:#fff0ed;color:#a63b20}
+    .pip-completed{background:#e0f0ff;color:#1a6fb5}
+    .activity-feed{max-height:320px;overflow-y:auto}
+    .activity-item{padding:10px 0;border-bottom:1px solid var(--line);font-size:.85rem;display:flex;gap:12px;align-items:start}
+    .activity-item:last-child{border:0}
+    .activity-icon{width:32px;height:32px;border-radius:8px;display:grid;place-items:center;font-size:.8rem;flex-shrink:0}
+    .icon-create{background:#e2f4ea;color:#177457}
+    .icon-update{background:#e0f0ff;color:#1a6fb5}
+    .icon-delete{background:#fff0ed;color:#a63b20}
+    .icon-default{background:#f0f0f0;color:var(--muted)}
+    .activity-text{flex:1}
+    .activity-text b{display:block;font-size:.86rem}
+    .activity-text small{color:var(--muted);font-size:.78rem}
+    .empty-state{text-align:center;padding:40px 20px;color:var(--muted)}
+    .empty-state i{font-size:2rem;display:block;margin-bottom:8px;opacity:.4}
+    .booking-item{padding:10px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:.86rem}
+    .booking-item:last-child{border:0}
+    .booking-names b{color:var(--ink)}
+    .booking-names small{display:block;color:var(--muted);font-size:.8rem}
+    .booking-amount{font-weight:700;color:var(--forest);white-space:nowrap}
+    .stars{color:var(--gold);letter-spacing:1px}
+    .entity-badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:.68rem;font-weight:700}
+    .badge-hotel{background:#e0f0ff;color:#1a6fb5}
+    .badge-restaurant{background:#fff0cf;color:#9a6716}
+    .badge-package{background:#f0e8ff;color:#6b3fa0}
+    .badge-activity{background:#e2f4ea;color:#177457}
+    @media(max-width:800px){
+      .today-stats{gap:16px}
+      .today-stat strong{font-size:1.2rem}
+    }
+  </style>
 </head>
-<body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="dashboard.html">ComfyGo Admin</a>
-            <div class="d-flex">
-                <a href="hotels.html" class="btn btn-outline-light btn-sm me-2">Manage Hotels</a>
-                <button id="logout-btn" class="btn btn-danger btn-sm">Logout</button>
-            </div>
-        </div>
-    </nav>
+<body>
+<main class="dashboard">
+  <aside class="sidebar">
+    <a class="brand" href="index.html"><b class="brand-mark">C</b>ComfyGo</a>
+    <p class="side-label">Workspace</p>
+    <a class="side-link active" href="#" data-view="overview"><i class="bi bi-grid-1x2"></i>Overview</a>
+    <a class="side-link" href="#" data-view="hotels"><i class="bi bi-buildings"></i>Hotels</a>
+    <a class="side-link" href="#" data-view="bookings"><i class="bi bi-calendar2-check"></i>Bookings</a>
+    <a class="side-link" href="#" data-view="pkg-bookings"><i class="bi bi-map"></i>Package Bookings</a>
+    <a class="side-link" href="#" data-view="act-bookings"><i class="bi bi-compass"></i>Activity Bookings</a>
+    <a class="side-link" href="#" data-view="customers"><i class="bi bi-people"></i>Customers</a>
+    <a class="side-link" href="#" data-view="guides"><i class="bi bi-signpost-2"></i>Guides</a>
+    <p class="side-label" style="margin-top:24px">Content</p>
+    <a class="side-link" href="#" data-view="reviews"><i class="bi bi-chat-left-text"></i>Reviews</a>
+    <a class="side-link" href="#" data-view="restaurants"><i class="bi bi-utensils"></i>Restaurants</a>
+    <p class="side-label" style="margin-top:24px">Finance</p>
+    <a class="side-link" href="#" data-view="payments"><i class="bi bi-credit-card"></i>Payments</a>
+    <a class="side-link" href="#" data-view="activity"><i class="bi bi-clock-history"></i>Activity Log</a>
+    <a class="side-link" href="index.html"><i class="bi bi-box-arrow-left"></i>Back to site</a>
+    <a class="side-link logout" href="#"><i class="bi bi-box-arrow-left"></i>Log out</a>
+  </aside>
 
-    <div class="container mt-4">
-        <h2>System Overview</h2>
-        <hr>
-        
-        <div class="row mb-4">
-            <div class="col-md-3">
-                <div class="card text-white bg-primary">
-                    <div class="card-body">
-                        <h5 class="card-title">Customers</h5>
-                        <h2 id="stat-customers">0</h2>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card text-white bg-success">
-                    <div class="card-body">
-                        <h5 class="card-title">Hotels</h5>
-                        <h2 id="stat-hotels">0</h2>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card text-white bg-warning">
-                    <div class="card-body">
-                        <h5 class="card-title">Bookings</h5>
-                        <h2 id="stat-bookings">0</h2>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card text-white bg-info">
-                    <div class="card-body">
-                        <h5 class="card-title">Payments</h5>
-                        <h2 id="stat-payments">0</h2>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <section class="dash-content">
+    <header class="dash-top">
+      <div>
+        <h1 id="greeting">Good morning, Admin</h1>
+        <p class="muted" style="margin:0;font-size:.87rem" id="date-display"></p>
+      </div>
+      <div style="display:flex;gap:13px;align-items:center">
+        <span id="user-info" class="muted" style="font-size:.85rem"></span>
+        <button class="btn btn-ghost" id="notification-btn" title="Recent activity"><i class="bi bi-bell"></i> <span id="notif-badge" style="display:none;background:var(--orange);color:#fff;border-radius:999px;padding:1px 6px;font-size:.7rem;font-weight:700"></span></button>
+      </div>
+    </header>
 
-        <h4>Recent System Activity</h4>
-        <div id="activity-feed" class="list-group">
+    <div id="view-overview" class="dash-view">
+      <div class="today-banner" id="today-banner">
+        <div>
+          <h2 id="today-title">Today's Overview</h2>
+          <p id="today-subtitle">Loading activity...</p>
         </div>
+        <div class="today-stats" id="today-stats"></div>
+      </div>
+
+      <div class="stat-grid">
+        <article class="stat">
+          <div class="stat-head">Total bookings <i class="bi bi-calendar2"></i></div>
+          <strong id="stat-bookings">—</strong>
+          <span class="trend muted" id="trend-bookings">Loading...</span>
+        </article>
+        <article class="stat revenue-stat">
+          <div class="stat-head" style="color:#ffffffaa">Total revenue <i class="bi bi-currency-dollar"></i></div>
+          <strong id="stat-revenue">—</strong>
+          <span class="trend" style="color:#7dffc8" id="trend-revenue">Loading...</span>
+        </article>
+        <article class="stat">
+          <div class="stat-head">Hotels <i class="bi bi-building"></i></div>
+          <strong id="stat-hotels">—</strong>
+          <span class="trend muted" id="trend-hotels">Loading...</span>
+        </article>
+        <article class="stat">
+          <div class="stat-head">Customers <i class="bi bi-people"></i></div>
+          <strong id="stat-customers">—</strong>
+          <span class="trend muted" id="trend-customers">Loading...</span>
+        </article>
+      </div>
+
+      <div class="stat-grid">
+        <article class="stat">
+          <div class="stat-head">Package bookings <i class="bi bi-map"></i></div>
+          <strong id="stat-pkg">—</strong>
+          <span class="trend muted" id="trend-pkg">Loading...</span>
+        </article>
+        <article class="stat">
+          <div class="stat-head">Activity bookings <i class="bi bi-compass"></i></div>
+          <strong id="stat-act">—</strong>
+          <span class="trend muted" id="trend-act">Loading...</span>
+        </article>
+        <article class="stat">
+          <div class="stat-head">Reviews <i class="bi bi-chat-left-text"></i></div>
+          <strong id="stat-reviews">—</strong>
+          <span class="trend muted" id="trend-reviews">Loading...</span>
+        </article>
+        <article class="stat">
+          <div class="stat-head">Restaurants <i class="bi bi-utensils"></i></div>
+          <strong id="stat-restaurants">—</strong>
+          <span class="trend muted" id="trend-restaurants">Loading...</span>
+        </article>
+      </div>
+
+      <div class="dash-grid">
+        <article class="panel">
+          <h2>Recent bookings</h2>
+          <div id="overview-bookings"><p class="muted">Loading...</p></div>
+        </article>
+        <article class="panel">
+          <h2>Today's activity</h2>
+          <div id="overview-activity" class="activity-feed"><p class="muted">Loading...</p></div>
+        </article>
+      </div>
+
+      <div class="dash-grid" style="margin-top:20px">
+        <article class="panel">
+          <h2>Popular destinations</h2>
+          <div id="overview-destinations"><p class="muted">Loading...</p></div>
+        </article>
+        <article class="panel">
+          <h2>Booking status breakdown</h2>
+          <div id="overview-status"><p class="muted">Loading...</p></div>
+        </article>
+      </div>
     </div>
 
-    <script src="js/utils/storage.js"></script>
-    <script src="js/api/client.js"></script>
-    <script src="js/modules/auth.js"></script>
-    <script src="js/modules/dashboard.js"></script>
+    <div id="view-hotels" class="dash-view" style="display:none">
+      <article class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+          <h2 style="margin:0">All Hotels</h2>
+          <span id="hotels-count" class="muted" style="font-size:.85rem"></span>
+        </div>
+        <div id="hotels-list"><p class="muted">Loading hotels...</p></div>
+      </article>
+    </div>
+
+    <div id="view-bookings" class="dash-view" style="display:none">
+      <article class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+          <h2 style="margin:0">Hotel Bookings</h2>
+          <span id="bookings-count" class="muted" style="font-size:.85rem"></span>
+        </div>
+        <div id="bookings-list"><p class="muted">Loading bookings...</p></div>
+      </article>
+    </div>
+
+    <div id="view-pkg-bookings" class="dash-view" style="display:none">
+      <article class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+          <h2 style="margin:0">Package Bookings</h2>
+          <span id="pkg-bookings-count" class="muted" style="font-size:.85rem"></span>
+        </div>
+        <div id="pkg-bookings-list"><p class="muted">Loading package bookings...</p></div>
+      </article>
+    </div>
+
+    <div id="view-act-bookings" class="dash-view" style="display:none">
+      <article class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+          <h2 style="margin:0">Activity Bookings</h2>
+          <span id="act-bookings-count" class="muted" style="font-size:.85rem"></span>
+        </div>
+        <div id="act-bookings-list"><p class="muted">Loading activity bookings...</p></div>
+      </article>
+    </div>
+
+    <div id="view-customers" class="dash-view" style="display:none">
+      <article class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+          <h2 style="margin:0">All Customers</h2>
+          <span id="customers-count" class="muted" style="font-size:.85rem"></span>
+        </div>
+        <div id="customers-list"><p class="muted">Loading customers...</p></div>
+      </article>
+    </div>
+
+    <div id="view-guides" class="dash-view" style="display:none">
+      <article class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+          <h2 style="margin:0">All Guides</h2>
+          <span id="guides-count" class="muted" style="font-size:.85rem"></span>
+        </div>
+        <div id="guides-list"><p class="muted">Loading guides...</p></div>
+      </article>
+    </div>
+
+    <div id="view-reviews" class="dash-view" style="display:none">
+      <article class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+          <h2 style="margin:0">Customer Reviews</h2>
+          <span id="reviews-count" class="muted" style="font-size:.85rem"></span>
+        </div>
+        <div id="reviews-list"><p class="muted">Loading reviews...</p></div>
+      </article>
+    </div>
+
+    <div id="view-restaurants" class="dash-view" style="display:none">
+      <article class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+          <h2 style="margin:0">Restaurants</h2>
+          <span id="restaurants-count" class="muted" style="font-size:.85rem"></span>
+        </div>
+        <div id="restaurants-list"><p class="muted">Loading restaurants...</p></div>
+      </article>
+    </div>
+
+    <div id="view-payments" class="dash-view" style="display:none">
+      <article class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+          <h2 style="margin:0">Payments</h2>
+          <span id="payments-count" class="muted" style="font-size:.85rem"></span>
+        </div>
+        <div id="payments-list"><p class="muted">Loading payments...</p></div>
+      </article>
+    </div>
+
+    <div id="view-activity" class="dash-view" style="display:none">
+      <article class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+          <h2 style="margin:0">Activity Log</h2>
+          <span id="activity-count" class="muted" style="font-size:.85rem"></span>
+        </div>
+        <div id="activity-list"><p class="muted">Loading activity...</p></div>
+      </article>
+    </div>
+  </section>
+</main>
+
+<script src="js/utils/storage.js?v=5"></script>
+<script src="js/api/client.js?v=5"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  if (!Storage.isAuthenticated()) {
+    window.location.href = 'login.html';
+    return;
+  }
+  const role = Storage.getRole();
+  if (role !== 'admin' && role !== 'employee') {
+    window.location.href = 'index.html';
+    return;
+  }
+
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+  const displayName = role.charAt(0).toUpperCase() + role.slice(1);
+  document.getElementById('greeting').textContent = greeting + ', ' + displayName;
+  document.getElementById('user-info').textContent = displayName;
+  document.getElementById('date-display').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+  const sidebarLinks = document.querySelectorAll('.side-link[data-view]');
+  sidebarLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const view = link.getAttribute('data-view');
+      sidebarLinks.forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+      document.querySelectorAll('.dash-view').forEach(v => v.style.display = 'none');
+      const targetView = document.getElementById('view-' + view);
+      if (targetView) {
+        targetView.style.display = 'block';
+        loadViewData(view);
+      }
+    });
+  });
+
+  document.querySelector('.side-link.logout').addEventListener('click', (e) => {
+    e.preventDefault();
+    if (confirm('Are you sure you want to log out?')) {
+      Storage.clear();
+      window.location.href = 'index.html';
+    }
+  });
+
+  document.getElementById('notification-btn').addEventListener('click', () => {
+    sidebarLinks.forEach(l => l.classList.remove('active'));
+    document.querySelector('[data-view="activity"]').classList.add('active');
+    document.querySelectorAll('.dash-view').forEach(v => v.style.display = 'none');
+    document.getElementById('view-activity').style.display = 'block';
+    loadViewData('activity');
+  });
+
+  loadOverview();
+});
+
+const loadedViews = {};
+
+function loadViewData(view) {
+  if (loadedViews[view]) return;
+  loadedViews[view] = true;
+  switch (view) {
+    case 'hotels': loadHotels(); break;
+    case 'bookings': loadAllBookings(); break;
+    case 'pkg-bookings': loadPkgBookings(); break;
+    case 'act-bookings': loadActBookings(); break;
+    case 'customers': loadAllCustomers(); break;
+    case 'guides': loadAllGuides(); break;
+    case 'reviews': loadAllReviews(); break;
+    case 'restaurants': loadAllRestaurants(); break;
+    case 'payments': loadAllPayments(); break;
+    case 'activity': loadActivityLog(); break;
+  }
+}
+
+function escapeHtml(text) { const d = document.createElement('div'); d.textContent = text || ''; return d.innerHTML; }
+function formatMoney(n) { return '$' + Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }); }
+function timeAgo(ts) {
+  if (!ts) return '';
+  const diff = Date.now() - new Date(ts).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return mins + 'm ago';
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return hrs + 'h ago';
+  return Math.floor(hrs / 24) + 'd ago';
+}
+function statusClass(s) {
+  if (s === 'confirmed' || s === 'completed') return 'confirmed';
+  if (s === 'cancelled') return 'cancelled';
+  return 'pending';
+}
+function starsStr(r) { const n = Math.round(r || 0); return '<i class="bi bi-star-fill" style="color:var(--gold)"></i>'.repeat(n) + '<i class="bi bi-star" style="color:var(--gold)"></i>'.repeat(5 - n); }
+function actionIconClass(a) { return a === 'CREATE' ? 'icon-create' : a === 'DELETE' ? 'icon-delete' : a === 'UPDATE' ? 'icon-update' : 'icon-default'; }
+function actionIcon(a) { return a === 'CREATE' ? 'bi-plus-lg' : a === 'DELETE' ? 'bi-trash3' : a === 'UPDATE' ? 'bi-pencil' : 'bi-circle'; }
+function entityBadge(type) {
+  const cls = { hotel: 'badge-hotel', restaurant: 'badge-restaurant', package: 'badge-package', activity: 'badge-activity' };
+  return '<span class="entity-badge ' + (cls[type] || '') + '">' + escapeHtml(type) + '</span>';
+}
+
+async function loadOverview() {
+  let stats = {};
+  try {
+    stats = await apiClient.get('/admin/stats');
+
+    document.getElementById('stat-bookings').textContent = (stats.bookings || 0) + (stats.package_bookings || 0) + (stats.activity_bookings || 0);
+    document.getElementById('stat-revenue').textContent = formatMoney(stats.total_revenue);
+    document.getElementById('stat-hotels').textContent = stats.hotels || 0;
+    document.getElementById('stat-customers').textContent = stats.customers || 0;
+    document.getElementById('stat-pkg').textContent = stats.package_bookings || 0;
+    document.getElementById('stat-act').textContent = stats.activity_bookings || 0;
+    document.getElementById('stat-reviews').textContent = stats.reviews || 0;
+    document.getElementById('stat-restaurants').textContent = stats.restaurants || 0;
+
+    document.getElementById('trend-bookings').textContent = (stats.today_bookings || 0) + (stats.today_pkg_bookings || 0) + (stats.today_act_bookings || 0) + ' total today';
+    document.getElementById('trend-revenue').textContent = stats.today_revenue ? '+' + formatMoney(stats.today_revenue) + ' today' : 'No revenue today';
+    document.getElementById('trend-customers').textContent = stats.today_new_customers ? '+' + stats.today_new_customers + ' new today' : 'No new signups today';
+    document.getElementById('trend-hotels').textContent = 'In the system';
+    document.getElementById('trend-pkg').textContent = stats.today_pkg_bookings ? '+' + stats.today_pkg_bookings + ' today' : 'No packages today';
+    document.getElementById('trend-act').textContent = stats.today_act_bookings ? '+' + stats.today_act_bookings + ' today' : 'No activities today';
+    document.getElementById('trend-reviews').textContent = stats.today_reviews ? '+' + stats.today_reviews + ' today' : 'No reviews today';
+    document.getElementById('trend-restaurants').textContent = 'In the system';
+
+    const totalToday = (stats.today_bookings || 0) + (stats.today_payments || 0) + (stats.today_new_customers || 0) + (stats.today_pkg_bookings || 0) + (stats.today_act_bookings || 0) + (stats.today_reviews || 0);
+    document.getElementById('today-subtitle').textContent = totalToday > 0 ? totalToday + ' actions recorded today' : 'No activity recorded today yet';
+    document.getElementById('today-title').textContent = "Today's Overview";
+
+    document.getElementById('today-stats').innerHTML =
+      '<div class="today-stat"><strong>' + (stats.today_bookings || 0) + '</strong><small>Hotel bookings</small></div>' +
+      '<div class="today-stat"><strong>' + formatMoney(stats.today_revenue) + '</strong><small>Revenue</small></div>' +
+      '<div class="today-stat"><strong>' + ((stats.today_pkg_bookings || 0) + (stats.today_act_bookings || 0)) + '</strong><small>Package/Activity</small></div>' +
+      '<div class="today-stat"><strong>' + (stats.today_new_customers || 0) + '</strong><small>New customers</small></div>' +
+      '<div class="today-stat"><strong>' + (stats.today_reviews || 0) + '</strong><small>Reviews</small></div>';
+
+    const statusContainer = document.getElementById('overview-status');
+    const statusData = stats.booking_status || {};
+    const totalBookings = stats.bookings || 1;
+    const statusEntries = Object.entries(statusData);
+    if (statusEntries.length > 0) {
+      statusContainer.innerHTML = statusEntries.map(([status, count]) => {
+        const pct = Math.round((count / totalBookings) * 100);
+        return '<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:.88rem;margin-bottom:4px"><span class="status-pip pip-' + status + '">' + status + '</span><span><b>' + count + '</b> (' + pct + '%)</span></div><div style="height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden"><div style="height:100%;width:' + pct + '%;background:var(--forest);border-radius:3px"></div></div></div>';
+      }).join('');
+    } else {
+      statusContainer.innerHTML = '<p class="muted">No bookings yet.</p>';
+    }
+
+    const actionData = stats.recent_actions || {};
+    const totalActions = Object.values(actionData).reduce((a, b) => a + b, 0);
+    if (totalActions > 0) {
+      const badge = document.getElementById('notif-badge');
+      badge.textContent = totalActions;
+      badge.style.display = 'inline';
+    }
+  } catch (error) { console.error('Could not load stats:', error); }
+
+  try {
+    const bookings = await apiClient.get('/admin/bookings/enriched?limit=5');
+    const container = document.getElementById('overview-bookings');
+    if (bookings.length > 0) {
+      container.innerHTML = bookings.map(b =>
+        '<div class="booking-item"><div class="booking-names"><b>' + escapeHtml(b.customer_name) + '</b><small>' + escapeHtml(b.hotel_name) + (b.hotel_city ? ' · ' + escapeHtml(b.hotel_city) : '') + ' · ' + b.check_in_date + ' → ' + b.check_out_date + '</small></div><div style="display:flex;gap:8px;align-items:center"><span class="booking-amount">' + formatMoney(b.total_amount) + '</span><span class="status ' + statusClass(b.booking_status) + '">' + b.booking_status + '</span></div></div>'
+      ).join('');
+    } else {
+      container.innerHTML = '<div class="empty-state"><i class="bi bi-calendar2-check"></i>No bookings yet.</div>';
+    }
+  } catch (e) { document.getElementById('overview-bookings').innerHTML = '<p class="muted">Could not load bookings.</p>'; }
+
+  try {
+    const logs = await apiClient.get('/admin/audit-logs?limit=8');
+    const items = logs.items || [];
+    const container = document.getElementById('overview-activity');
+    if (items.length > 0) {
+      container.innerHTML = items.map(log =>
+        '<div class="activity-item"><div class="activity-icon ' + actionIconClass(log.action) + '"><i class="bi ' + actionIcon(log.action) + '"></i></div><div class="activity-text"><b>' + escapeHtml(log.action) + ' ' + escapeHtml(log.entity_type || 'resource') + (log.entity_id ? ' #' + log.entity_id : '') + '</b><small>' + (log.user_role || 'System') + (log.user_id ? ' #' + log.user_id : '') + ' · ' + (log.status_code || '') + ' · ' + timeAgo(log.timestamp) + '</small></div></div>'
+      ).join('');
+    } else {
+      container.innerHTML = '<div class="empty-state"><i class="bi bi-clock-history"></i>No recent activity.</div>';
+    }
+  } catch (e) { document.getElementById('overview-activity').innerHTML = '<p class="muted">Could not load activity.</p>'; }
+
+  try {
+    const destinations = await apiClient.get('/hotels/destinations');
+    const list = Array.isArray(destinations) ? destinations : (destinations.items || []);
+    const container = document.getElementById('overview-destinations');
+    if (list.length > 0) {
+      container.innerHTML = list.slice(0, 5).map(d =>
+        '<div class="booking-item"><span><b>' + escapeHtml(d.city) + ', ' + escapeHtml(d.country) + '</b><br><small class="muted">' + d.hotel_count + ' hotel' + (d.hotel_count !== 1 ? 's' : '') + '</small></span></div>'
+      ).join('');
+    } else {
+      container.innerHTML = '<div class="empty-state"><i class="bi bi-geo-alt"></i>No destinations yet.</div>';
+    }
+  } catch (e) { document.getElementById('overview-destinations').innerHTML = '<p class="muted">Could not load destinations.</p>'; }
+}
+
+async function loadHotels() {
+  const container = document.getElementById('hotels-list');
+  try {
+    const data = await apiClient.get('/hotels/?limit=100');
+    const hotels = data.items || [];
+    document.getElementById('hotels-count').textContent = hotels.length + ' hotel' + (hotels.length !== 1 ? 's' : '');
+    if (hotels.length > 0) {
+      container.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:.88rem"><thead><tr style="border-bottom:2px solid var(--line);text-align:left"><th style="padding:10px 8px;color:var(--muted)">ID</th><th style="padding:10px 8px;color:var(--muted)">Name</th><th style="padding:10px 8px;color:var(--muted)">City</th><th style="padding:10px 8px;color:var(--muted)">Country</th><th style="padding:10px 8px;color:var(--muted)">Rating</th></tr></thead><tbody>' +
+        hotels.map(h => '<tr style="border-bottom:1px solid var(--line)"><td style="padding:10px 8px">' + h.hotel_id + '</td><td style="padding:10px 8px;font-weight:600">' + escapeHtml(h.hotel_name) + '</td><td style="padding:10px 8px">' + escapeHtml(h.hotel_city) + '</td><td style="padding:10px 8px">' + escapeHtml(h.hotel_country) + '</td><td style="padding:10px 8px">' + (h.hotel_rating || 'N/A') + '</td></tr>').join('') +
+        '</tbody></table>';
+    } else {
+      container.innerHTML = '<div class="empty-state"><i class="bi bi-buildings"></i>No hotels found.</div>';
+    }
+  } catch (e) { container.innerHTML = '<p class="muted">Could not load hotels.</p>'; }
+}
+
+async function loadAllBookings() {
+  const container = document.getElementById('bookings-list');
+  try {
+    const bookings = await apiClient.get('/admin/bookings/enriched?limit=100');
+    document.getElementById('bookings-count').textContent = bookings.length + ' booking' + (bookings.length !== 1 ? 's' : '');
+    if (bookings.length > 0) {
+      container.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:.86rem"><thead><tr style="border-bottom:2px solid var(--line);text-align:left"><th style="padding:10px 8px;color:var(--muted)">#</th><th style="padding:10px 8px;color:var(--muted)">Customer</th><th style="padding:10px 8px;color:var(--muted)">Hotel</th><th style="padding:10px 8px;color:var(--muted)">Check-in</th><th style="padding:10px 8px;color:var(--muted)">Check-out</th><th style="padding:10px 8px;color:var(--muted)">Guests</th><th style="padding:10px 8px;color:var(--muted)">Amount</th><th style="padding:10px 8px;color:var(--muted)">Status</th></tr></thead><tbody>' +
+        bookings.map(b => '<tr style="border-bottom:1px solid var(--line)"><td style="padding:10px 8px">' + b.booking_id + '</td><td style="padding:10px 8px;font-weight:600">' + escapeHtml(b.customer_name) + '<br><small style="color:var(--muted);font-weight:400">' + escapeHtml(b.customer_email) + '</small></td><td style="padding:10px 8px">' + escapeHtml(b.hotel_name) + '<br><small style="color:var(--muted)">' + escapeHtml(b.hotel_city) + '</small></td><td style="padding:10px 8px">' + b.check_in_date + '</td><td style="padding:10px 8px">' + b.check_out_date + '</td><td style="padding:10px 8px">' + b.number_of_guests + '</td><td style="padding:10px 8px;font-weight:700;color:var(--forest)">' + formatMoney(b.total_amount) + '</td><td style="padding:10px 8px"><span class="status ' + statusClass(b.booking_status) + '">' + b.booking_status + '</span></td></tr>').join('') +
+        '</tbody></table>';
+    } else {
+      container.innerHTML = '<div class="empty-state"><i class="bi bi-calendar2-check"></i>No bookings yet.</div>';
+    }
+  } catch (e) { container.innerHTML = '<p class="muted">Could not load bookings.</p>'; }
+}
+
+async function loadPkgBookings() {
+  const container = document.getElementById('pkg-bookings-list');
+  try {
+    const bookings = await apiClient.get('/admin/package-bookings/enriched?limit=100');
+    document.getElementById('pkg-bookings-count').textContent = bookings.length + ' booking' + (bookings.length !== 1 ? 's' : '');
+    if (bookings.length > 0) {
+      container.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:.86rem"><thead><tr style="border-bottom:2px solid var(--line);text-align:left"><th style="padding:10px 8px;color:var(--muted)">Ref</th><th style="padding:10px 8px;color:var(--muted)">Customer</th><th style="padding:10px 8px;color:var(--muted)">Package</th><th style="padding:10px 8px;color:var(--muted)">Travel Date</th><th style="padding:10px 8px;color:var(--muted)">Persons</th><th style="padding:10px 8px;color:var(--muted)">Amount</th><th style="padding:10px 8px;color:var(--muted)">Status</th></tr></thead><tbody>' +
+        bookings.map(b => '<tr style="border-bottom:1px solid var(--line)"><td style="padding:10px 8px;font-family:monospace;font-size:.8rem">' + escapeHtml(b.booking_ref) + '</td><td style="padding:10px 8px;font-weight:600">' + escapeHtml(b.customer_name) + '<br><small style="color:var(--muted);font-weight:400">' + escapeHtml(b.customer_email) + '</small></td><td style="padding:10px 8px">' + escapeHtml(b.package_name) + '<br><small style="color:var(--muted)">' + escapeHtml(b.destination) + '</small></td><td style="padding:10px 8px">' + b.travel_date + '</td><td style="padding:10px 8px">' + b.num_persons + '</td><td style="padding:10px 8px;font-weight:700;color:var(--forest)">' + formatMoney(b.total_amount) + '</td><td style="padding:10px 8px"><span class="status ' + statusClass(b.status) + '">' + b.status + '</span></td></tr>').join('') +
+        '</tbody></table>';
+    } else {
+      container.innerHTML = '<div class="empty-state"><i class="bi bi-map"></i>No package bookings yet.</div>';
+    }
+  } catch (e) { container.innerHTML = '<p class="muted">Could not load package bookings.</p>'; }
+}
+
+async function loadActBookings() {
+  const container = document.getElementById('act-bookings-list');
+  try {
+    const bookings = await apiClient.get('/admin/activity-bookings/enriched?limit=100');
+    document.getElementById('act-bookings-count').textContent = bookings.length + ' booking' + (bookings.length !== 1 ? 's' : '');
+    if (bookings.length > 0) {
+      container.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:.86rem"><thead><tr style="border-bottom:2px solid var(--line);text-align:left"><th style="padding:10px 8px;color:var(--muted)">Ref</th><th style="padding:10px 8px;color:var(--muted)">Customer</th><th style="padding:10px 8px;color:var(--muted)">Activity</th><th style="padding:10px 8px;color:var(--muted)">Date</th><th style="padding:10px 8px;color:var(--muted)">Persons</th><th style="padding:10px 8px;color:var(--muted)">Amount</th><th style="padding:10px 8px;color:var(--muted)">Status</th></tr></thead><tbody>' +
+        bookings.map(b => '<tr style="border-bottom:1px solid var(--line)"><td style="padding:10px 8px;font-family:monospace;font-size:.8rem">' + escapeHtml(b.booking_ref) + '</td><td style="padding:10px 8px;font-weight:600">' + escapeHtml(b.customer_name) + '<br><small style="color:var(--muted);font-weight:400">' + escapeHtml(b.customer_email) + '</small></td><td style="padding:10px 8px">' + escapeHtml(b.activity_name) + '<br><small style="color:var(--muted)">' + escapeHtml(b.destination) + '</small></td><td style="padding:10px 8px">' + b.booking_date + '</td><td style="padding:10px 8px">' + b.num_persons + '</td><td style="padding:10px 8px;font-weight:700;color:var(--forest)">' + formatMoney(b.total_amount) + '</td><td style="padding:10px 8px"><span class="status ' + statusClass(b.status) + '">' + b.status + '</span></td></tr>').join('') +
+        '</tbody></table>';
+    } else {
+      container.innerHTML = '<div class="empty-state"><i class="bi bi-compass"></i>No activity bookings yet.</div>';
+    }
+  } catch (e) { container.innerHTML = '<p class="muted">Could not load activity bookings.</p>'; }
+}
+
+async function loadAllCustomers() {
+  const container = document.getElementById('customers-list');
+  try {
+    const data = await apiClient.get('/customers/?limit=100');
+    const customers = data.items || [];
+    document.getElementById('customers-count').textContent = customers.length + ' customer' + (customers.length !== 1 ? 's' : '');
+    if (customers.length > 0) {
+      container.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:.88rem"><thead><tr style="border-bottom:2px solid var(--line);text-align:left"><th style="padding:10px 8px;color:var(--muted)">ID</th><th style="padding:10px 8px;color:var(--muted)">Name</th><th style="padding:10px 8px;color:var(--muted)">Email</th><th style="padding:10px 8px;color:var(--muted)">Phone</th><th style="padding:10px 8px;color:var(--muted)">Joined</th></tr></thead><tbody>' +
+        customers.map(c => '<tr style="border-bottom:1px solid var(--line)"><td style="padding:10px 8px">' + c.customer_id + '</td><td style="padding:10px 8px;font-weight:600">' + escapeHtml(c.customer_name || 'N/A') + '</td><td style="padding:10px 8px">' + escapeHtml(c.customer_email || 'N/A') + '</td><td style="padding:10px 8px">' + escapeHtml(c.customer_phone || '—') + '</td><td style="padding:10px 8px">' + timeAgo(c.created_at) + '</td></tr>').join('') +
+        '</tbody></table>';
+    } else {
+      container.innerHTML = '<div class="empty-state"><i class="bi bi-people"></i>No customers yet.</div>';
+    }
+  } catch (e) { container.innerHTML = '<p class="muted">Could not load customers.</p>'; }
+}
+
+async function loadAllGuides() {
+  const container = document.getElementById('guides-list');
+  try {
+    const data = await apiClient.get('/guides/?limit=100');
+    const guides = data.items || [];
+    document.getElementById('guides-count').textContent = guides.length + ' guide' + (guides.length !== 1 ? 's' : '');
+    if (guides.length > 0) {
+      container.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:.88rem"><thead><tr style="border-bottom:2px solid var(--line);text-align:left"><th style="padding:10px 8px;color:var(--muted)">ID</th><th style="padding:10px 8px;color:var(--muted)">Name</th><th style="padding:10px 8px;color:var(--muted)">Email</th><th style="padding:10px 8px;color:var(--muted)">City</th><th style="padding:10px 8px;color:var(--muted)">Language</th><th style="padding:10px 8px;color:var(--muted)">Experience</th></tr></thead><tbody>' +
+        guides.map(g => '<tr style="border-bottom:1px solid var(--line)"><td style="padding:10px 8px">' + g.guide_id + '</td><td style="padding:10px 8px;font-weight:600">' + escapeHtml(g.guide_name) + '</td><td style="padding:10px 8px">' + escapeHtml(g.guide_email || 'N/A') + '</td><td style="padding:10px 8px">' + escapeHtml(g.guide_city || '—') + '</td><td style="padding:10px 8px">' + escapeHtml(g.guide_language || 'General') + '</td><td style="padding:10px 8px">' + (g.guide_experience ? g.guide_experience + ' yrs' : 'New') + '</td></tr>').join('') +
+        '</tbody></table>';
+    } else {
+      container.innerHTML = '<div class="empty-state"><i class="bi bi-compass"></i>No guides yet.</div>';
+    }
+  } catch (e) { container.innerHTML = '<p class="muted">Could not load guides.</p>'; }
+}
+
+async function loadAllReviews() {
+  const container = document.getElementById('reviews-list');
+  try {
+    const reviews = await apiClient.get('/admin/reviews/enriched?limit=100');
+    document.getElementById('reviews-count').textContent = reviews.length + ' review' + (reviews.length !== 1 ? 's' : '');
+    if (reviews.length > 0) {
+      container.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:.86rem"><thead><tr style="border-bottom:2px solid var(--line);text-align:left"><th style="padding:10px 8px;color:var(--muted)">#</th><th style="padding:10px 8px;color:var(--muted)">Customer</th><th style="padding:10px 8px;color:var(--muted)">Entity</th><th style="padding:10px 8px;color:var(--muted)">Rating</th><th style="padding:10px 8px;color:var(--muted)">Title</th><th style="padding:10px 8px;color:var(--muted)">Comment</th><th style="padding:10px 8px;color:var(--muted)">Date</th></tr></thead><tbody>' +
+        reviews.map(r => '<tr style="border-bottom:1px solid var(--line)"><td style="padding:10px 8px">' + r.review_id + '</td><td style="padding:10px 8px;font-weight:600">' + escapeHtml(r.customer_name) + '<br><small style="color:var(--muted);font-weight:400">' + escapeHtml(r.customer_email) + '</small></td><td style="padding:10px 8px">' + entityBadge(r.entity_type) + ' #' + r.entity_id + '</td><td style="padding:10px 8px"><span class="stars">' + starsStr(r.rating) + '</span> ' + r.rating + '</td><td style="padding:10px 8px">' + escapeHtml(r.title || '—') + '</td><td style="padding:10px 8px;max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escapeHtml(r.comment || '—') + '</td><td style="padding:10px 8px">' + timeAgo(r.created_at) + '</td></tr>').join('') +
+        '</tbody></table>';
+    } else {
+      container.innerHTML = '<div class="empty-state"><i class="bi bi-chat-left-text"></i>No reviews yet.</div>';
+    }
+  } catch (e) { container.innerHTML = '<p class="muted">Could not load reviews.</p>'; }
+}
+
+async function loadAllRestaurants() {
+  const container = document.getElementById('restaurants-list');
+  try {
+    const restaurants = await apiClient.get('/admin/restaurants?limit=100');
+    document.getElementById('restaurants-count').textContent = restaurants.length + ' restaurant' + (restaurants.length !== 1 ? 's' : '');
+    if (restaurants.length > 0) {
+      container.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:.86rem"><thead><tr style="border-bottom:2px solid var(--line);text-align:left"><th style="padding:10px 8px;color:var(--muted)">ID</th><th style="padding:10px 8px;color:var(--muted)">Name</th><th style="padding:10px 8px;color:var(--muted)">Destination</th><th style="padding:10px 8px;color:var(--muted)">Cuisine</th><th style="padding:10px 8px;color:var(--muted)">Rating</th><th style="padding:10px 8px;color:var(--muted)">Price</th><th style="padding:10px 8px;color:var(--muted)">Features</th></tr></thead><tbody>' +
+        restaurants.map(r => {
+          const feats = [];
+          if (r.vegetarian_options) feats.push('<span style="color:#177457">Veg</span>');
+          if (r.outdoor_seating) feats.push('<span style="color:#1a6fb5">Outdoor</span>');
+          if (r.delivery_available) feats.push('<span style="color:#6b3fa0">Delivery</span>');
+          if (r.is_featured) feats.push('<span style="color:var(--orange)">Featured</span>');
+          return '<tr style="border-bottom:1px solid var(--line)"><td style="padding:10px 8px">' + r.restaurant_id + '</td><td style="padding:10px 8px;font-weight:600">' + escapeHtml(r.restaurant_name) + '</td><td style="padding:10px 8px">' + escapeHtml(r.destination) + '</td><td style="padding:10px 8px">' + escapeHtml(r.cuisine) + '</td><td style="padding:10px 8px"><span class="stars">' + starsStr(r.rating) + '</span> ' + (r.rating || 'N/A') + '</td><td style="padding:10px 8px">' + escapeHtml(r.price_range || '—') + '</td><td style="padding:10px 8px;font-size:.8rem">' + feats.join(' · ') + '</td></tr>';
+        }).join('') +
+        '</tbody></table>';
+    } else {
+      container.innerHTML = '<div class="empty-state"><i class="bi bi-utensils"></i>No restaurants yet.</div>';
+    }
+  } catch (e) { container.innerHTML = '<p class="muted">Could not load restaurants.</p>'; }
+}
+
+async function loadAllPayments() {
+  const container = document.getElementById('payments-list');
+  try {
+    const data = await apiClient.get('/payments/?limit=100');
+    const payments = data.items || [];
+    document.getElementById('payments-count').textContent = payments.length + ' payment' + (payments.length !== 1 ? 's' : '');
+    if (payments.length > 0) {
+      const total = payments.reduce((s, p) => s + Number(p.payment_amount || 0), 0);
+      container.innerHTML =
+        '<div style="margin-bottom:16px;padding:12px 16px;background:var(--mint);border-radius:10px;font-size:.9rem"><b>Total:</b> ' + formatMoney(total) + ' from ' + payments.length + ' payment' + (payments.length !== 1 ? 's' : '') + '</div>' +
+        '<table style="width:100%;border-collapse:collapse;font-size:.86rem"><thead><tr style="border-bottom:2px solid var(--line);text-align:left"><th style="padding:10px 8px;color:var(--muted)">ID</th><th style="padding:10px 8px;color:var(--muted)">Booking</th><th style="padding:10px 8px;color:var(--muted)">Amount</th><th style="padding:10px 8px;color:var(--muted)">Method</th><th style="padding:10px 8px;color:var(--muted)">Status</th><th style="padding:10px 8px;color:var(--muted)">Transaction</th><th style="padding:10px 8px;color:var(--muted)">Date</th></tr></thead><tbody>' +
+        payments.map(p => '<tr style="border-bottom:1px solid var(--line)"><td style="padding:10px 8px">' + p.payment_id + '</td><td style="padding:10px 8px">#' + p.booking_id + '</td><td style="padding:10px 8px;font-weight:700;color:var(--forest)">' + formatMoney(p.payment_amount) + '</td><td style="padding:10px 8px">' + escapeHtml(p.payment_method || 'N/A') + '</td><td style="padding:10px 8px"><span class="status ' + statusClass(p.payment_status) + '">' + p.payment_status + '</span></td><td style="padding:10px 8px;font-size:.8rem;color:var(--muted)">' + escapeHtml(p.transaction_id || '—') + '</td><td style="padding:10px 8px">' + timeAgo(p.payment_date) + '</td></tr>').join('') +
+        '</tbody></table>';
+    } else {
+      container.innerHTML = '<div class="empty-state"><i class="bi bi-credit-card"></i>No payments yet.</div>';
+    }
+  } catch (e) { container.innerHTML = '<p class="muted">Could not load payments.</p>'; }
+}
+
+async function loadActivityLog() {
+  const container = document.getElementById('activity-list');
+  try {
+    const logs = await apiClient.get('/admin/audit-logs?limit=50');
+    const items = logs.items || [];
+    document.getElementById('activity-count').textContent = (logs.total || items.length) + ' log entries';
+    if (items.length > 0) {
+      container.innerHTML = items.map(log =>
+        '<div class="activity-item"><div class="activity-icon ' + actionIconClass(log.action) + '"><i class="bi ' + actionIcon(log.action) + '"></i></div><div class="activity-text" style="flex:1"><b>' + escapeHtml(log.action) + ' ' + escapeHtml(log.entity_type || 'resource') + (log.entity_id ? ' #' + log.entity_id : '') + '</b><small>' + (log.user_role ? escapeHtml(log.user_role) : 'System') + (log.user_id ? ' #' + log.user_id : '') + ' · ' + log.request_method + ' ' + escapeHtml(log.request_path) + ' · ' + (log.status_code || '—') + ' · ' + (log.duration_ms ? Math.round(log.duration_ms) + 'ms' : '—') + ' · ' + timeAgo(log.timestamp) + (log.ip_address ? ' · ' + escapeHtml(log.ip_address) : '') + '</small></div></div>'
+      ).join('');
+    } else {
+      container.innerHTML = '<div class="empty-state"><i class="bi bi-clock-history"></i>No activity recorded yet.</div>';
+    }
+  } catch (e) { container.innerHTML = '<p class="muted">Could not load activity.</p>'; }
+}
+</script>
 </body>
 </html>

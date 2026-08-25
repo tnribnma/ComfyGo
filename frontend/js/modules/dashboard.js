@@ -1,42 +1,107 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    const statCustomers = document.getElementById('stat-customers');
-    const statHotels = document.getElementById('stat-hotels');
-    const statBookings = document.getElementById('stat-bookings');
-    const statPayments = document.getElementById('stat-payments');
-    const activityFeed = document.getElementById('activity-feed');
+  if (!Storage.isAuthenticated()) {
+    window.location.href = 'login.html';
+    return;
+  }
 
-    if (!statCustomers) return; 
-
-    try {
-        const stats = await apiClient.get('/admin/stats');
-        statCustomers.innerText = stats.customers;
-        statHotels.innerText = stats.hotels;
-        statBookings.innerText = stats.bookings;
-        statPayments.innerText = stats.payments;
-
-        const logs = await apiClient.get('/admin/recent-activity?limit=5');
-        
-        if (logs.length === 0) {
-            activityFeed.innerHTML = '<p class="text-muted">No recent activity.</p>';
-            return;
-        }
-
-        activityFeed.innerHTML = logs.map(log => `
-            <div class="activity-item">
-                <div class="d-flex justify-content-between">
-                    <strong>${log.action} ${log.entity_type || ''}</strong>
-                    <small class="text-muted">${new Date(log.timestamp).toLocaleString()}</small>
-                </div>
-                <div class="mt-1">
-                    <span class="badge bg-${log.user_role === 'admin' ? 'dark' : 'primary'}">${log.user_role || 'Unknown'}</span>
-                    <span class="text-muted">User ID: ${log.user_id || 'N/A'}</span> 
-                    <span class="text-muted">| ${log.request_method} ${log.request_path}</span>
-                    <span class="badge bg-${log.status_code < 400 ? 'success' : 'danger'} ms-2">${log.status_code}</span>
-                </div>
-            </div>
-        `).join('');
-
-    } catch (error) {
-        console.error('Failed to load dashboard data:', error);
-    }
+  setupLogout();
+  loadDashboardStats();
 });
+
+function setupLogout() {
+  const logoutLink = document.querySelector('.logout');
+  
+  if (logoutLink) {
+    logoutLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (confirm('Are you sure you want to log out?')) {
+        Storage.clear();
+        window.location.href = 'index.html';
+      }
+    });
+  }
+}
+
+async function loadDashboardStats() {
+  try {
+    const stats = await apiClient.get('/admin/stats');
+    
+    updateStatElement('stat-bookings', stats.bookings);
+    updateStatElement('stat-revenue', '$' + formatNumber(stats.revenue || 0));
+    updateStatElement('stat-hotels', stats.hotels);
+    updateStatElement('stat-rating', stats.rating || '4.8/5');
+    
+    try {
+      const bookings = await apiClient.get('/bookings/?limit=3');
+      loadRecentBookings(bookings.items || []);
+    } catch (e) {
+      console.log('Could not load bookings');
+    }
+    
+  } catch (error) {
+    console.error('Failed to load dashboard stats:', error);
+    showToast('Could not load dashboard data');
+  }
+}
+
+function updateStatElement(elementId, value) {
+  const element = document.querySelector('[data-' + elementId.replace('stat-', '') + ']');
+  if (element) {
+    const strong = element.querySelector('strong');
+    if (strong) {
+      strong.textContent = value;
+    }
+  }
+}
+
+function loadRecentBookings(bookings) {
+  const container = document.querySelector('.panel');
+  if (!container || bookings.length === 0) return;
+  
+  const panels = document.querySelectorAll('.panel');
+  let bookingPanel = null;
+  
+  panels.forEach(panel => {
+    if (panel.querySelector('h2') && panel.querySelector('h2').textContent.includes('Recent')) {
+      bookingPanel = panel;
+    }
+  });
+  
+  if (!bookingPanel) return;
+  
+  const html = bookings.map(booking => `
+    <div class="booking-item">
+      <span>
+        <b>${booking.customer_name || 'Guest'}</b><br>
+        <small class="muted">${booking.hotel_name || 'Hotel'} · ${booking.check_in_date} – ${booking.check_out_date}</small>
+      </span>
+      <span class="status ${booking.booking_status ? booking.booking_status.toLowerCase() : 'pending'}">
+        ${booking.booking_status || 'Pending'}
+      </span>
+    </div>
+  `).join('');
+  
+  const items = bookingPanel.querySelectorAll('.booking-item');
+  if (items.length > 0) {
+    items.forEach(item => item.remove());
+  }
+  
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  bookingPanel.appendChild(div);
+}
+
+function formatNumber(num) {
+  return num.toLocaleString('en-US', { maximumFractionDigits: 0 });
+}
+
+function showToast(message) {
+  const toast = document.querySelector('#toast');
+  if (toast) {
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => {
+      toast.classList.remove('show');
+    }, 3000);
+  }
+}

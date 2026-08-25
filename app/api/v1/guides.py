@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import APIRouter, Query
 from ...dependencies import DBDep, CurrentAdminDep
 from ...schemas.guide import GuideOut, GuideCreate, GuideUpdate
@@ -10,6 +11,47 @@ router = APIRouter(prefix="/guides", tags=["Guides"])
 def list_guides(db: DBDep, skip: int = 0, limit: int = 100):
     items = GuideService(db).list(skip=skip, limit=limit)
     return PaginatedResponse[GuideOut](items=items, total=len(items), page=1, page_size=limit, pages=1)
+
+
+@router.get("/search", response_model=PaginatedResponse[GuideOut])
+def search_guides(
+    db: DBDep,
+    city: Optional[str] = None,
+    language: Optional[str] = None,
+    min_experience: Optional[int] = None,
+    is_available: Optional[bool] = None,
+    min_rate: Optional[float] = None,
+    max_rate: Optional[float] = None,
+    specialty: Optional[str] = None,
+    sort_by: Optional[str] = Query(None, description="experience, price_asc, price_desc, rating, name"),
+    skip: int = 0,
+    limit: int = 50,
+):
+    items = GuideService(db).search(
+        city=city, language=language, min_experience=min_experience,
+        is_available=is_available, min_rate=min_rate, max_rate=max_rate,
+        specialty=specialty, sort_by=sort_by, skip=skip, limit=limit,
+    )
+    return PaginatedResponse[GuideOut](items=items, total=len(items), page=1, page_size=limit, pages=1)
+
+
+@router.get("/by-city", response_model=list[GuideOut])
+def guides_by_city(db: DBDep, city: str = Query(...)):
+    """Return guides who operate in a specific city."""
+    from ...repositories import GuideRepository
+    repo = GuideRepository(db)
+    return repo.list_by_city(city)
+
+
+@router.get("/filter-options")
+def filter_options(db: DBDep):
+    """Return available cities, languages and specialties for filter dropdowns."""
+    svc = GuideService(db)
+    return {
+        "cities": svc.list_cities(),
+        "languages": svc.list_languages(),
+    }
+
 
 @router.get("/top", response_model=PaginatedResponse[GuideOut])
 def top_guides(db: DBDep, limit: int = 10):

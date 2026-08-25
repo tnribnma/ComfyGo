@@ -50,7 +50,10 @@ class BookingService:
                 "Hotel is not available for the selected dates",
                 detail=f"hotel_id={payload.hotel_id}, dates={payload.check_in_date}→{payload.check_out_date}",
             )
-        return self.repo.create(payload.model_dump())
+        data = payload.model_dump()
+        if not data.get('booking_date'):
+            data['booking_date'] = date.today()
+        return self.repo.create(data)
 
     def update(self, booking_id: int, payload: BookingUpdate):
         booking = self.repo.get_or_404(booking_id)

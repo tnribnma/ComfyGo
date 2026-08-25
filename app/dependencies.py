@@ -62,8 +62,6 @@ def get_current_user(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="User no longer exists",
         )
-        request.state.user_id = user_id
-        request.state.user_role = role
     return user
 
 

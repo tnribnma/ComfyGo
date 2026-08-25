@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Hotel · ComfyGo</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .hotel-hero{position:relative;height:50vh;min-height:350px;overflow:hidden;margin-top:60px;background:var(--sage);display:flex;align-items:flex-end}
+    .hotel-hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+    .hotel-hero::after{content:'';position:absolute;inset:0;background:linear-gradient(transparent 40%,rgba(16,44,39,.85))}
+    .hotel-hero-content{position:relative;z-index:2;padding:40px 0;width:100%}
+    .hotel-hero h1{font-family:'Playfair Display',serif;font-size:2.5rem;color:#fff;margin:0 0 8px}
+    .hotel-hero .hero-meta{display:flex;flex-wrap:wrap;gap:14px;color:rgba(255,255,255,.85);font-size:.9rem}
+    .detail-body{max-width:1000px;margin:0 auto;padding:40px 20px 80px}
+    .detail-grid{display:grid;grid-template-columns:1fr 360px;gap:40px}
+    .section-title{font-family:'Playfair Display',serif;font-size:1.5rem;margin:30px 0 14px;display:flex;align-items:center;gap:10px}
+    .amenity-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}
+    .amenity-item{display:flex;align-items:center;gap:8px;padding:10px 14px;background:#f4f7f6;border-radius:10px;font-size:.88rem}
+    .amenity-item i{color:var(--forest);font-size:1.1rem}
+    .room-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:16px;transition:.25s}
+    .room-card:hover{box-shadow:var(--shadow)}
+    .room-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+    .room-header h3{font-size:1.1rem;margin:0}
+    .room-price{font-size:1.3rem;font-weight:700;color:var(--forest)}
+    .room-price small{font-size:.78rem;font-weight:400;color:var(--muted)}
+    .room-meta{display:flex;gap:16px;margin:10px 0;font-size:.85rem;color:var(--muted)}
+    .room-meta span{display:flex;align-items:center;gap:4px}
+    .room-amenities{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+    .room-tag{padding:4px 10px;border-radius:999px;font-size:.75rem;background:var(--mint);color:var(--forest);font-weight:600}
+    .gallery-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0}
+    .gallery-grid img{width:100%;height:130px;object-fit:cover;border-radius:10px;cursor:pointer;transition:.2s}
+    .gallery-grid img:hover{transform:scale(1.03)}
+    .review-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:12px}
+    .review-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+    .review-stars{color:var(--gold);font-size:.9rem}
+    .review-meta{font-size:.82rem;color:var(--muted)}
+    .review-title{font-weight:700;margin:0 0 6px}
+    .review-text{font-size:.9rem;color:var(--muted);line-height:1.7;margin:0}
+    .verified-badge{display:inline-flex;align-items:center;gap:4px;color:var(--forest);font-size:.78rem;font-weight:600}
+    .booking-sidebar{position:sticky;top:80px}
+    .booking-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px;margin-bottom:16px}
+    .booking-card h3{margin:0 0 16px;font-size:1.1rem}
+    .booking-field{margin-bottom:14px}
+    .booking-field label{display:block;font-size:.82rem;font-weight:600;margin-bottom:4px;color:var(--muted)}
+    .booking-field input,.booking-field select{width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:8px;font-size:.9rem}
+    .booking-total{display:flex;justify-content:space-between;padding:14px 0;border-top:2px solid var(--line);margin-top:10px;font-weight:700}
+    @media(max-width:800px){.detail-grid{grid-template-columns:1fr}.amenity-grid{grid-template-columns:repeat(2,1fr)}.gallery-grid{grid-template-columns:repeat(2,1fr)}}
+  </style>
+</head>
+<body>
+<nav class="site-nav"><div class="shell nav-inner"><a class="brand" href="index.html"><b class="brand-mark">C</b>ComfyGo</a><div class="nav-links"><a href="index.html">Explore</a><a class="active" href="hotels.html">Hotels</a><a href="destinations.html">Destinations</a><a href="guides.html">Guides</a></div><div class="nav-actions"><a href="login.html">Log in</a><a class="btn btn-ghost" href="register.html">Sign up</a></div><button class="menu-toggle" data-menu><i class="bi bi-list"></i></button></div></nav>
+
+<div id="hotel-root" style="min-height:500px"><div class="shell section"><p class="muted">Loading hotel…</p></div></div>
+
+<footer class="footer"><div class="shell"><div class="footer-grid"><div><a class="brand" href="index.html"><b class="brand-mark">C</b>ComfyGo</a><p>Thoughtful stays and real local experiences.</p></div><div><h4>Explore</h4><a href="hotels.html">Hotels</a><a href="guides.html">Guides</a><a href="destinations.html">Destinations</a></div><div><h4>Support</h4><a href="#">Help</a><a href="#">Privacy</a><a href="#">Terms</a></div></div><div class="footer-bottom">© 2026 ComfyGo.</div></div></footer>
+
+<script src="js/utils/storage.js?v=5"></script>
+<script src="js/api/client.js?v=5"></script>
+<script src="js/ui.js?v=5"></script>
+<script>
+function escapeHtml(t){const d=document.createElement('div');d.textContent=t||'';return d.innerHTML}
+function parseJson(s){try{return JSON.parse(s)}catch{return[]}}
+
+document.addEventListener('DOMContentLoaded',async()=>{
+  const root=document.getElementById('hotel-root');
+  const params=new URLSearchParams(window.location.search);
+  const hotelId=params.get('id');
+  if(!hotelId){root.innerHTML='<div class="shell section"><p>No hotel selected. <a href="hotels.html">Browse hotels</a></p></div>';return}
+  try{
+    const[hotel,roomsData,reviewsData]=await Promise.all([
+      apiClient.get('/hotels/'+hotelId),
+      apiClient.get('/rooms/?hotel_id='+hotelId),
+      apiClient.get('/reviews/?entity_type=hotel&entity_id='+hotelId),
+    ]);
+    const rooms=roomsData.items||[];
+    const reviews=reviewsData.items||[];
+    const amenities=['Wi-Fi','Restaurant','Pool','Parking','Spa','Room Service','Laundry','Concierge','Airport Shuttle','Garden','Bar','Gym'];
+    const haveAmenities=amenities.slice(0,rand(6,10));
+    const stars='<i class="bi bi-star-fill" style="color:var(--gold)"></i>'.repeat(Math.round(hotel.hotel_rating||0))+'<i class="bi bi-star" style="color:var(--gold)"></i>'.repeat(5-Math.round(hotel.hotel_rating||0));
+
+    root.innerHTML=`
+      <header class="hotel-hero">
+        <img src="https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=85" alt="${escapeHtml(hotel.hotel_name)}">
+        <div class="hotel-hero-content"><div class="shell">
+          <h1>${escapeHtml(hotel.hotel_name)}</h1>
+          <div class="hero-meta">
+            <span><i class="bi bi-geo-alt"></i> ${escapeHtml(hotel.hotel_address)}, ${escapeHtml(hotel.hotel_city)}</span>
+            <span style="color:#ffbd95">${stars} ${hotel.hotel_rating||''}</span>
+            <span><i class="bi bi-building"></i> ${rooms.length} room types</span>
+          </div>
+        </div></div>
+      </header>
+      <div class="detail-body"><div class="detail-grid"><div class="detail-main">
+        <h2 class="section-title"><i class="bi bi-info-circle"></i> About</h2>
+        <p style="color:var(--muted);line-height:1.8">${escapeHtml(hotel.hotel_description||'A wonderful hotel.')}</p>
+        <h2 class="section-title"><i class="bi bi-images"></i> Gallery</h2>
+        <div class="gallery-grid">
+          <img src="https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=400&q=85" alt="Room">
+          <img src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=400&q=85" alt="Pool">
+          <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=400&q=85" alt="Restaurant">
+          <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=400&q=85" alt="Lobby">
+        </div>
+        <h2 class="section-title"><i class="bi bi-patch-check"></i> Amenities</h2>
+        <div class="amenity-grid">
+          ${haveAmenities.map(a=>`<div class="amenity-item"><i class="bi bi-check-circle-fill"></i>${a}</div>`).join('')}
+        </div>
+        <h2 class="section-title"><i class="bi bi-door-open"></i> Available Rooms</h2>
+        ${rooms.length>0?rooms.map(r=>renderRoom(r)).join(''):'<p class="muted">No rooms available at the moment.</p>'}
+        <h2 class="section-title"><i class="bi bi-chat-dots"></i> Guest Reviews (${reviews.length})</h2>
+        ${reviews.length>0?reviews.map(r=>renderReview(r)).join(''):'<p class="muted">No reviews yet. Be the first to review!</p>'}
+      </div>
+      <aside class="booking-sidebar">
+        <div class="booking-card">
+          <h3><i class="bi bi-calendar-check"></i> Book this stay</h3>
+          <div class="booking-field"><label>Check-in</label><input type="date"></div>
+          <div class="booking-field"><label>Check-out</label><input type="date"></div>
+          <div class="booking-field"><label>Guests</label><select><option>2 Adults</option><option>1 Adult</option><option>3 Adults</option><option>Family (2+2)</option></select></div>
+          ${rooms.length>0?`<div class="booking-field"><label>Room type</label><select>${rooms.map(r=>`<option value="${r.room_id}">${escapeHtml(r.room_type)} — $${r.price_per_night}/night</option>`).join('')}</select></div>`:''}
+          <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:10px" onclick="alert('Booking system coming soon!')"><i class="bi bi-calendar-check"></i> Check availability</button>
+        </div>
+        <div class="booking-card" style="background:var(--mint);border-color:var(--mint)">
+          <h3><i class="bi bi-telephone"></i> Contact</h3>
+          <p style="margin:0;font-size:.9rem"><i class="bi bi-telephone"></i> ${escapeHtml(hotel.hotel_phone||'N/A')}</p>
+          <p style="margin:8px 0 0;font-size:.9rem"><i class="bi bi-envelope"></i> ${escapeHtml(hotel.hotel_email||'N/A')}</p>
+        </div>
+      </aside></div></div>
+    `;
+    document.title=hotel.hotel_name+' · ComfyGo';
+  }catch(e){
+    root.innerHTML=`<div class="shell section" style="text-align:center;padding:100px 20px"><h2>Hotel not found</h2><a class="btn btn-primary" href="hotels.html" style="margin-top:20px">Browse hotels</a></div>`;
+  }
+});
+
+function renderRoom(r){
+  const ams=parseJson(r.amenities);
+  return `<div class="room-card">
+    <div class="room-header"><div><h3>${escapeHtml(r.room_type)}</h3><span style="font-size:.82rem;color:var(--muted)">${escapeHtml(r.room_name||'')}</span></div><div class="room-price">$${r.price_per_night}<small>/night</small></div></div>
+    <p style="margin:0 0 8px;font-size:.88rem;color:var(--muted)">${escapeHtml(r.room_description||'')}</p>
+    <div class="room-meta"><span><i class="bi bi-people"></i> ${escapeHtml(r.room_capacity||'2 adults')}</span><span><i class="bi bi-layers"></i> ${escapeHtml(r.room_beds||'1 bed')}</span><span><i class="bi bi-arrows-fullscreen"></i> ${r.room_size_sqm||30} m²</span><span><i class="bi bi-door-open"></i> ${r.available_rooms} left</span></div>
+    <div class="room-amenities">${ams.map(a=>`<span class="room-tag">${a}</span>`).join('')}${r.breakfast_included?'<span class="room-tag" style="background:#fff0cf;color:#9a6716">Breakfast incl.</span>':''}</div>
+  </div>`;
+}
+
+function renderReview(r){
+  const stars='<i class="bi bi-star-fill" style="color:var(--gold)"></i>'.repeat(r.rating)+'<i class="bi bi-star" style="color:var(--gold)"></i>'.repeat(5-r.rating);
+  return `<div class="review-card">
+    <div class="review-header"><span class="review-stars">${stars}</span><span class="review-meta">${r.created_at?new Date(r.created_at).toLocaleDateString():''}</span></div>
+    ${r.title?`<p class="review-title">${escapeHtml(r.title)}</p>`:''}
+    <p class="review-text">${escapeHtml(r.comment||'')}</p>
+    ${r.verified_visit?'<span class="verified-badge"><i class="bi bi-patch-check-fill"></i> Verified visit</span>':''}
+    ${r.helpful_count>0?`<span style="font-size:.8rem;color:var(--muted);margin-left:12px"><i class="bi bi-hand-thumbs-up"></i> ${r.helpful_count} found this helpful</span>`:''}
+  </div>`;
+}
+
+function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+</script>
+</body>
+</html>
