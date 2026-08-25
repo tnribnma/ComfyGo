@@ -1,7 +1,7 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from ..repositories import FlightRepository
-from ..schemas.flight import FlightCreate, FlightBookSeat
+from ..schemas.flight import FlightCreate, FlightUpdate, FlightBookSeat
 
 
 class FlightService:
@@ -18,6 +18,9 @@ class FlightService:
 
     def create(self, payload: FlightCreate):
         return self.repo.create(payload.model_dump())
+
+    def update(self, flight_id: int, payload: FlightUpdate):
+        return self.repo.update(flight_id, payload.model_dump(exclude_unset=True))
 
     def delete(self, flight_id: int) -> None:
         self.repo.delete(flight_id)

@@ -24,6 +24,21 @@ class PromotionCreate(PromotionBase):
     pass
 
 
+class PromotionUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    destination: Optional[str] = None
+    original_price: Optional[float] = None
+    discount_percent: Optional[int] = None
+    final_price: Optional[float] = None
+    promo_code: Optional[str] = None
+    valid_from: Optional[datetime] = None
+    valid_until: Optional[datetime] = None
+    image: Optional[str] = None
+    badge: Optional[str] = None
+    is_active: Optional[bool] = None
+
+
 class PromotionOut(PromotionBase, TimestampedOut):
     promotion_id: int
     model_config = ConfigDict(from_attributes=True)

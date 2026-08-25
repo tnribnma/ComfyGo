@@ -1,7 +1,7 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from ..repositories import LocalTransportRepository
-from ..schemas.local_transport import LocalTransportCreate, LocalTransportBook
+from ..schemas.local_transport import LocalTransportCreate, LocalTransportUpdate, LocalTransportBook
 
 
 class LocalTransportService:
@@ -21,6 +21,9 @@ class LocalTransportService:
 
     def create(self, payload: LocalTransportCreate):
         return self.repo.create(payload.model_dump())
+
+    def update(self, transport_id: int, payload: LocalTransportUpdate):
+        return self.repo.update(transport_id, payload.model_dump(exclude_unset=True))
 
     def delete(self, transport_id: int) -> None:
         self.repo.delete(transport_id)

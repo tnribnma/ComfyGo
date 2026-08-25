@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from ..repositories import PromotionRepository
-from ..schemas.promotion import PromotionCreate
+from ..schemas.promotion import PromotionCreate, PromotionUpdate
 
 
 class PromotionService:
@@ -15,6 +15,9 @@ class PromotionService:
 
     def create(self, payload: PromotionCreate):
         return self.repo.create(payload.model_dump())
+
+    def update(self, promotion_id: int, payload: PromotionUpdate):
+        return self.repo.update(promotion_id, payload.model_dump(exclude_unset=True))
 
     def delete(self, promotion_id: int) -> None:
         self.repo.delete(promotion_id)

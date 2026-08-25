@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Query
 from ...dependencies import DBDep, CurrentAdminDep
-from ...schemas.promotion import PromotionOut, PromotionCreate
+from ...schemas.promotion import PromotionOut, PromotionCreate, PromotionUpdate
 from ...schemas.common import PaginatedResponse
 from ...services import PromotionService
 
@@ -21,3 +21,13 @@ def get_promotion(promotion_id: int, db: DBDep):
 @router.post("/", response_model=PromotionOut, status_code=201)
 def create_promotion(payload: PromotionCreate, db: DBDep, _: CurrentAdminDep):
     return PromotionService(db).create(payload)
+
+
+@router.put("/{promotion_id}", response_model=PromotionOut)
+def update_promotion(promotion_id: int, payload: PromotionUpdate, db: DBDep, _: CurrentAdminDep):
+    return PromotionService(db).update(promotion_id, payload)
+
+
+@router.delete("/{promotion_id}", status_code=204)
+def delete_promotion(promotion_id: int, db: DBDep, _: CurrentAdminDep):
+    PromotionService(db).delete(promotion_id)

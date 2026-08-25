@@ -38,6 +38,11 @@ def create_activity(payload: ActivityCreate, db: DBDep, _: CurrentAdminDep):
     return ActivityService(db).create(payload)
 
 
+@router.put("/{activity_id}", response_model=ActivityOut)
+def update_activity(activity_id: int, payload: ActivityUpdate, db: DBDep, _: CurrentAdminDep):
+    return ActivityService(db).update(activity_id, payload)
+
+
 @router.delete("/{activity_id}", status_code=204)
 def delete_activity(activity_id: int, db: DBDep, _: CurrentAdminDep):
     ActivityService(db).delete(activity_id)

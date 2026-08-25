@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Query
 from ...dependencies import DBDep, CurrentAdminDep
-from ...schemas.local_transport import LocalTransportOut, LocalTransportCreate, LocalTransportBook
+from ...schemas.local_transport import LocalTransportOut, LocalTransportCreate, LocalTransportUpdate, LocalTransportBook
 from ...schemas.common import PaginatedResponse
 from ...services import LocalTransportService
 
@@ -39,3 +39,13 @@ def book_transport(transport_id: int, payload: LocalTransportBook, db: DBDep):
 @router.post("/", response_model=LocalTransportOut, status_code=201)
 def create_transport(payload: LocalTransportCreate, db: DBDep, _: CurrentAdminDep):
     return LocalTransportService(db).create(payload)
+
+
+@router.put("/{transport_id}", response_model=LocalTransportOut)
+def update_transport(transport_id: int, payload: LocalTransportUpdate, db: DBDep, _: CurrentAdminDep):
+    return LocalTransportService(db).update(transport_id, payload)
+
+
+@router.delete("/{transport_id}", status_code=204)
+def delete_transport(transport_id: int, db: DBDep, _: CurrentAdminDep):
+    LocalTransportService(db).delete(transport_id)

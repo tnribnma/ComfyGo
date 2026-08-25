@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Query
 from ...dependencies import DBDep, CurrentAdminDep
-from ...schemas.flight import FlightOut, FlightCreate, FlightBookSeat
+from ...schemas.flight import FlightOut, FlightCreate, FlightUpdate, FlightBookSeat
 from ...schemas.common import PaginatedResponse
 from ...services import FlightService
 
@@ -37,3 +37,13 @@ def book_flight_seats(flight_id: int, payload: FlightBookSeat, db: DBDep):
 @router.post("/", response_model=FlightOut, status_code=201)
 def create_flight(payload: FlightCreate, db: DBDep, _: CurrentAdminDep):
     return FlightService(db).create(payload)
+
+
+@router.put("/{flight_id}", response_model=FlightOut)
+def update_flight(flight_id: int, payload: FlightUpdate, db: DBDep, _: CurrentAdminDep):
+    return FlightService(db).update(flight_id, payload)
+
+
+@router.delete("/{flight_id}", status_code=204)
+def delete_flight(flight_id: int, db: DBDep, _: CurrentAdminDep):
+    FlightService(db).delete(flight_id)

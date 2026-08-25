@@ -29,6 +29,27 @@ class FlightCreate(FlightBase):
     pass
 
 
+class FlightUpdate(BaseModel):
+    airline: Optional[str] = None
+    flight_number: Optional[str] = None
+    departure_city: Optional[str] = None
+    arrival_city: Optional[str] = None
+    departure_airport: Optional[str] = None
+    arrival_airport: Optional[str] = None
+    departure_time: Optional[str] = None
+    arrival_time: Optional[str] = None
+    duration: Optional[str] = None
+    stops: Optional[str] = None
+    price_economy: Optional[float] = None
+    price_business: Optional[float] = None
+    price_first_class: Optional[float] = None
+    cabin_class: Optional[str] = None
+    baggage_allowance: Optional[str] = None
+    total_seats: Optional[int] = None
+    available_seats: Optional[int] = None
+    image: Optional[str] = None
+
+
 class FlightBookSeat(BaseModel):
     seats_to_book: int = Field(default=1, ge=1, le=9)
     cabin_class: str = Field(default="Economy", pattern="^(Economy|Business|First)$")

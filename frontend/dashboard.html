@@ -53,6 +53,44 @@
       .today-stats{gap:16px}
       .today-stat strong{font-size:1.2rem}
     }
+
+    .view-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;gap:12px;flex-wrap:wrap}
+    .view-toolbar h2{margin:0}
+    .btn-add{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:.85rem;font-weight:600;border:none;cursor:pointer;background:var(--forest);color:#fff;transition:opacity .15s}
+    .btn-add:hover{opacity:.85}
+    .btn-add i{font-size:.9rem}
+    .action-btns{display:flex;gap:6px}
+    .btn-sm-edit,.btn-sm-delete{border:none;border-radius:6px;padding:5px 10px;font-size:.78rem;cursor:pointer;font-weight:600;transition:opacity .15s}
+    .btn-sm-edit{background:#e0f0ff;color:#1a6fb5}
+    .btn-sm-edit:hover{opacity:.8}
+    .btn-sm-delete{background:#fff0ed;color:#a63b20}
+    .btn-sm-delete:hover{opacity:.8}
+    .action-col{white-space:nowrap}
+
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;justify-content:center;align-items:center}
+    .modal-overlay.active{display:flex}
+    .modal-box{background:#fff;border-radius:14px;padding:28px 32px;max-width:600px;width:95%;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+    .modal-box h2{margin:0 0 18px;font-size:1.15rem}
+    .modal-box label{display:block;margin-bottom:12px;font-size:.85rem;font-weight:600;color:var(--ink)}
+    .modal-box label span{display:block;margin-bottom:4px;font-weight:500;color:var(--muted)}
+    .modal-box input,.modal-box select,.modal-box textarea{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:8px;font-size:.88rem;font-family:inherit}
+    .modal-box input:focus,.modal-box select:focus,.modal-box textarea:focus{outline:none;border-color:var(--forest);box-shadow:0 0 0 2px rgba(13,92,80,.15)}
+    .modal-box textarea{resize:vertical;min-height:70px}
+    .modal-row{display:flex;gap:14px}
+    .modal-row>label{flex:1}
+    .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+    .modal-actions .btn-cancel{padding:9px 18px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer;font-size:.85rem;font-weight:600}
+    .modal-actions .btn-save{padding:9px 18px;border:none;border-radius:8px;background:var(--forest);color:#fff;cursor:pointer;font-size:.85rem;font-weight:600}
+    .modal-actions .btn-save:hover{opacity:.85}
+
+    .confirm-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:10000;justify-content:center;align-items:center}
+    .confirm-overlay.active{display:flex}
+    .confirm-box{background:#fff;border-radius:14px;padding:28px 32px;max-width:400px;width:95%;box-shadow:0 20px 60px rgba(0,0,0,.25);text-align:center}
+    .confirm-box h2{margin:0 0 8px;font-size:1.1rem}
+    .confirm-box p{margin:0 0 20px;color:var(--muted);font-size:.88rem}
+    .confirm-box .confirm-actions{display:flex;gap:10px;justify-content:center}
+    .confirm-box .btn-cancel{padding:9px 18px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer;font-size:.85rem;font-weight:600}
+    .confirm-box .btn-danger{padding:9px 18px;border:none;border-radius:8px;background:#a63b20;color:#fff;cursor:pointer;font-size:.85rem;font-weight:600}
   </style>
 </head>
 <body>
@@ -62,15 +100,21 @@
     <p class="side-label">Workspace</p>
     <a class="side-link active" href="#" data-view="overview"><i class="bi bi-grid-1x2"></i>Overview</a>
     <a class="side-link" href="#" data-view="hotels"><i class="bi bi-buildings"></i>Hotels</a>
+    <a class="side-link" href="#" data-view="packages"><i class="bi bi-map"></i>Tour Packages</a>
+    <a class="side-link" href="#" data-view="activities"><i class="bi bi-compass"></i>Activities</a>
+    <a class="side-link" href="#" data-view="tourist-spots"><i class="bi bi-geo-alt"></i>Tourist Spots</a>
     <a class="side-link" href="#" data-view="bookings"><i class="bi bi-calendar2-check"></i>Bookings</a>
-    <a class="side-link" href="#" data-view="pkg-bookings"><i class="bi bi-map"></i>Package Bookings</a>
-    <a class="side-link" href="#" data-view="act-bookings"><i class="bi bi-compass"></i>Activity Bookings</a>
+    <a class="side-link" href="#" data-view="pkg-bookings"><i class="bi bi-journal-check"></i>Package Bookings</a>
+    <a class="side-link" href="#" data-view="act-bookings"><i class="bi bi-ticket-perforated"></i>Activity Bookings</a>
     <a class="side-link" href="#" data-view="customers"><i class="bi bi-people"></i>Customers</a>
     <a class="side-link" href="#" data-view="guides"><i class="bi bi-signpost-2"></i>Guides</a>
     <p class="side-label" style="margin-top:24px">Content</p>
     <a class="side-link" href="#" data-view="reviews"><i class="bi bi-chat-left-text"></i>Reviews</a>
     <a class="side-link" href="#" data-view="restaurants"><i class="bi bi-utensils"></i>Restaurants</a>
-    <p class="side-label" style="margin-top:24px">Finance</p>
+    <a class="side-link" href="#" data-view="promotions"><i class="bi bi-megaphone"></i>Promotions</a>
+    <p class="side-label" style="margin-top:24px">Operations</p>
+    <a class="side-link" href="#" data-view="flights"><i class="bi bi-airplane"></i>Flights</a>
+    <a class="side-link" href="#" data-view="local-transport"><i class="bi bi-bus-front"></i>Local Transport</a>
     <a class="side-link" href="#" data-view="payments"><i class="bi bi-credit-card"></i>Payments</a>
     <a class="side-link" href="#" data-view="activity"><i class="bi bi-clock-history"></i>Activity Log</a>
     <a class="side-link" href="index.html"><i class="bi bi-box-arrow-left"></i>Back to site</a>
@@ -97,7 +141,6 @@
         </div>
         <div class="today-stats" id="today-stats"></div>
       </div>
-
       <div class="stat-grid">
         <article class="stat">
           <div class="stat-head">Total bookings <i class="bi bi-calendar2"></i></div>
@@ -120,7 +163,6 @@
           <span class="trend muted" id="trend-customers">Loading...</span>
         </article>
       </div>
-
       <div class="stat-grid">
         <article class="stat">
           <div class="stat-head">Package bookings <i class="bi bi-map"></i></div>
@@ -143,7 +185,6 @@
           <span class="trend muted" id="trend-restaurants">Loading...</span>
         </article>
       </div>
-
       <div class="dash-grid">
         <article class="panel">
           <h2>Recent bookings</h2>
@@ -154,7 +195,6 @@
           <div id="overview-activity" class="activity-feed"><p class="muted">Loading...</p></div>
         </article>
       </div>
-
       <div class="dash-grid" style="margin-top:20px">
         <article class="panel">
           <h2>Popular destinations</h2>
@@ -169,18 +209,60 @@
 
     <div id="view-hotels" class="dash-view" style="display:none">
       <article class="panel">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
-          <h2 style="margin:0">All Hotels</h2>
-          <span id="hotels-count" class="muted" style="font-size:.85rem"></span>
+        <div class="view-toolbar">
+          <h2>All Hotels</h2>
+          <div style="display:flex;gap:10px;align-items:center">
+            <span id="hotels-count" class="muted" style="font-size:.85rem"></span>
+            <button class="btn-add" onclick="openModal('hotel')"><i class="bi bi-plus-lg"></i>Add Hotel</button>
+          </div>
         </div>
         <div id="hotels-list"><p class="muted">Loading hotels...</p></div>
       </article>
     </div>
 
+    <div id="view-packages" class="dash-view" style="display:none">
+      <article class="panel">
+        <div class="view-toolbar">
+          <h2>Tour Packages</h2>
+          <div style="display:flex;gap:10px;align-items:center">
+            <span id="packages-count" class="muted" style="font-size:.85rem"></span>
+            <button class="btn-add" onclick="openModal('package')"><i class="bi bi-plus-lg"></i>Add Package</button>
+          </div>
+        </div>
+        <div id="packages-list"><p class="muted">Loading packages...</p></div>
+      </article>
+    </div>
+
+    <div id="view-activities" class="dash-view" style="display:none">
+      <article class="panel">
+        <div class="view-toolbar">
+          <h2>Activities</h2>
+          <div style="display:flex;gap:10px;align-items:center">
+            <span id="activities-count" class="muted" style="font-size:.85rem"></span>
+            <button class="btn-add" onclick="openModal('activity')"><i class="bi bi-plus-lg"></i>Add Activity</button>
+          </div>
+        </div>
+        <div id="activities-list"><p class="muted">Loading activities...</p></div>
+      </article>
+    </div>
+
+    <div id="view-tourist-spots" class="dash-view" style="display:none">
+      <article class="panel">
+        <div class="view-toolbar">
+          <h2>Tourist Spots</h2>
+          <div style="display:flex;gap:10px;align-items:center">
+            <span id="tourist-spots-count" class="muted" style="font-size:.85rem"></span>
+            <button class="btn-add" onclick="openModal('tourist-spot')"><i class="bi bi-plus-lg"></i>Add Tourist Spot</button>
+          </div>
+        </div>
+        <div id="tourist-spots-list"><p class="muted">Loading tourist spots...</p></div>
+      </article>
+    </div>
+
     <div id="view-bookings" class="dash-view" style="display:none">
       <article class="panel">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
-          <h2 style="margin:0">Hotel Bookings</h2>
+        <div class="view-toolbar">
+          <h2>Hotel Bookings</h2>
           <span id="bookings-count" class="muted" style="font-size:.85rem"></span>
         </div>
         <div id="bookings-list"><p class="muted">Loading bookings...</p></div>
@@ -189,8 +271,8 @@
 
     <div id="view-pkg-bookings" class="dash-view" style="display:none">
       <article class="panel">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
-          <h2 style="margin:0">Package Bookings</h2>
+        <div class="view-toolbar">
+          <h2>Package Bookings</h2>
           <span id="pkg-bookings-count" class="muted" style="font-size:.85rem"></span>
         </div>
         <div id="pkg-bookings-list"><p class="muted">Loading package bookings...</p></div>
@@ -199,8 +281,8 @@
 
     <div id="view-act-bookings" class="dash-view" style="display:none">
       <article class="panel">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
-          <h2 style="margin:0">Activity Bookings</h2>
+        <div class="view-toolbar">
+          <h2>Activity Bookings</h2>
           <span id="act-bookings-count" class="muted" style="font-size:.85rem"></span>
         </div>
         <div id="act-bookings-list"><p class="muted">Loading activity bookings...</p></div>
@@ -209,8 +291,8 @@
 
     <div id="view-customers" class="dash-view" style="display:none">
       <article class="panel">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
-          <h2 style="margin:0">All Customers</h2>
+        <div class="view-toolbar">
+          <h2>All Customers</h2>
           <span id="customers-count" class="muted" style="font-size:.85rem"></span>
         </div>
         <div id="customers-list"><p class="muted">Loading customers...</p></div>
@@ -219,9 +301,12 @@
 
     <div id="view-guides" class="dash-view" style="display:none">
       <article class="panel">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
-          <h2 style="margin:0">All Guides</h2>
-          <span id="guides-count" class="muted" style="font-size:.85rem"></span>
+        <div class="view-toolbar">
+          <h2>All Guides</h2>
+          <div style="display:flex;gap:10px;align-items:center">
+            <span id="guides-count" class="muted" style="font-size:.85rem"></span>
+            <button class="btn-add" onclick="openModal('guide')"><i class="bi bi-plus-lg"></i>Add Guide</button>
+          </div>
         </div>
         <div id="guides-list"><p class="muted">Loading guides...</p></div>
       </article>
@@ -229,8 +314,8 @@
 
     <div id="view-reviews" class="dash-view" style="display:none">
       <article class="panel">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
-          <h2 style="margin:0">Customer Reviews</h2>
+        <div class="view-toolbar">
+          <h2>Customer Reviews</h2>
           <span id="reviews-count" class="muted" style="font-size:.85rem"></span>
         </div>
         <div id="reviews-list"><p class="muted">Loading reviews...</p></div>
@@ -239,18 +324,60 @@
 
     <div id="view-restaurants" class="dash-view" style="display:none">
       <article class="panel">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
-          <h2 style="margin:0">Restaurants</h2>
-          <span id="restaurants-count" class="muted" style="font-size:.85rem"></span>
+        <div class="view-toolbar">
+          <h2>Restaurants</h2>
+          <div style="display:flex;gap:10px;align-items:center">
+            <span id="restaurants-count" class="muted" style="font-size:.85rem"></span>
+            <button class="btn-add" onclick="openModal('restaurant')"><i class="bi bi-plus-lg"></i>Add Restaurant</button>
+          </div>
         </div>
         <div id="restaurants-list"><p class="muted">Loading restaurants...</p></div>
       </article>
     </div>
 
+    <div id="view-promotions" class="dash-view" style="display:none">
+      <article class="panel">
+        <div class="view-toolbar">
+          <h2>Promotions</h2>
+          <div style="display:flex;gap:10px;align-items:center">
+            <span id="promotions-count" class="muted" style="font-size:.85rem"></span>
+            <button class="btn-add" onclick="openModal('promotion')"><i class="bi bi-plus-lg"></i>Add Promotion</button>
+          </div>
+        </div>
+        <div id="promotions-list"><p class="muted">Loading promotions...</p></div>
+      </article>
+    </div>
+
+    <div id="view-flights" class="dash-view" style="display:none">
+      <article class="panel">
+        <div class="view-toolbar">
+          <h2>Flights</h2>
+          <div style="display:flex;gap:10px;align-items:center">
+            <span id="flights-count" class="muted" style="font-size:.85rem"></span>
+            <button class="btn-add" onclick="openModal('flight')"><i class="bi bi-plus-lg"></i>Add Flight</button>
+          </div>
+        </div>
+        <div id="flights-list"><p class="muted">Loading flights...</p></div>
+      </article>
+    </div>
+
+    <div id="view-local-transport" class="dash-view" style="display:none">
+      <article class="panel">
+        <div class="view-toolbar">
+          <h2>Local Transport</h2>
+          <div style="display:flex;gap:10px;align-items:center">
+            <span id="local-transport-count" class="muted" style="font-size:.85rem"></span>
+            <button class="btn-add" onclick="openModal('local-transport')"><i class="bi bi-plus-lg"></i>Add Transport</button>
+          </div>
+        </div>
+        <div id="local-transport-list"><p class="muted">Loading transport...</p></div>
+      </article>
+    </div>
+
     <div id="view-payments" class="dash-view" style="display:none">
       <article class="panel">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
-          <h2 style="margin:0">Payments</h2>
+        <div class="view-toolbar">
+          <h2>Payments</h2>
           <span id="payments-count" class="muted" style="font-size:.85rem"></span>
         </div>
         <div id="payments-list"><p class="muted">Loading payments...</p></div>
@@ -259,8 +386,8 @@
 
     <div id="view-activity" class="dash-view" style="display:none">
       <article class="panel">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
-          <h2 style="margin:0">Activity Log</h2>
+        <div class="view-toolbar">
+          <h2>Activity Log</h2>
           <span id="activity-count" class="muted" style="font-size:.85rem"></span>
         </div>
         <div id="activity-list"><p class="muted">Loading activity...</p></div>
@@ -268,6 +395,24 @@
     </div>
   </section>
 </main>
+
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <h2 id="modal-title">Add Item</h2>
+    <form id="modal-form"></form>
+  </div>
+</div>
+
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-box">
+    <h2>Delete this item?</h2>
+    <p id="confirm-text">This action cannot be undone.</p>
+    <div class="confirm-actions">
+      <button class="btn-cancel" onclick="closeConfirm()">Cancel</button>
+      <button class="btn-danger" id="confirm-delete-btn" onclick="confirmDelete()">Delete</button>
+    </div>
+  </div>
+</div>
 
 <script src="js/utils/storage.js?v=5"></script>
 <script src="js/api/client.js?v=5"></script>
@@ -332,6 +477,9 @@ function loadViewData(view) {
   loadedViews[view] = true;
   switch (view) {
     case 'hotels': loadHotels(); break;
+    case 'packages': loadPackages(); break;
+    case 'activities': loadActivities(); break;
+    case 'tourist-spots': loadTouristSpots(); break;
     case 'bookings': loadAllBookings(); break;
     case 'pkg-bookings': loadPkgBookings(); break;
     case 'act-bookings': loadActBookings(); break;
@@ -339,6 +487,9 @@ function loadViewData(view) {
     case 'guides': loadAllGuides(); break;
     case 'reviews': loadAllReviews(); break;
     case 'restaurants': loadAllRestaurants(); break;
+    case 'promotions': loadPromotions(); break;
+    case 'flights': loadFlights(); break;
+    case 'local-transport': loadLocalTransport(); break;
     case 'payments': loadAllPayments(); break;
     case 'activity': loadActivityLog(); break;
   }
@@ -368,6 +519,311 @@ function entityBadge(type) {
   const cls = { hotel: 'badge-hotel', restaurant: 'badge-restaurant', package: 'badge-package', activity: 'badge-activity' };
   return '<span class="entity-badge ' + (cls[type] || '') + '">' + escapeHtml(type) + '</span>';
 }
+function thExtra(actions) { return actions ? '<th style="padding:10px 8px;color:var(--muted)">Actions</th>' : ''; }
+function tdExtra(actions, entity, id) {
+  if (!actions) return '';
+  return '<td class="action-col" style="padding:10px 8px"><div class="action-btns"><button class="btn-sm-edit" onclick="editItem(\'' + entity + '\',' + id + ')"><i class="bi bi-pencil"></i> Edit</button><button class="btn-sm-delete" onclick="deleteItem(\'' + entity + '\',' + id + ')"><i class="bi bi-trash3"></i> Del</button></div></td>';
+}
+
+const ENTITY_SCHEMAS = {
+  hotel: {
+    title: 'Hotel',
+    api: '/hotels',
+    fields: [
+      { name: 'hotel_name', label: 'Hotel Name', required: true, max: 150 },
+      { name: 'hotel_address', label: 'Address', required: true, max: 255 },
+      { name: 'hotel_city', label: 'City', required: true, max: 100 },
+      { name: 'hotel_country', label: 'Country', required: true, max: 100 },
+      { name: 'hotel_phone', label: 'Phone', max: 20 },
+      { name: 'hotel_email', label: 'Email', type: 'email' },
+      { name: 'hotel_description', label: 'Description', type: 'textarea' },
+      { name: 'hotel_rating', label: 'Rating (0-5)', type: 'number', step: 0.1, min: 0, max: 5 },
+      { name: 'price_per_night', label: 'Price/Night', type: 'number', step: 0.01, min: 0 },
+      { name: 'breakfast_included', label: 'Breakfast', type: 'checkbox' },
+      { name: 'free_cancellation', label: 'Free Cancel', type: 'checkbox' },
+      { name: 'has_pool', label: 'Pool', type: 'checkbox' },
+      { name: 'has_wifi', label: 'WiFi', type: 'checkbox' },
+      { name: 'has_parking', label: 'Parking', type: 'checkbox' },
+    ]
+  },
+  package: {
+    title: 'Tour Package',
+    api: '/packages',
+    fields: [
+      { name: 'package_name', label: 'Package Name', required: true, max: 200 },
+      { name: 'destination', label: 'Destination', required: true, max: 100 },
+      { name: 'country', label: 'Country', required: true, max: 100 },
+      { name: 'duration_days', label: 'Days', type: 'number', required: true, min: 1 },
+      { name: 'duration_nights', label: 'Nights', type: 'number', required: true, min: 1 },
+      { name: 'price_per_person', label: 'Price/Person', type: 'number', required: true, step: 0.01, min: 0 },
+      { name: 'original_price', label: 'Original Price', type: 'number', step: 0.01, min: 0 },
+      { name: 'description', label: 'Description', type: 'textarea' },
+      { name: 'hotel_name', label: 'Hotel Name', max: 200 },
+      { name: 'difficulty', label: 'Difficulty', type: 'select', options: ['', 'Easy', 'Moderate', 'Challenging'] },
+      { name: 'max_group_size', label: 'Max Group Size', type: 'number', min: 1, value: 15 },
+      { name: 'is_active', label: 'Active', type: 'checkbox', checked: true },
+      { name: 'image', label: 'Image URL' },
+    ]
+  },
+  activity: {
+    title: 'Activity',
+    api: '/activities',
+    fields: [
+      { name: 'activity_name', label: 'Activity Name', required: true, max: 200 },
+      { name: 'destination', label: 'Destination', required: true, max: 100 },
+      { name: 'country', label: 'Country', required: true, max: 100 },
+      { name: 'description', label: 'Description', type: 'textarea' },
+      { name: 'duration', label: 'Duration', max: 100 },
+      { name: 'price', label: 'Price', type: 'number', required: true, step: 0.01, min: 0 },
+      { name: 'difficulty', label: 'Difficulty', type: 'select', options: ['', 'Easy', 'Moderate', 'Challenging'] },
+      { name: 'category', label: 'Category', max: 100 },
+      { name: 'max_participants', label: 'Max Participants', type: 'number', min: 1, value: 20 },
+      { name: 'is_active', label: 'Active', type: 'checkbox', checked: true },
+      { name: 'image', label: 'Image URL' },
+    ]
+  },
+  'tourist-spot': {
+    title: 'Tourist Spot',
+    api: '/tourist-spots',
+    fields: [
+      { name: 'spot_name', label: 'Spot Name', required: true, max: 150 },
+      { name: 'spot_city', label: 'City', required: true, max: 100 },
+      { name: 'spot_country', label: 'Country', required: true, max: 100 },
+      { name: 'spot_description', label: 'Description', type: 'textarea' },
+      { name: 'spot_category', label: 'Category', max: 50, value: 'attraction' },
+      { name: 'spot_type', label: 'Type', max: 50 },
+      { name: 'spot_rating', label: 'Rating (0-5)', type: 'number', min: 0, max: 5 },
+      { name: 'spot_hero_image', label: 'Image URL' },
+    ]
+  },
+  guide: {
+    title: 'Guide',
+    api: '/guides',
+    fields: [
+      { name: 'guide_name', label: 'Guide Name', required: true, max: 120 },
+      { name: 'guide_email', label: 'Email', type: 'email', required: true },
+      { name: 'guide_phone', label: 'Phone', max: 20 },
+      { name: 'guide_city', label: 'City', max: 100 },
+      { name: 'guide_language', label: 'Language', max: 100 },
+      { name: 'guide_experience', label: 'Experience (yrs)', type: 'number', min: 0, value: 0 },
+      { name: 'bio', label: 'Bio', type: 'textarea' },
+      { name: 'specialties', label: 'Specialties', max: 300 },
+      { name: 'hourly_rate', label: 'Hourly Rate', type: 'number', step: 0.01, min: 0 },
+      { name: 'daily_rate', label: 'Daily Rate', type: 'number', step: 0.01, min: 0 },
+      { name: 'is_available', label: 'Available', type: 'checkbox', checked: true },
+    ]
+  },
+  restaurant: {
+    title: 'Restaurant',
+    api: '/restaurants',
+    fields: [
+      { name: 'restaurant_name', label: 'Restaurant Name', required: true, max: 200 },
+      { name: 'destination', label: 'Destination', required: true, max: 100 },
+      { name: 'country', label: 'Country', required: true, max: 100 },
+      { name: 'cuisine', label: 'Cuisine', required: true, max: 100 },
+      { name: 'description', label: 'Description', type: 'textarea' },
+      { name: 'price_range', label: 'Price Range', type: 'select', options: ['$', '$$', '$$$', '$$$$'] },
+      { name: 'rating', label: 'Rating (0-5)', type: 'number', step: 0.1, min: 0, max: 5 },
+      { name: 'address', label: 'Address' },
+      { name: 'phone', label: 'Phone' },
+      { name: 'vegetarian_options', label: 'Vegetarian', type: 'checkbox' },
+      { name: 'outdoor_seating', label: 'Outdoor', type: 'checkbox' },
+      { name: 'delivery_available', label: 'Delivery', type: 'checkbox' },
+      { name: 'is_featured', label: 'Featured', type: 'checkbox' },
+      { name: 'image', label: 'Image URL' },
+    ]
+  },
+  promotion: {
+    title: 'Promotion',
+    api: '/promotions',
+    fields: [
+      { name: 'title', label: 'Title', required: true, max: 200 },
+      { name: 'description', label: 'Description', type: 'textarea' },
+      { name: 'destination', label: 'Destination', max: 100 },
+      { name: 'original_price', label: 'Original Price', type: 'number', step: 0.01, min: 0 },
+      { name: 'discount_percent', label: 'Discount %', type: 'number', min: 0, max: 100 },
+      { name: 'final_price', label: 'Final Price', type: 'number', step: 0.01, min: 0 },
+      { name: 'promo_code', label: 'Promo Code', max: 50 },
+      { name: 'valid_from', label: 'Valid From', type: 'datetime-local' },
+      { name: 'valid_until', label: 'Valid Until', type: 'datetime-local' },
+      { name: 'badge', label: 'Badge Text', max: 50 },
+      { name: 'image', label: 'Image URL' },
+      { name: 'is_active', label: 'Active', type: 'checkbox', checked: true },
+    ]
+  },
+  flight: {
+    title: 'Flight',
+    api: '/flights',
+    fields: [
+      { name: 'airline', label: 'Airline', required: true, max: 100 },
+      { name: 'flight_number', label: 'Flight Number', required: true, max: 20 },
+      { name: 'departure_city', label: 'Departure City', required: true, max: 100 },
+      { name: 'arrival_city', label: 'Arrival City', required: true, max: 100 },
+      { name: 'departure_airport', label: 'Departure Airport', max: 10 },
+      { name: 'arrival_airport', label: 'Arrival Airport', max: 10 },
+      { name: 'departure_time', label: 'Departure Time', required: true, max: 10 },
+      { name: 'arrival_time', label: 'Arrival Time', required: true, max: 10 },
+      { name: 'duration', label: 'Duration', required: true, max: 20 },
+      { name: 'stops', label: 'Stops', value: 'Direct' },
+      { name: 'price_economy', label: 'Economy Price', type: 'number', required: true, step: 0.01, min: 0 },
+      { name: 'price_business', label: 'Business Price', type: 'number', step: 0.01, min: 0 },
+      { name: 'total_seats', label: 'Total Seats', type: 'number', min: 1, value: 180 },
+      { name: 'available_seats', label: 'Available Seats', type: 'number', min: 0, value: 180 },
+      { name: 'image', label: 'Image URL' },
+    ]
+  },
+  'local-transport': {
+    title: 'Local Transport',
+    api: '/local-transport',
+    fields: [
+      { name: 'transport_type', label: 'Type', required: true, type: 'select', options: ['Bus', 'Train', 'Taxi', 'Car Rental'] },
+      { name: 'provider_name', label: 'Provider Name', required: true, max: 100 },
+      { name: 'route_name', label: 'Route Name', max: 150 },
+      { name: 'departure_city', label: 'Departure City', required: true, max: 100 },
+      { name: 'arrival_city', label: 'Arrival City', required: true, max: 100 },
+      { name: 'departure_time', label: 'Departure Time', max: 10 },
+      { name: 'arrival_time', label: 'Arrival Time', max: 10 },
+      { name: 'duration', label: 'Duration', max: 20 },
+      { name: 'price_per_person', label: 'Price per Person', type: 'number', required: true, step: 0.01, min: 0 },
+      { name: 'total_seats', label: 'Total Seats', type: 'number', min: 1, value: 40 },
+      { name: 'available_seats', label: 'Available Seats', type: 'number', min: 0, value: 40 },
+      { name: 'frequency', label: 'Frequency', max: 50 },
+      { name: 'features', label: 'Features', max: 500 },
+      { name: 'image', label: 'Image URL' },
+    ]
+  },
+};
+
+function openModal(entity, existingData) {
+  const schema = ENTITY_SCHEMAS[entity];
+  if (!schema) return;
+  const isEdit = !!existingData;
+  document.getElementById('modal-title').textContent = (isEdit ? 'Edit ' : 'Add ') + schema.title;
+
+  let html = '';
+  schema.fields.forEach(f => {
+    const val = existingData ? (existingData[f.name] ?? '') : (f.value || '');
+    if (f.type === 'checkbox') {
+      const checked = existingData ? !!existingData[f.name] : !!f.checked;
+      html += '<label style="display:flex;align-items:center;gap:8px;width:auto"><input type="checkbox" name="' + f.name + '"' + (checked ? ' checked' : '') + '> ' + escapeHtml(f.label) + '</label>';
+    } else if (f.type === 'select') {
+      html += '<label><span>' + escapeHtml(f.label) + (f.required ? ' *' : '') + '</span><select name="' + f.name + '"' + (f.required ? ' required' : '') + '>' + f.options.map(o => '<option value="' + escapeHtml(o) + '"' + (val === o ? ' selected' : '') + '>' + escapeHtml(o || '—') + '</option>').join('') + '</select></label>';
+    } else if (f.type === 'textarea') {
+      html += '<label><span>' + escapeHtml(f.label) + (f.required ? ' *' : '') + '</span><textarea name="' + f.name + '"' + (f.required ? ' required' : '') + (f.max ? ' maxlength="' + f.max + '"' : '') + '>' + escapeHtml(String(val)) + '</textarea></label>';
+    } else {
+      const inputType = f.type || 'text';
+      const attrs = [];
+      if (f.required) attrs.push('required');
+      if (f.max) attrs.push('maxlength="' + f.max + '"');
+      if (f.min !== undefined) attrs.push('min="' + f.min + '"');
+      if (f.max !== undefined && f.type === 'number') attrs.push('max="' + f.max + '"');
+      if (f.step) attrs.push('step="' + f.step + '"');
+      html += '<label><span>' + escapeHtml(f.label) + (f.required ? ' *' : '') + '</span><input type="' + inputType + '" name="' + f.name + '" value="' + escapeHtml(String(val)) + '" ' + attrs.join(' ') + '></label>';
+    }
+  });
+
+  html += '<div class="modal-actions"><button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button><button type="submit" class="btn-save">' + (isEdit ? 'Update' : 'Create') + '</button></div>';
+  document.getElementById('modal-form').innerHTML = html;
+  document.getElementById('modal-form').dataset.entity = entity;
+  document.getElementById('modal-form').dataset.editId = isEdit ? existingData.id : '';
+  document.getElementById('modal-overlay').classList.add('active');
+}
+
+function closeModal() { document.getElementById('modal-overlay').classList.remove('active'); }
+
+document.getElementById('modal-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const entity = form.dataset.entity;
+  const editId = form.dataset.editId;
+  const schema = ENTITY_SCHEMAS[entity];
+  const payload = {};
+
+  schema.fields.forEach(f => {
+    if (f.type === 'checkbox') {
+      payload[f.name] = form.querySelector('[name="' + f.name + '"]').checked;
+    } else if (f.type === 'number') {
+      const val = form.querySelector('[name="' + f.name + '"]').value;
+      payload[f.name] = val === '' ? null : Number(val);
+    } else if (f.type === 'datetime-local') {
+      const val = form.querySelector('[name="' + f.name + '"]').value;
+      payload[f.name] = val || null;
+    } else {
+      const val = form.querySelector('[name="' + f.name + '"]').value.trim();
+      payload[f.name] = val || null;
+    }
+  });
+
+  try {
+    if (editId) {
+      await apiClient.put(schema.api + '/' + editId, payload);
+    } else {
+      await apiClient.post(schema.api, payload);
+    }
+    closeModal();
+    refreshView(entity);
+  } catch (err) {
+    alert('Error: ' + err.message);
+  }
+});
+
+let pendingDelete = { entity: '', id: null };
+
+function deleteItem(entity, id) {
+  pendingDelete = { entity, id };
+  document.getElementById('confirm-text').textContent = 'This will permanently delete this ' + entity + '.';
+  document.getElementById('confirm-overlay').classList.add('active');
+}
+
+function closeConfirm() { document.getElementById('confirm-overlay').classList.remove('active'); }
+
+async function confirmDelete() {
+  closeConfirm();
+  const { entity, id } = pendingDelete;
+  const schema = ENTITY_SCHEMAS[entity];
+  if (!schema || !id) return;
+  try {
+    await apiClient.delete(schema.api + '/' + id);
+    refreshView(entity);
+  } catch (err) {
+    alert('Error: ' + err.message);
+  }
+}
+
+async function editItem(entity, id) {
+  const schema = ENTITY_SCHEMAS[entity];
+  if (!schema) return;
+  try {
+    const data = await apiClient.get(schema.api + '/' + id);
+    openModal(entity, data);
+  } catch (err) {
+    alert('Error loading item: ' + err.message);
+  }
+}
+
+function refreshView(entity) {
+  const viewMap = {
+    'hotel': 'hotels', 'package': 'packages', 'activity': 'activities',
+    'tourist-spot': 'tourist-spots', 'guide': 'guides', 'restaurant': 'restaurants',
+    'promotion': 'promotions', 'flight': 'flights', 'local-transport': 'local-transport',
+  };
+  const view = viewMap[entity];
+  if (view) {
+    delete loadedViews[view];
+    loadedViews[view] = true;
+    switch (view) {
+      case 'hotels': loadHotels(); break;
+      case 'packages': loadPackages(); break;
+      case 'activities': loadActivities(); break;
+      case 'tourist-spots': loadTouristSpots(); break;
+      case 'guides': loadAllGuides(); break;
+      case 'restaurants': loadAllRestaurants(); break;
+      case 'promotions': loadPromotions(); break;
+      case 'flights': loadFlights(); break;
+      case 'local-transport': loadLocalTransport(); break;
+    }
+  }
+}
 
 async function loadOverview() {
   let stats = {};
@@ -394,7 +850,6 @@ async function loadOverview() {
 
     const totalToday = (stats.today_bookings || 0) + (stats.today_payments || 0) + (stats.today_new_customers || 0) + (stats.today_pkg_bookings || 0) + (stats.today_act_bookings || 0) + (stats.today_reviews || 0);
     document.getElementById('today-subtitle').textContent = totalToday > 0 ? totalToday + ' actions recorded today' : 'No activity recorded today yet';
-    document.getElementById('today-title').textContent = "Today's Overview";
 
     document.getElementById('today-stats').innerHTML =
       '<div class="today-stat"><strong>' + (stats.today_bookings || 0) + '</strong><small>Hotel bookings</small></div>' +
@@ -471,13 +926,61 @@ async function loadHotels() {
     const hotels = data.items || [];
     document.getElementById('hotels-count').textContent = hotels.length + ' hotel' + (hotels.length !== 1 ? 's' : '');
     if (hotels.length > 0) {
-      container.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:.88rem"><thead><tr style="border-bottom:2px solid var(--line);text-align:left"><th style="padding:10px 8px;color:var(--muted)">ID</th><th style="padding:10px 8px;color:var(--muted)">Name</th><th style="padding:10px 8px;color:var(--muted)">City</th><th style="padding:10px 8px;color:var(--muted)">Country</th><th style="padding:10px 8px;color:var(--muted)">Rating</th></tr></thead><tbody>' +
-        hotels.map(h => '<tr style="border-bottom:1px solid var(--line)"><td style="padding:10px 8px">' + h.hotel_id + '</td><td style="padding:10px 8px;font-weight:600">' + escapeHtml(h.hotel_name) + '</td><td style="padding:10px 8px">' + escapeHtml(h.hotel_city) + '</td><td style="padding:10px 8px">' + escapeHtml(h.hotel_country) + '</td><td style="padding:10px 8px">' + (h.hotel_rating || 'N/A') + '</td></tr>').join('') +
+      container.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:.88rem"><thead><tr style="border-bottom:2px solid var(--line);text-align:left"><th style="padding:10px 8px;color:var(--muted)">ID</th><th style="padding:10px 8px;color:var(--muted)">Name</th><th style="padding:10px 8px;color:var(--muted)">City</th><th style="padding:10px 8px;color:var(--muted)">Country</th><th style="padding:10px 8px;color:var(--muted)">Rating</th><th style="padding:10px 8px;color:var(--muted)">Price</th>' + thExtra(true) + '</tr></thead><tbody>' +
+        hotels.map(h => '<tr style="border-bottom:1px solid var(--line)"><td style="padding:10px 8px">' + h.hotel_id + '</td><td style="padding:10px 8px;font-weight:600">' + escapeHtml(h.hotel_name) + '</td><td style="padding:10px 8px">' + escapeHtml(h.hotel_city) + '</td><td style="padding:10px 8px">' + escapeHtml(h.hotel_country) + '</td><td style="padding:10px 8px">' + (h.hotel_rating || 'N/A') + '</td><td style="padding:10px 8px">' + (h.price_per_night ? formatMoney(h.price_per_night) : '—') + '</td>' + tdExtra(true, 'hotel', h.hotel_id) + '</tr>').join('') +
         '</tbody></table>';
     } else {
       container.innerHTML = '<div class="empty-state"><i class="bi bi-buildings"></i>No hotels found.</div>';
     }
   } catch (e) { container.innerHTML = '<p class="muted">Could not load hotels.</p>'; }
+}
+
+async function loadPackages() {
+  const container = document.getElementById('packages-list');
+  try {
+    const data = await apiClient.get('/packages/?limit=100');
+    const packages = data.items || [];
+    document.getElementById('packages-count').textContent = packages.length + ' package' + (packages.length !== 1 ? 's' : '');
+    if (packages.length > 0) {
+      container.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:.86rem"><thead><tr style="border-bottom:2px solid var(--line);text-align:left"><th style="padding:10px 8px;color:var(--muted)">ID</th><th style="padding:10px 8px;color:var(--muted)">Name</th><th style="padding:10px 8px;color:var(--muted)">Destination</th><th style="padding:10px 8px;color:var(--muted)">Duration</th><th style="padding:10px 8px;color:var(--muted)">Price</th><th style="padding:10px 8px;color:var(--muted)">Difficulty</th><th style="padding:10px 8px;color:var(--muted)">Active</th>' + thExtra(true) + '</tr></thead><tbody>' +
+        packages.map(p => '<tr style="border-bottom:1px solid var(--line)"><td style="padding:10px 8px">' + p.package_id + '</td><td style="padding:10px 8px;font-weight:600">' + escapeHtml(p.package_name) + '</td><td style="padding:10px 8px">' + escapeHtml(p.destination) + ', ' + escapeHtml(p.country) + '</td><td style="padding:10px 8px">' + p.duration_days + 'D/' + p.duration_nights + 'N</td><td style="padding:10px 8px;font-weight:700;color:var(--forest)">' + formatMoney(p.price_per_person) + '</td><td style="padding:10px 8px">' + escapeHtml(p.difficulty || '—') + '</td><td style="padding:10px 8px"><span class="status ' + (p.is_active ? 'confirmed' : 'cancelled') + '">' + (p.is_active ? 'Yes' : 'No') + '</span></td>' + tdExtra(true, 'package', p.package_id) + '</tr>').join('') +
+        '</tbody></table>';
+    } else {
+      container.innerHTML = '<div class="empty-state"><i class="bi bi-map"></i>No packages yet.</div>';
+    }
+  } catch (e) { container.innerHTML = '<p class="muted">Could not load packages.</p>'; }
+}
+
+async function loadActivities() {
+  const container = document.getElementById('activities-list');
+  try {
+    const data = await apiClient.get('/activities/?limit=100');
+    const items = data.items || [];
+    document.getElementById('activities-count').textContent = items.length + ' activit' + (items.length !== 1 ? 'ies' : 'y');
+    if (items.length > 0) {
+      container.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:.86rem"><thead><tr style="border-bottom:2px solid var(--line);text-align:left"><th style="padding:10px 8px;color:var(--muted)">ID</th><th style="padding:10px 8px;color:var(--muted)">Name</th><th style="padding:10px 8px;color:var(--muted)">Destination</th><th style="padding:10px 8px;color:var(--muted)">Duration</th><th style="padding:10px 8px;color:var(--muted)">Price</th><th style="padding:10px 8px;color:var(--muted)">Category</th><th style="padding:10px 8px;color:var(--muted)">Active</th>' + thExtra(true) + '</tr></thead><tbody>' +
+        items.map(a => '<tr style="border-bottom:1px solid var(--line)"><td style="padding:10px 8px">' + a.activity_id + '</td><td style="padding:10px 8px;font-weight:600">' + escapeHtml(a.activity_name) + '</td><td style="padding:10px 8px">' + escapeHtml(a.destination) + ', ' + escapeHtml(a.country) + '</td><td style="padding:10px 8px">' + escapeHtml(a.duration || '—') + '</td><td style="padding:10px 8px;font-weight:700;color:var(--forest)">' + formatMoney(a.price) + '</td><td style="padding:10px 8px">' + escapeHtml(a.category || '—') + '</td><td style="padding:10px 8px"><span class="status ' + (a.is_active ? 'confirmed' : 'cancelled') + '">' + (a.is_active ? 'Yes' : 'No') + '</span></td>' + tdExtra(true, 'activity', a.activity_id) + '</tr>').join('') +
+        '</tbody></table>';
+    } else {
+      container.innerHTML = '<div class="empty-state"><i class="bi bi-compass"></i>No activities yet.</div>';
+    }
+  } catch (e) { container.innerHTML = '<p class="muted">Could not load activities.</p>'; }
+}
+
+async function loadTouristSpots() {
+  const container = document.getElementById('tourist-spots-list');
+  try {
+    const data = await apiClient.get('/tourist-spots/?limit=100');
+    const items = data.items || [];
+    document.getElementById('tourist-spots-count').textContent = items.length + ' spot' + (items.length !== 1 ? 's' : '');
+    if (items.length > 0) {
+      container.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:.86rem"><thead><tr style="border-bottom:2px solid var(--line);text-align:left"><th style="padding:10px 8px;color:var(--muted)">ID</th><th style="padding:10px 8px;color:var(--muted)">Name</th><th style="padding:10px 8px;color:var(--muted)">City</th><th style="padding:10px 8px;color:var(--muted)">Country</th><th style="padding:10px 8px;color:var(--muted)">Category</th><th style="padding:10px 8px;color:var(--muted)">Rating</th>' + thExtra(true) + '</tr></thead><tbody>' +
+        items.map(s => '<tr style="border-bottom:1px solid var(--line)"><td style="padding:10px 8px">' + s.spot_id + '</td><td style="padding:10px 8px;font-weight:600">' + escapeHtml(s.spot_name) + '</td><td style="padding:10px 8px">' + escapeHtml(s.spot_city) + '</td><td style="padding:10px 8px">' + escapeHtml(s.spot_country) + '</td><td style="padding:10px 8px">' + escapeHtml(s.spot_category || '—') + '</td><td style="padding:10px 8px">' + (s.spot_rating || 'N/A') + '</td>' + tdExtra(true, 'tourist-spot', s.spot_id) + '</tr>').join('') +
+        '</tbody></table>';
+    } else {
+      container.innerHTML = '<div class="empty-state"><i class="bi bi-geo-alt"></i>No tourist spots yet.</div>';
+    }
+  } catch (e) { container.innerHTML = '<p class="muted">Could not load tourist spots.</p>'; }
 }
 
 async function loadAllBookings() {
@@ -548,11 +1051,11 @@ async function loadAllGuides() {
     const guides = data.items || [];
     document.getElementById('guides-count').textContent = guides.length + ' guide' + (guides.length !== 1 ? 's' : '');
     if (guides.length > 0) {
-      container.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:.88rem"><thead><tr style="border-bottom:2px solid var(--line);text-align:left"><th style="padding:10px 8px;color:var(--muted)">ID</th><th style="padding:10px 8px;color:var(--muted)">Name</th><th style="padding:10px 8px;color:var(--muted)">Email</th><th style="padding:10px 8px;color:var(--muted)">City</th><th style="padding:10px 8px;color:var(--muted)">Language</th><th style="padding:10px 8px;color:var(--muted)">Experience</th></tr></thead><tbody>' +
-        guides.map(g => '<tr style="border-bottom:1px solid var(--line)"><td style="padding:10px 8px">' + g.guide_id + '</td><td style="padding:10px 8px;font-weight:600">' + escapeHtml(g.guide_name) + '</td><td style="padding:10px 8px">' + escapeHtml(g.guide_email || 'N/A') + '</td><td style="padding:10px 8px">' + escapeHtml(g.guide_city || '—') + '</td><td style="padding:10px 8px">' + escapeHtml(g.guide_language || 'General') + '</td><td style="padding:10px 8px">' + (g.guide_experience ? g.guide_experience + ' yrs' : 'New') + '</td></tr>').join('') +
+      container.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:.88rem"><thead><tr style="border-bottom:2px solid var(--line);text-align:left"><th style="padding:10px 8px;color:var(--muted)">ID</th><th style="padding:10px 8px;color:var(--muted)">Name</th><th style="padding:10px 8px;color:var(--muted)">Email</th><th style="padding:10px 8px;color:var(--muted)">City</th><th style="padding:10px 8px;color:var(--muted)">Language</th><th style="padding:10px 8px;color:var(--muted)">Experience</th>' + thExtra(true) + '</tr></thead><tbody>' +
+        guides.map(g => '<tr style="border-bottom:1px solid var(--line)"><td style="padding:10px 8px">' + g.guide_id + '</td><td style="padding:10px 8px;font-weight:600">' + escapeHtml(g.guide_name) + '</td><td style="padding:10px 8px">' + escapeHtml(g.guide_email || 'N/A') + '</td><td style="padding:10px 8px">' + escapeHtml(g.guide_city || '—') + '</td><td style="padding:10px 8px">' + escapeHtml(g.guide_language || 'General') + '</td><td style="padding:10px 8px">' + (g.guide_experience ? g.guide_experience + ' yrs' : 'New') + '</td>' + tdExtra(true, 'guide', g.guide_id) + '</tr>').join('') +
         '</tbody></table>';
     } else {
-      container.innerHTML = '<div class="empty-state"><i class="bi bi-compass"></i>No guides yet.</div>';
+      container.innerHTML = '<div class="empty-state"><i class="bi bi-signpost-2"></i>No guides yet.</div>';
     }
   } catch (e) { container.innerHTML = '<p class="muted">Could not load guides.</p>'; }
 }
@@ -578,20 +1081,68 @@ async function loadAllRestaurants() {
     const restaurants = await apiClient.get('/admin/restaurants?limit=100');
     document.getElementById('restaurants-count').textContent = restaurants.length + ' restaurant' + (restaurants.length !== 1 ? 's' : '');
     if (restaurants.length > 0) {
-      container.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:.86rem"><thead><tr style="border-bottom:2px solid var(--line);text-align:left"><th style="padding:10px 8px;color:var(--muted)">ID</th><th style="padding:10px 8px;color:var(--muted)">Name</th><th style="padding:10px 8px;color:var(--muted)">Destination</th><th style="padding:10px 8px;color:var(--muted)">Cuisine</th><th style="padding:10px 8px;color:var(--muted)">Rating</th><th style="padding:10px 8px;color:var(--muted)">Price</th><th style="padding:10px 8px;color:var(--muted)">Features</th></tr></thead><tbody>' +
+      container.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:.86rem"><thead><tr style="border-bottom:2px solid var(--line);text-align:left"><th style="padding:10px 8px;color:var(--muted)">ID</th><th style="padding:10px 8px;color:var(--muted)">Name</th><th style="padding:10px 8px;color:var(--muted)">Destination</th><th style="padding:10px 8px;color:var(--muted)">Cuisine</th><th style="padding:10px 8px;color:var(--muted)">Rating</th><th style="padding:10px 8px;color:var(--muted)">Price</th><th style="padding:10px 8px;color:var(--muted)">Features</th>' + thExtra(true) + '</tr></thead><tbody>' +
         restaurants.map(r => {
           const feats = [];
           if (r.vegetarian_options) feats.push('<span style="color:#177457">Veg</span>');
           if (r.outdoor_seating) feats.push('<span style="color:#1a6fb5">Outdoor</span>');
           if (r.delivery_available) feats.push('<span style="color:#6b3fa0">Delivery</span>');
           if (r.is_featured) feats.push('<span style="color:var(--orange)">Featured</span>');
-          return '<tr style="border-bottom:1px solid var(--line)"><td style="padding:10px 8px">' + r.restaurant_id + '</td><td style="padding:10px 8px;font-weight:600">' + escapeHtml(r.restaurant_name) + '</td><td style="padding:10px 8px">' + escapeHtml(r.destination) + '</td><td style="padding:10px 8px">' + escapeHtml(r.cuisine) + '</td><td style="padding:10px 8px"><span class="stars">' + starsStr(r.rating) + '</span> ' + (r.rating || 'N/A') + '</td><td style="padding:10px 8px">' + escapeHtml(r.price_range || '—') + '</td><td style="padding:10px 8px;font-size:.8rem">' + feats.join(' · ') + '</td></tr>';
+          return '<tr style="border-bottom:1px solid var(--line)"><td style="padding:10px 8px">' + r.restaurant_id + '</td><td style="padding:10px 8px;font-weight:600">' + escapeHtml(r.restaurant_name) + '</td><td style="padding:10px 8px">' + escapeHtml(r.destination) + '</td><td style="padding:10px 8px">' + escapeHtml(r.cuisine) + '</td><td style="padding:10px 8px"><span class="stars">' + starsStr(r.rating) + '</span> ' + (r.rating || 'N/A') + '</td><td style="padding:10px 8px">' + escapeHtml(r.price_range || '—') + '</td><td style="padding:10px 8px;font-size:.8rem">' + feats.join(' · ') + '</td>' + tdExtra(true, 'restaurant', r.restaurant_id) + '</tr>';
         }).join('') +
         '</tbody></table>';
     } else {
       container.innerHTML = '<div class="empty-state"><i class="bi bi-utensils"></i>No restaurants yet.</div>';
     }
   } catch (e) { container.innerHTML = '<p class="muted">Could not load restaurants.</p>'; }
+}
+
+async function loadPromotions() {
+  const container = document.getElementById('promotions-list');
+  try {
+    const data = await apiClient.get('/promotions/?limit=100');
+    const promos = data.items || [];
+    document.getElementById('promotions-count').textContent = promos.length + ' promotion' + (promos.length !== 1 ? 's' : '');
+    if (promos.length > 0) {
+      container.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:.86rem"><thead><tr style="border-bottom:2px solid var(--line);text-align:left"><th style="padding:10px 8px;color:var(--muted)">ID</th><th style="padding:10px 8px;color:var(--muted)">Title</th><th style="padding:10px 8px;color:var(--muted)">Destination</th><th style="padding:10px 8px;color:var(--muted)">Discount</th><th style="padding:10px 8px;color:var(--muted)">Code</th><th style="padding:10px 8px;color:var(--muted)">Valid Until</th><th style="padding:10px 8px;color:var(--muted)">Active</th>' + thExtra(true) + '</tr></thead><tbody>' +
+        promos.map(p => '<tr style="border-bottom:1px solid var(--line)"><td style="padding:10px 8px">' + p.promotion_id + '</td><td style="padding:10px 8px;font-weight:600">' + escapeHtml(p.title) + '</td><td style="padding:10px 8px">' + escapeHtml(p.destination || '—') + '</td><td style="padding:10px 8px">' + (p.discount_percent ? p.discount_percent + '%' : '—') + '</td><td style="padding:10px 8px;font-family:monospace">' + escapeHtml(p.promo_code || '—') + '</td><td style="padding:10px 8px">' + (p.valid_until ? p.valid_until.split('T')[0] : '—') + '</td><td style="padding:10px 8px"><span class="status ' + (p.is_active ? 'confirmed' : 'cancelled') + '">' + (p.is_active ? 'Yes' : 'No') + '</span></td>' + tdExtra(true, 'promotion', p.promotion_id) + '</tr>').join('') +
+        '</tbody></table>';
+    } else {
+      container.innerHTML = '<div class="empty-state"><i class="bi bi-megaphone"></i>No promotions yet.</div>';
+    }
+  } catch (e) { container.innerHTML = '<p class="muted">Could not load promotions.</p>'; }
+}
+
+async function loadFlights() {
+  const container = document.getElementById('flights-list');
+  try {
+    const data = await apiClient.get('/flights/?limit=100');
+    const flights = data.items || [];
+    document.getElementById('flights-count').textContent = flights.length + ' flight' + (flights.length !== 1 ? 's' : '');
+    if (flights.length > 0) {
+      container.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:.86rem"><thead><tr style="border-bottom:2px solid var(--line);text-align:left"><th style="padding:10px 8px;color:var(--muted)">ID</th><th style="padding:10px 8px;color:var(--muted)">Airline</th><th style="padding:10px 8px;color:var(--muted)">Flight #</th><th style="padding:10px 8px;color:var(--muted)">Route</th><th style="padding:10px 8px;color:var(--muted)">Time</th><th style="padding:10px 8px;color:var(--muted)">Duration</th><th style="padding:10px 8px;color:var(--muted)">Economy</th><th style="padding:10px 8px;color:var(--muted)">Seats</th>' + thExtra(true) + '</tr></thead><tbody>' +
+        flights.map(f => '<tr style="border-bottom:1px solid var(--line)"><td style="padding:10px 8px">' + f.flight_id + '</td><td style="padding:10px 8px;font-weight:600">' + escapeHtml(f.airline) + '</td><td style="padding:10px 8px;font-family:monospace">' + escapeHtml(f.flight_number) + '</td><td style="padding:10px 8px">' + escapeHtml(f.departure_city) + ' → ' + escapeHtml(f.arrival_city) + '</td><td style="padding:10px 8px">' + escapeHtml(f.departure_time) + ' – ' + escapeHtml(f.arrival_time) + '</td><td style="padding:10px 8px">' + escapeHtml(f.duration) + '</td><td style="padding:10px 8px;font-weight:700;color:var(--forest)">' + formatMoney(f.price_economy) + '</td><td style="padding:10px 8px">' + f.available_seats + '/' + f.total_seats + '</td>' + tdExtra(true, 'flight', f.flight_id) + '</tr>').join('') +
+        '</tbody></table>';
+    } else {
+      container.innerHTML = '<div class="empty-state"><i class="bi bi-airplane"></i>No flights yet.</div>';
+    }
+  } catch (e) { container.innerHTML = '<p class="muted">Could not load flights.</p>'; }
+}
+
+async function loadLocalTransport() {
+  const container = document.getElementById('local-transport-list');
+  try {
+    const data = await apiClient.get('/local-transport/?limit=100');
+    const items = data.items || [];
+    document.getElementById('local-transport-count').textContent = items.length + ' transport' + (items.length !== 1 ? 's' : '');
+    if (items.length > 0) {
+      container.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:.86rem"><thead><tr style="border-bottom:2px solid var(--line);text-align:left"><th style="padding:10px 8px;color:var(--muted)">ID</th><th style="padding:10px 8px;color:var(--muted)">Type</th><th style="padding:10px 8px;color:var(--muted)">Provider</th><th style="padding:10px 8px;color:var(--muted)">Route</th><th style="padding:10px 8px;color:var(--muted)">Time</th><th style="padding:10px 8px;color:var(--muted)">Price</th><th style="padding:10px 8px;color:var(--muted)">Seats</th>' + thExtra(true) + '</tr></thead><tbody>' +
+        items.map(t => '<tr style="border-bottom:1px solid var(--line)"><td style="padding:10px 8px">' + t.transport_id + '</td><td style="padding:10px 8px;font-weight:600">' + escapeHtml(t.transport_type) + '</td><td style="padding:10px 8px">' + escapeHtml(t.provider_name || '—') + '</td><td style="padding:10px 8px">' + escapeHtml(t.departure_city) + ' → ' + escapeHtml(t.arrival_city) + '</td><td style="padding:10px 8px">' + escapeHtml(t.departure_time || '—') + ' – ' + escapeHtml(t.arrival_time || '—') + '</td><td style="padding:10px 8px;font-weight:700;color:var(--forest)">' + formatMoney(t.price_per_person) + '</td><td style="padding:10px 8px">' + t.available_seats + '/' + t.total_seats + '</td>' + tdExtra(true, 'local-transport', t.transport_id) + '</tr>').join('') +
+        '</tbody></table>';
+    } else {
+      container.innerHTML = '<div class="empty-state"><i class="bi bi-bus-front"></i>No transport options yet.</div>';
+    }
+  } catch (e) { container.innerHTML = '<p class="muted">Could not load transport.</p>'; }
 }
 
 async function loadAllPayments() {
