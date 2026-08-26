@@ -131,7 +131,8 @@
 <script src="js/ui.js?v=6"></script>
 <script>
 function escapeHtml(t){const d=document.createElement('div');d.textContent=t||'';return d.innerHTML}
-function parseJson(s){try{return JSON.parse(s)}catch{return[]}}
+
+function parseJson(s){if(s==null||s==='null'||s==='')return[];try{return JSON.parse(s)||[]}catch{return[]}}
 const countryFlags={'Sri Lanka':'<i class="bi bi-geo-alt"></i>','Bangladesh':'<i class="bi bi-geo-alt"></i>','Nepal':'<i class="bi bi-geo-alt"></i>','Thailand':'<i class="bi bi-geo-alt"></i>','India':'<i class="bi bi-geo-alt"></i>'};
 let allPackages=[];
 
@@ -146,7 +147,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
       <div class="section-head"><div><span class="eyebrow">ALL PACKAGES</span><h2>${allPackages.length} curated experiences</h2></div></div>
       <div class="filter-bar">
         <button class="filter-btn active" onclick="filterPkg('all',this)">All</button>
-        ${destinations.map(d=>`<button class="filter-btn" onclick="filterPkg('${escapeHtml(d)}',this)">${escapeHtml(d)}</button>`).join('')}
+        ${destinations.map(d=>`<button class="filter-btn" data-dest="${escapeHtml(d)}" onclick="filterPkg(this.dataset.dest,this)">${escapeHtml(d)}</button>`).join('')}
       </div>
       <div class="pkg-grid" id="pkg-grid">${allPackages.map(p=>renderPkgCard(p)).join('')}</div>
     `;

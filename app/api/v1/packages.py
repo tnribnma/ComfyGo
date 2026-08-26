@@ -28,6 +28,12 @@ def list_packages(
     return PaginatedResponse[TourPackageOut](items=items, total=len(items), page=1, page_size=limit, pages=1)
 
 
+@router.get("/my-bookings", response_model=list[PackageBookingOut])
+def my_package_bookings(db: DBDep, user: CurrentCustomerDep, skip: int = 0, limit: int = 50):
+    """List the current customer's package bookings."""
+    return PackageBookingService(db).get_customer_bookings(user.customer_id, skip=skip, limit=limit)
+
+
 @router.get("/{package_id}", response_model=TourPackageOut)
 def get_package(package_id: int, db: DBDep):
     return TourPackageService(db).get(package_id)
@@ -63,12 +69,6 @@ def book_package(
 ):
     payload.package_id = package_id
     return PackageBookingService(db).create(customer_id=user.customer_id, payload=payload)
-
-
-@router.get("/my-bookings", response_model=list[PackageBookingOut])
-def my_package_bookings(db: DBDep, user: CurrentCustomerDep, skip: int = 0, limit: int = 50):
-    """List the current customer's package bookings."""
-    return PackageBookingService(db).get_customer_bookings(user.customer_id, skip=skip, limit=limit)
 
 
 @router.post("/{booking_id}/cancel", response_model=PackageBookingOut)
